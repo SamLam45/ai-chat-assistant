@@ -1,10 +1,11 @@
-import "@/styles/globals.css";
+import "@/styles/globals.css"; // Your global styles
 import type { AppProps } from "next/app";
-import Head from 'next/head';
+import Head from "next/head";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import "owl.carousel/dist/assets/owl.theme.default.min.css";
 import "lightbox2/dist/css/lightbox.min.css";
+import "animate.css"; // Ensure this is installed
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
