@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import 'animate.css';
+import Link from 'next/link';
 
 declare global {
   interface Window {
@@ -27,28 +28,16 @@ export default function Training() {
           offset: 0,
           mobile: true,
           live: true,
-          callback: function(box: HTMLElement) {
-            // Optional callback when animation is triggered
-          },
-          scrollContainer: null
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         });
-        
-        // Initialize WOW
         wow.init();
-        
-        // Force refresh on scroll
-        window.addEventListener('scroll', () => {
-          wow.sync();
-        });
+        window.addEventListener('scroll', () => wow.sync());
       }
     };
-
-    // Wait for WOW.js to load
+  
     if (typeof window !== 'undefined') {
-      if (window.WOW) {
-        initWOW();
-      } else {
-        // If WOW is not loaded yet, wait for it
+      if (window.WOW) initWOW();
+      else {
         const checkWOW = setInterval(() => {
           if (window.WOW) {
             initWOW();
@@ -109,15 +98,29 @@ return (
             <span className="fa fa-bars"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarCollapse">
-            <div className="navbar-nav ms-auto py-0">
-              <a href="/" className="nav-item nav-link">首页</a>
-              <a href="/about" className="nav-item nav-link">关于我们</a>
-              <a href="/training" className="nav-item nav-link active">服务项目</a>
-              <a href="/team" className="nav-item nav-link">团队介绍</a>
-              <a href="/testimonials" className="nav-item nav-link">学员评价</a>
-              <a href="/blog" className="nav-item nav-link">博客资讯</a>
-              <a href="/contact" className="nav-item nav-link">联系我们</a>
-            </div>
+          <div className="navbar-nav ms-auto py-0">
+                    <Link href="/">
+                      <a className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>首页</a>
+                    </Link>
+                    <Link href="/about">
+                      <a className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>关于我们</a>
+                    </Link>
+                    <Link href="/training">
+                      <a className={`nav-item nav-link${router.pathname === '/training' ? ' active' : ''}`}>服务项目</a>
+                    </Link>
+                    <Link href="/team">
+                      <a className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>团队介绍</a>
+                    </Link>
+                    <Link href="/testimonial">
+                      <a className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>学员评价</a>
+                    </Link>
+                    <Link href="/blog">
+                      <a className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>博客资讯</a>
+                    </Link>
+                    <Link href="/contact">
+                      <a className="nav-item nav-link">联系我们</a>
+                    </Link>
+                  </div>
             <a href="#" className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
           </div>
         </nav>
