@@ -8,56 +8,46 @@ import Link from 'next/link';
 
 declare global {
   interface Window {
-    bootstrap: any;
-    $: any;
-    jQuery: any;
-    WOW: any;
+    WOW: {
+      new (options?: Record<string, unknown>): {
+        init(): void;
+        sync(): void;
+      };
+    };
   }
 }
 
 export default function Home() {
   const router = useRouter();
 
-  useEffect(() => {
-    const initWOW = () => {
-      if (typeof window !== 'undefined' && window.WOW) {
-        const wow = new window.WOW({
-          boxClass: 'wow',
-          animateClass: 'animate__animated',
-          offset: 0,
-          mobile: true,
-          live: true,
-          callback: function(box: HTMLElement) {
-            // Optional callback when animation is triggered
-          },
-          scrollContainer: null
-        });
-        
-        // Initialize WOW
-        wow.init();
-        
-        // Force refresh on scroll
-        window.addEventListener('scroll', () => {
-          wow.sync();
-        });
-      }
-    };
-
-    // Wait for WOW.js to load
-    if (typeof window !== 'undefined') {
-      if (window.WOW) {
-        initWOW();
-      } else {
-        // If WOW is not loaded yet, wait for it
-        const checkWOW = setInterval(() => {
-          if (window.WOW) {
-            initWOW();
-            clearInterval(checkWOW);
-          }
-        }, 100);
-      }
+useEffect(() => {
+  const initWOW = () => {
+    if (typeof window !== 'undefined' && window.WOW) {
+      const wow = new window.WOW({
+        boxClass: 'wow',
+        animateClass: 'animate__animated',
+        offset: 0,
+        mobile: true,
+        live: true,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      });
+      wow.init();
+      window.addEventListener('scroll', () => wow.sync());
     }
-  }, []);
+  };
+
+  if (typeof window !== 'undefined') {
+    if (window.WOW) initWOW();
+    else {
+      const checkWOW = setInterval(() => {
+        if (window.WOW) {
+          initWOW();
+          clearInterval(checkWOW);
+        }
+      }, 100);
+    }
+  }
+}, []);
 
   
 
@@ -71,16 +61,10 @@ export default function Home() {
       </Head>
 
       {/* Load jQuery first */}
-      <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js" strategy="beforeInteractive" />
+      
       
       {/* Load other dependencies */}
       
-      <Script src="/lib/wow/wow.min.js" strategy="beforeInteractive" />
-      <Script src="/lib/easing/easing.min.js" strategy="beforeInteractive" />
-      <Script src="/lib/waypoints/waypoints.min.js" strategy="beforeInteractive" />
-      <Script src="/lib/counterup/counterup.min.js" strategy="beforeInteractive" />
-      <Script src="/lib/owlcarousel/owl.carousel.min.js" strategy="beforeInteractive" />
-      <Script src="/lib/lightbox/js/lightbox.min.js" strategy="beforeInteractive" />
       
       {/* Load main.js last */}
       <Script src="/js/main.js" strategy="afterInteractive" />
@@ -123,17 +107,29 @@ export default function Home() {
             <span className="fa fa-bars"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarCollapse">
-            <div className="navbar-nav ms-auto py-0">
-              <Link href="/">
-                <a className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>首页</a>
-              </Link>
-              <a href="/about" className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>关于我们</a>
-              <a href="/training" className={`nav-item nav-link${router.pathname === '/services' ? ' active' : ''}`}>服务项目</a>
-              <a href="/team" className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>团队介绍</a>
-              <a href="/testimonial" className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>学员评价</a>
-              <a href="/blog" className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>博客资讯</a>
-              <a href="/contact" className="nav-item nav-link">联系我们</a>
-            </div>
+                  <div className="navbar-nav ms-auto py-0">
+                    <Link href="/">
+                      <a className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>首页</a>
+                    </Link>
+                    <Link href="/about">
+                      <a className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>关于我们</a>
+                    </Link>
+                    <Link href="/training">
+                      <a className={`nav-item nav-link${router.pathname === '/training' ? ' active' : ''}`}>服务项目</a>
+                    </Link>
+                    <Link href="/team">
+                      <a className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>团队介绍</a>
+                    </Link>
+                    <Link href="/testimonial">
+                      <a className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>学员评价</a>
+                    </Link>
+                    <Link href="/blog">
+                      <a className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>博客资讯</a>
+                    </Link>
+                    <Link href="/contact">
+                      <a className="nav-item nav-link">联系我们</a>
+                    </Link>
+                  </div>
             <a href="#" className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
           </div>
         </nav>
@@ -214,13 +210,13 @@ export default function Home() {
             ].map((item, idx) => (
               <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
                 <div className="training-img rounded-top">
-                  <Image
-                    src={`/img/service-${item.img}.jpg`}
-                    className="img-fluid rounded-top w-100"
-                    alt="服务图片"
-                    width={600}
-                    height={400}
-                  />
+                    <Image
+                      src={`/img/service-${item.img}.jpg`}
+                      className="img-fluid rounded-top w-100"
+                      alt="服务图片"
+                      width={600}
+                      height={400}
+                    />
                   <h1 className="fs-1 fw-bold bg-primary text-white d-inline-block rounded p-2 position-absolute" style={{top: 0, left: 0}}>{`0${idx+1}`}</h1>
                 </div>
                 <div className="rounded-bottom border border-top-0 p-4">
@@ -277,7 +273,13 @@ export default function Home() {
             ].map((member, idx) => (
               <div className="team-item border rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
                 <div className="team-img bg-secondary rounded-top">
-                  <Image src={`/img/${member.img}`} className="img-fluid rounded-top w-100" alt={member.name} width={400} height={400} />
+                  <Image
+                      src={`/img/${member.img}`}
+                      className="img-fluid rounded-top w-100"
+                      alt={member.name}
+                      width={400}
+                      height={400}
+                    />
                   <div className="team-icon">
                     <a className="btn btn-square btn-primary rounded-circle mx-1" href=""><i className="fab fa-weixin"></i></a>
                     <a className="btn btn-square btn-primary rounded-circle mx-1" href=""><i className="fab fa-linkedin-in"></i></a>
@@ -312,13 +314,13 @@ export default function Home() {
             ].map((post, idx) => (
               <div className="blog-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
                 <div className="blog-img rounded-top">
-                    <Image
-                      src={`/img/${post.img}`}
-                      className="img-fluid rounded-top w-100"
-                      alt="博客图片"
-                      width={600}
-                      height={400}
-                    />
+                  <Image
+                    src={`/img/${post.img}`}
+                    className="img-fluid rounded-top w-100"
+                    alt="博客图片"
+                    width={600}
+                    height={400}
+                  />  
                 </div>
                 <div className="bg-light rounded-bottom p-4">
                   <div className="d-flex justify-content-between mb-4">
@@ -347,7 +349,13 @@ export default function Home() {
             {[1, 2, 3, 3].map((num, idx) => (
               <div className="testimonial-item border text-center rounded" key={idx}>
                 <div className="rounded-circle position-absolute" style={{ width: 100, height: 100, top: 25, left: '50%', transform: 'translateX(-50%)' }}>
-                  <img className="img-fluid rounded-circle" src={`/img/testimonial-${num}.jpg`} alt="img" />
+                      <Image
+                        className="img-fluid rounded-circle"
+                        src={`/img/testimonial-${num}.jpg`}
+                        alt="img"
+                        width={100}
+                        height={100}
+                      />
                 </div>
                 <div className="position-relative" style={{ marginTop: 140 }}>
                   <h5 className="mb-0">{idx === 0 ? '张女士' : idx === 1 ? 'Kevin L.' : 'Kevin L.'}</h5>

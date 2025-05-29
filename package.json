@@ -11,10 +11,10 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@supabase/supabase-js": "^2.49.8",
-    "bootstrap": "^5.0.0",
+    "bootstrap": "^5.3.6",
     "counterup2": "^2.0.2",
     "jquery": "^3.6.4",
-    "lightbox2": "^2.11.3",
+    "lightbox2": "^2.11.5",
     "next": "15.3.2",
     "owl.carousel": "^2.3.4",
     "react": "^19.0.0",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/jquery": "^3.5.32",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
