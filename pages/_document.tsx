@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document'
+import Script from 'next/script';
 
 export default function Document() {
   return (
@@ -29,6 +30,13 @@ export default function Document() {
         <link href="/css/style.css" rel="stylesheet" />
       </Head>
       <body>
+        <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js" strategy="beforeInteractive" />
+        <Script src="/lib/wow/wow.min.js" strategy="beforeInteractive" />
+        <Script src="/lib/easing/easing.min.js" strategy="beforeInteractive" />
+        <Script src="/lib/waypoints/waypoints.min.js" strategy="beforeInteractive" />
+        <Script src="/lib/counterup/counterup.min.js" strategy="beforeInteractive" />
+        <Script src="/lib/owlcarousel/owl.carousel.min.js" strategy="beforeInteractive" />
+        <Script src="/lib/lightbox/js/lightbox.min.js" strategy="beforeInteractive" />
         <Main />
         <NextScript />
       </body>
