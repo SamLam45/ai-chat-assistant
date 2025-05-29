@@ -139,7 +139,14 @@ useEffect(() => {
       {/* Carousel Start */}
       <div className="header-carousel owl-carousel">
         <div className="header-carousel-item">
-          <Image src="/img/carousel-1.jpg" className="img-fluid w-100" alt="横幅图片" width={1920} height={1080} priority />
+          <Image
+            src="/img/carousel-1.jpg"
+            className="img-fluid w-100 warm-filter"
+            alt="横幅图片"
+            width={1920}
+            height={1080}
+            priority
+          />
           <div className="carousel-caption">
             <div className="carousel-caption-content p-3" style={{ maxWidth: '900px' }}>
               <h4 id="subtitle" className="text-secondary text-uppercase sub-title fw-bold mb-4 wow animate__animated animate__fadeInUp" data-wow-delay="0.2s" style={{ letterSpacing: '3px' }}>通过专属国际视野培训项目，激发孩子潜能</h4>
@@ -186,50 +193,50 @@ useEffect(() => {
       </div>
       {/* About End */}
 
-            {/* Services Start */}
-      <div className="container-fluid training bg-white py-5">
-        <div className="container py-5">
-          <div className="pb-5">
-            <div className="row g-4 align-items-end">
-              <div className="col-xl-8">
-                <h4 className="text-secondary sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">服务项目</h4>
-                <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">全球视野新一代精英少年培训计划</h1>
-              </div>
-               <div className="col-xl-4 text-xl-end wow fadeInUp" data-wow-delay="0.3s">
-                <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">查看所有课程</a>
-              </div>
-            </div>
-          </div>
-          <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
-            {[
-              { img: 1, title: '沉浸式课程', desc: '12个月课程，每月围绕AI、国际关系等12大主题展开' },
-              { img: 3, title: '精英导师辅导', desc: '香港及海外顶尖大学生1对2小组辅导，非大班网课' },
-              { img: 2, title: '双语教学', desc: '结合新闻分析与批判性思维训练，全面提升能力' },
-              { img: 4, title: '高端体验', desc: '独家企业参观、名师大师班及一线城市高端沙龙' },
-              { img: 3, title: '国际认证', desc: '结业颁发香港精英教育机构认证的国际素养证书' }
-            ].map((item, idx) => (
-              <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
-                <div className="training-img rounded-top">
-                    <Image
-                      src={`/img/service-${item.img}.jpg`}
-                      className="img-fluid rounded-top w-100"
-                      alt="服务图片"
-                      width={600}
-                      height={400}
-                    />
-                  <h1 className="fs-1 fw-bold bg-primary text-white d-inline-block rounded p-2 position-absolute" style={{top: 0, left: 0}}>{`0${idx+1}`}</h1>
-                </div>
-                <div className="rounded-bottom border border-top-0 p-4">
-                  <a href="#" className="h4 mb-3 d-block">{item.title}</a>
-                  <p className="mb-3 text-dark">{item.desc}</p>
-                  <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">了解详情</a>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Services Start */}
+<div className="container-fluid training bg-white py-5">
+  <div className="container py-5">
+    <div className="pb-5">
+      <div className="row g-4 align-items-end">
+        <div className="col-xl-8">
+          <h4 className="text-secondary sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">服务项目</h4>
+          <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">全球视野新一代精英少年培训计划</h1>
+        </div>
+        <div className="col-xl-4 text-xl-end wow fadeInUp" data-wow-delay="0.3s">
+          <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">查看所有课程</a>
         </div>
       </div>
-      {/* Services End */}
+    </div>
+    <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
+      {[
+        { img: 1, title: '沉浸式课程', desc: '12个月课程，每月围绕AI、国际关系等12大主题展开' },
+        { img: 3, title: '精英导师辅导', desc: '香港及海外顶尖大学生1对2小组辅导，非大班网课' },
+        { img: 2, title: '双语教学', desc: '结合新闻分析与批判性思维训练，全面提升能力' },
+        { img: 4, title: '高端体验', desc: '独家企业参观、名师大师班及一线城市高端沙龙' },
+        { img: 3, title: '国际认证', desc: '结业颁发香港精英教育机构认证的国际素养证书' }
+      ].map((item, idx) => (
+        <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx * 0.2}s`} key={idx}>
+          <div className="training-img rounded-top">
+            <Image
+              src={`/img/service-${item.img}.jpg`}
+              className="img-fluid rounded-top w-100 warm-filter"
+              alt="服务图片"
+              width={600}
+              height={400}
+            />
+            <h1 className="fs-1 fw-bold bg-primary text-white d-inline-block rounded p-2 position-absolute" style={{ top: 0, left: 0 }}>{`0${idx + 1}`}</h1>
+          </div>
+          <div className="rounded-bottom border border-top-0 p-4">
+            <a href="#" className="h4 mb-3 d-block">{item.title}</a>
+            <p className="mb-3 text-dark">{item.desc}</p>
+            <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">了解详情</a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+{/* Services End */}
 
       {/* Why Choose Us Start */}
       <div className="container-fluid py-5 bg-light">

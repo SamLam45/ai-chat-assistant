@@ -967,3 +967,7 @@
   color: #ff4d79 !important;
   font-weight: bold;
 }
+
+.warm-filter {
+  filter: sepia(60%) saturate(1.5) hue-rotate(20deg) brightness(1.1);
+}
