@@ -58,7 +58,7 @@ export default function Testimonial() {
       <Script src="/js/main.js" strategy="afterInteractive" />
 
       {/* Topbar Start */}
-      <div className="container-fluid bg-warning px-5 d-none d-lg-block">
+      <div className="container-fluid px-5 d-none d-lg-block" style={{ backgroundColor: '#f28b00' }}>
         <div className="row gx-0 align-items-center" style={{ height: '45px' }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
             <div className="d-flex flex-wrap">
@@ -147,7 +147,7 @@ export default function Testimonial() {
       {/* Header End */}
 
       {/* Banner Start */}
-      <div className="container-fluid bg-warning wow zoomInDown" data-wow-delay="0.1s">
+      <div className="container-fluid wow zoomInDown" data-wow-delay="0.1s" style={{ backgroundColor: '#f28b00' }}>
         <div className="container">
           <div className="d-flex flex-column flex-lg-row align-items-center justify-content-center text-center p-5">
             <h1 className="me-4"><span className="fw-normal">加入我们今日，</span><span>赋能新一代全球青年领袖</span></h1>
@@ -180,11 +180,11 @@ export default function Testimonial() {
                   <h5 className="mb-0">{idx === 0 ? '张女士' : idx === 1 ? 'Kevin L.' : 'Kevin L.'}</h5>
                   <p>{idx === 0 ? '家长' : '学员'}</p>
                   <div className="d-flex justify-content-center">
-                    <i className="fas fa-star text-warning"></i>
-                    <i className="fas fa-star text-warning"></i>
-                    <i className="fas fa-star text-warning"></i>
-                    <i className="fas fa-star text-warning"></i>
-                    <i className="fas fa-star"></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
                   </div>
                 </div>
                 <div className="testimonial-content p-4">

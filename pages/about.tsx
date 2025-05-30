@@ -60,7 +60,7 @@ export default function About() {
       <Script src="/js/main.js" strategy="afterInteractive" />
 
       {/* Topbar Start */}
-      <div className="container-fluid bg-warning px-5 d-none d-lg-block">
+      <div className="container-fluid px-5 d-none d-lg-block" style={{ backgroundColor: '#f28b00' }}>
         <div className="row gx-0 align-items-center" style={{ height: "45px" }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
             <div className="d-flex flex-wrap">
@@ -163,7 +163,7 @@ export default function About() {
       {/* Header End */}
 
       {/* Banner Start */}
-      <div className="container-fluid bg-warning animate__animated animate__zoomInDown" data-wow-delay="0.1s">
+      <div className="container-fluid animate__animated animate__zoomInDown" data-wow-delay="0.1s" style={{ backgroundColor: '#f28b00' }}>
         <div className="container">
           <div className="d-flex flex-column flex-lg-row align-items-center justify-content-center text-center p-5">
             <h1 className="me-4">
@@ -183,12 +183,12 @@ export default function About() {
         <div className="container py-5">
           <div className="row g-5 align-items-center">
             <div className="col-lg-5 wow fadeInLeft" data-wow-delay="0.1s">
-              <div className="border bg-warning rounded">
+              <div className="border rounded" style={{ backgroundColor: '#f28b00' }}>
                 <Image src="/img/about-2.png" className="img-fluid w-100 rounded" alt="Image" width={500} height={500} />
               </div>
             </div>
             <div className="col-lg-7 wow fadeInRight" data-wow-delay="0.3s">
-              <h4 className="text-warning sub-title fw-bold">关于我们</h4>
+              <h4 className="sub-title fw-bold" style={{ color: '#f28b00' }}>关于我们</h4>
               <h1 className="display-3 mb-4">
                 <strong className="text-primary">全球视野</strong>, 培养具有全球视野的未来领袖
               </h1>
@@ -218,7 +218,7 @@ export default function About() {
                 </div>
                 <div className="counter-content d-flex align-items-center justify-content-center mt-4">
                   <span className="counter-value" data-toggle="counter-up">5</span>
-                  <h4 className="text-warning mb-0" style={{ fontWeight: 600, fontSize: "25px" }}>
+                  <h4 className="mb-0" style={{ fontWeight: 600, fontSize: '25px', color: '#f28b00' }}>
                     +
                   </h4>
                 </div>
@@ -231,7 +231,7 @@ export default function About() {
                 </div>
                 <div className="counter-content d-flex align-items-center justify-content-center mt-4">
                   <span className="counter-value" data-toggle="counter-up">49</span>
-                  <h4 className="text-warning mb-0" style={{ fontWeight: 600, fontSize: "25px" }}>
+                  <h4 className="mb-0" style={{ fontWeight: 600, fontSize: '25px', color: '#f28b00' }}>
                     +
                   </h4>
                 </div>
@@ -244,7 +244,7 @@ export default function About() {
                 </div>
                 <div className="counter-content d-flex align-items-center justify-content-center mt-4">
                   <span className="counter-value" data-toggle="counter-up">17</span>
-                  <h4 className="text-warning mb-0" style={{ fontWeight: 600, fontSize: "25px" }}>
+                  <h4 className="mb-0" style={{ fontWeight: 600, fontSize: '25px', color: '#f28b00' }}>
                     +
                   </h4>
                 </div>
@@ -257,7 +257,7 @@ export default function About() {
                 </div>
                 <div className="counter-content d-flex align-items-center justify-content-center mt-4">
                   <span className="counter-value" data-toggle="counter-up">567</span>
-                  <h4 className="text-warning mb-0" style={{ fontWeight: 600, fontSize: "25px" }}>
+                  <h4 className="mb-0" style={{ fontWeight: 600, fontSize: '25px', color: '#f28b00' }}>
                     +
                   </h4>
                 </div>

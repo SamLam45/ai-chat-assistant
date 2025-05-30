@@ -71,7 +71,7 @@ useEffect(() => {
 
 
      {/* Topbar Start */}
-      <div className="container-fluid bg-warning px-5 d-none d-lg-block">
+      <div className="container-fluid px-5 d-none d-lg-block" style={{ backgroundColor: '#f28b00' }}>
         <div className="row gx-0 align-items-center" style={{ height: '45px' }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
             <div className="d-flex flex-wrap">
@@ -149,12 +149,12 @@ useEffect(() => {
           />
           <div className="carousel-caption">
             <div className="carousel-caption-content p-3" style={{ maxWidth: '900px' }}>
-              <h4 id="subtitle" className="text-warning text-uppercase sub-title fw-bold mb-4 wow animate__animated animate__fadeInUp" data-wow-delay="0.2s" style={{ letterSpacing: '3px' }}>通过专属国际视野培训项目，激发孩子潜能</h4>
+              <h4 id="subtitle" className="text-uppercase sub-title fw-bold mb-4 wow animate__animated animate__fadeInUp" data-wow-delay="0.2s" style={{ letterSpacing: '3px', color: '#f28b00' }}>通过专属国际视野培训项目，激发孩子潜能</h4>
               <h1 id="main-title" className="display-1 text-capitalize text-white mb-4 wow animate__animated animate__fadeInUp" data-wow-delay="0.4s">赋能新一代全球青年领袖</h1>
               <p id="main-desc" className="fs-5 wow animate__animated animate__fadeInUp" data-wow-delay="0.6s">线上授课，精英导师，真实体验，助力孩子成为具有国际视野的未来领袖。</p>
               <div className="pt-2">
                 <Link href="#" className="btn btn-primary rounded-pill text-white py-3 px-5 m-2 wow animate__animated animate__fadeInLeft" data-wow-delay="0.1s">立即报名</Link>
-                <Link href="#" className="btn btn-warning rounded-pill text-white py-3 px-5 m-2 wow animate__animated animate__fadeInRight" data-wow-delay="0.3s">下载课程手册</Link>
+                <Link href="#" className="btn rounded-pill text-white py-3 px-5 m-2 wow animate__animated animate__fadeInRight" data-wow-delay="0.3s" style={{ backgroundColor: '#f28b00', borderColor: '#f28b00' }}>下载课程手册</Link>
               </div>
             </div>
           </div>
@@ -163,7 +163,7 @@ useEffect(() => {
       {/* Carousel End */}
 
       {/* Banner Start */}
-      <div className="container-fluid bg-warning wow zoomInDown" data-wow-delay="0.1s">
+      <div className="container-fluid wow zoomInDown" data-wow-delay="0.1s" style={{ backgroundColor: '#f28b00' }}>
         <div className="container">
           <div className="d-flex flex-column flex-lg-row align-items-center justify-content-center text-center p-5">
             <h1 className="me-4"><span className="fw-normal">加入我们今日，</span><span>赋能新一代全球青年领袖</span></h1>
@@ -178,12 +178,12 @@ useEffect(() => {
         <div className="container py-5">
           <div className="row g-5 align-items-center">
             <div className="col-lg-5 wow fadeInLeft" data-wow-delay="0.1s">
-              <div className="border bg-warning rounded">
+              <div className="border rounded" style={{ backgroundColor: '#f28b00' }}>
                 <Image src="/img/about-2.png" className="img-fluid w-100 rounded" alt="关于我们图片" width={500} height={500} />
               </div>
             </div>
             <div className="col-lg-7 wow fadeInRight" data-wow-delay="0.3s">
-              <h4 className="text-warning sub-title fw-bold">关于我们</h4>
+              <h4 className="sub-title fw-bold" style={{ color: '#f28b00' }}>关于我们</h4>
               <h1 className="display-3 mb-4">培养具有全球视野的未来领袖</h1>
               <p className="text-dark">我们是一支总部位于香港的精英教育团队，致力于培养具有全球视野和批判性思维的中国青少年。通过双语全球议题讨论、香港及海外顶尖大学生导师辅导，以及企业参观和大师班等体验活动，帮助孩子们弥补传统学业的不足，塑造差异化升学优势和未来竞争力。我们的使命是培养自信、具国际视野的未来领袖，助力他们进入世界顶尖高校和职场。</p>
               <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">了解更多</a>
@@ -199,7 +199,7 @@ useEffect(() => {
           <div className="pb-5">
             <div className="row g-4 align-items-end">
               <div className="col-xl-8">
-                <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">服务项目</h4>
+                <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>服务项目</h4>
                 <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">全球视野新一代精英少年培训计划</h1>
               </div>
                <div className="col-xl-4 text-xl-end wow fadeInUp" data-wow-delay="0.3s">
@@ -242,7 +242,7 @@ useEffect(() => {
       <div className="container-fluid py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">项目特色</h4>
+            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>项目特色</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">为什么选择我们</h1>
           </div>
           <div className="row g-4">
@@ -269,7 +269,7 @@ useEffect(() => {
       <div className="container-fluid team py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s">团队介绍</h4>
+            <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>团队介绍</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">我们的精英导师团队</h1>
           </div>
           <div className="team-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
@@ -310,7 +310,7 @@ useEffect(() => {
       <div className="container-fluid blog py-5 bg-white">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">最新博客 / 新闻</h4>
+            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>最新博客 / 新闻</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">前沿资讯与见解</h1>
           </div>
           <div className="blog-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
@@ -349,7 +349,7 @@ useEffect(() => {
       <div className="container-fluid testimonial bg-light py-5">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">我们的学员评价</h4>
+            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>我们的学员评价</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">学员的真实反馈</h1>
           </div>
           <div className="owl-carousel testimonial-carousel pt-5 wow fadeInUp" data-wow-delay="0.2s">
@@ -368,11 +368,11 @@ useEffect(() => {
                   <h5 className="mb-0">{idx === 0 ? '张女士' : idx === 1 ? 'Kevin L.' : 'Kevin L.'}</h5>
                   <p>{idx === 0 ? '家长' : '学员'}</p>
                   <div className="d-flex justify-content-center">
-                    <i className="fas fa-star text-warning"></i>
-                    <i className="fas fa-star text-warning"></i>
-                    <i className="fas fa-star text-warning"></i>
-                    <i className="fas fa-star text-warning"></i>
-                    <i className="fas fa-star text-warning"></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
+                    <i className="fas fa-star" style={{ color: '#f28b00' }}></i>
                   </div>
                 </div>
                 <div className="testimonial-content p-4">
@@ -394,7 +394,7 @@ useEffect(() => {
       <div className="container-fluid py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">联系我们</h4>
+            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>联系我们</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">如有疑问或报名</h1>
           </div>
           <div className="row g-5">
