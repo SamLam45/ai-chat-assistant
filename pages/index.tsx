@@ -29,7 +29,6 @@ useEffect(() => {
         offset: 0,
         mobile: true,
         live: true,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       });
       wow.init();
       window.addEventListener('scroll', () => wow.sync());
@@ -60,13 +59,6 @@ useEffect(() => {
         <meta content="" name="description" />
       </Head>
 
-      {/* Load jQuery first */}
-      
-      
-      {/* Load other dependencies */}
-      
-      
-      {/* Load main.js last */}
       <Script src="/js/main.js" strategy="afterInteractive" />
 
 
