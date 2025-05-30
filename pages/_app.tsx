@@ -14,7 +14,10 @@ const customStyles = `
   .text-secondary {
     color: #FF8C00 !important;
   }
-  .bg-secondary {
+  .bg-secondary,
+  .bg-breadcrumb,
+  .footer,
+  .copyright {
     background-color: #FF8C00 !important;
   }
   .btn-secondary {
@@ -40,6 +43,8 @@ const customStyles = `
   .about-img-bg {
     background-color: #FF8C00 !important;
   }
+
+  .bg-light { background-color: #FF8C00 !important; 
 `;
 
 interface JQuery {
