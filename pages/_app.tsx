@@ -9,6 +9,39 @@ import "owl.carousel/dist/assets/owl.theme.default.min.css";
 import "lightbox2/dist/css/lightbox.min.css";
 import "animate.css"; // Ensure this is installed
 
+// Add custom styles
+const customStyles = `
+  .text-secondary {
+    color: #FF8C00 !important;
+  }
+  .bg-secondary {
+    background-color: #FF8C00 !important;
+  }
+  .btn-secondary {
+    background-color: #FF8C00 !important;
+    border-color: #FF8C00 !important;
+  }
+  .btn-secondary:hover {
+    background-color: #FF7F00 !important;
+    border-color: #FF7F00 !important;
+  }
+  .team-item .team-icon {
+    background-color: #FF8C00 !important;
+  }
+  .owl-nav button {
+    background-color: #FF8C00 !important;
+  }
+  .owl-nav button:hover {
+    background-color: #FF7F00 !important;
+  }
+  .warm-filter {
+    filter: sepia(30%) saturate(150%) hue-rotate(5deg);
+  }
+  .about-img-bg {
+    background-color: #FF8C00 !important;
+  }
+`;
+
 interface JQuery {
   owlCarousel(options?: {
     loop?: boolean;
@@ -167,6 +200,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <style>{customStyles}</style>
       </Head>
       <Component {...pageProps} />
     </>
