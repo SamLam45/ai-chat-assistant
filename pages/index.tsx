@@ -20,45 +20,45 @@ declare global {
 export default function Home() {
   const router = useRouter();
 
-useEffect(() => {
-  let wowInstance: { init(): void; sync(): void } | undefined;
-
-  const initWOW = () => {
-    if (typeof window !== 'undefined' && window.WOW) {
-      wowInstance = new window.WOW({
-        boxClass: 'wow',
-        animateClass: 'animate__animated',
-        offset: 100,
-        mobile: true,
-        live: true,
-      });
-      wowInstance.init();
-      window.addEventListener('scroll', () => wowInstance?.sync());
-
-      window.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => wowInstance?.sync(), 500);
-      });
+  useEffect(() => {
+    let wowInstance: { init(): void; sync(): void } | undefined;
+  
+    const initWOW = () => {
+      if (typeof window !== 'undefined' && window.WOW) {
+        wowInstance = new window.WOW({
+          boxClass: 'wow',
+          animateClass: 'animate__animated',
+          offset: 100,
+          mobile: true,
+          live: true,
+        });
+        wowInstance.init();
+        window.addEventListener('scroll', () => wowInstance?.sync());
+  
+        window.addEventListener('DOMContentLoaded', () => {
+          setTimeout(() => wowInstance?.sync(), 500);
+        });
+      }
+    };
+  
+    if (typeof window !== 'undefined') {
+      if (window.WOW) initWOW();
+      else {
+        const checkWOW = setInterval(() => {
+          if (window.WOW) {
+            initWOW();
+            clearInterval(checkWOW);
+          }
+        }, 100);
+      }
     }
-  };
-
-  if (typeof window !== 'undefined') {
-    if (window.WOW) initWOW();
-    else {
-      const checkWOW = setInterval(() => {
-        if (window.WOW) {
-          initWOW();
-          clearInterval(checkWOW);
-        }
-      }, 100);
-    }
-  }
-
-  return () => {
-    if (wowInstance) {
-      window.removeEventListener('scroll', () => wowInstance?.sync());
-    }
-  };
-}, []);
+  
+    return () => {
+      if (wowInstance) {
+        window.removeEventListener('scroll', () => wowInstance?.sync());
+      }
+    };
+  }, [router.pathname]); // 添加 router.pathname 作为依赖
 
   
 
