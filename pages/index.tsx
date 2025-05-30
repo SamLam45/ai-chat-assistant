@@ -21,21 +21,22 @@ export default function Home() {
   const router = useRouter();
 
 useEffect(() => {
+  let wowInstance: { init(): void; sync(): void } | undefined;
+
   const initWOW = () => {
     if (typeof window !== 'undefined' && window.WOW) {
-      const wow = new window.WOW({
+      wowInstance = new window.WOW({
         boxClass: 'wow',
         animateClass: 'animate__animated',
         offset: 100,
         mobile: true,
         live: true,
       });
-      wow.init();
-      window.addEventListener('scroll', () => wow.sync());
-      
-      // 添加DOMContentLoaded事件监听
+      wowInstance.init();
+      window.addEventListener('scroll', () => wowInstance?.sync());
+
       window.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => wow.sync(), 500);
+        setTimeout(() => wowInstance?.sync(), 500);
       });
     }
   };
@@ -51,10 +52,7 @@ useEffect(() => {
       }, 100);
     }
   }
-  
-  // 添加清理函数
-  let wowInstance: { init(): void; sync(): void } | undefined;
-  
+
   return () => {
     if (wowInstance) {
       window.removeEventListener('scroll', () => wowInstance?.sync());
