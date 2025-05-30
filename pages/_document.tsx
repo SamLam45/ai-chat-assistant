@@ -31,10 +31,13 @@ export default function Document() {
         <link href="/css/style.css" rel="stylesheet" />
       </Head>
       <body>
+        {/* Load jQuery first */}
         <Script
           src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"
           strategy="beforeInteractive"
         />
+        
+        {/* Load other dependencies */}
         <Script src="/lib/wow/wow.min.js" strategy="beforeInteractive" />
         <Script src="/lib/easing/easing.min.js" strategy="beforeInteractive" />
         <Script src="/lib/waypoints/waypoints.min.js" strategy="beforeInteractive" />
@@ -45,6 +48,10 @@ export default function Document() {
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
           strategy="beforeInteractive"
         />
+        
+        {/* Load main.js last */}
+        <Script src="/js/main.js" strategy="afterInteractive" />
+        
         <Main />
         <NextScript />
       </body>

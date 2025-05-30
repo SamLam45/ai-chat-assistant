@@ -20,52 +20,36 @@ declare global {
 export default function Home() {
   const router = useRouter();
 
-  useEffect(() => {
-    const initWOW = () => {
-      if (typeof window !== 'undefined' && window.WOW) {
-        const wow = new window.WOW({
-          boxClass: 'wow',
-          animateClass: 'animate__animated',
-          offset: 0,
-          mobile: true,
-          live: true,
-        });
-        wow.init();
-        window.addEventListener('scroll', () => wow.sync());
-      }
-    };
+useEffect(() => {
+  const initWOW = () => {
+    if (typeof window !== 'undefined' && window.WOW) {
+      const wow = new window.WOW({
+        boxClass: 'wow',
+        animateClass: 'animate__animated',
+        offset: 0,
+        mobile: true,
+        live: true,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      });
+      wow.init();
+      window.addEventListener('scroll', () => wow.sync());
+    }
+  };
 
-    const loadScripts = () => {
-      if (typeof window !== 'undefined') {
-        // Load jQuery first
-        const jqueryScript = document.createElement('script');
-        jqueryScript.src = '/js/jquery.min.js';
-        jqueryScript.async = true;
-        document.body.appendChild(jqueryScript);
+  if (typeof window !== 'undefined') {
+    if (window.WOW) initWOW();
+    else {
+      const checkWOW = setInterval(() => {
+        if (window.WOW) {
+          initWOW();
+          clearInterval(checkWOW);
+        }
+      }, 100);
+    }
+  }
+}, []);
 
-        // Load WOW.js after jQuery
-        jqueryScript.onload = () => {
-          const wowScript = document.createElement('script');
-          wowScript.src = '/js/wow.min.js';
-          wowScript.async = true;
-          document.body.appendChild(wowScript);
-
-          wowScript.onload = () => {
-            initWOW();
-          };
-        };
-      }
-    };
-
-    loadScripts();
-
-    // Cleanup function
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('scroll', () => {});
-      }
-    };
-  }, [router.pathname]);
+  
 
   return (
     <>
@@ -124,26 +108,26 @@ export default function Home() {
           </button>
           <div className="collapse navbar-collapse" id="navbarCollapse">
                   <div className="navbar-nav ms-auto py-0">
-                    <Link href="/" className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>
-                      首页
+                    <Link href="/">
+                      <a className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>首页</a>
                     </Link>
-                    <Link href="/about" className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>
-                      关于我们
+                    <Link href="/about">
+                      <a className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>关于我们</a>
                     </Link>
-                    <Link href="/training" className={`nav-item nav-link${router.pathname === '/training' ? ' active' : ''}`}>
-                      服务项目
+                    <Link href="/training">
+                      <a className={`nav-item nav-link${router.pathname === '/training' ? ' active' : ''}`}>服务项目</a>
                     </Link>
-                    <Link href="/team" className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>
-                      团队介绍
+                    <Link href="/team">
+                      <a className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>团队介绍</a>
                     </Link>
-                    <Link href="/testimonial" className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>
-                      学员评价
+                    <Link href="/testimonial">
+                      <a className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>学员评价</a>
                     </Link>
-                    <Link href="/blog" className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>
-                      博客资讯
+                    <Link href="/blog">
+                      <a className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>博客资讯</a>
                     </Link>
-                    <Link href="/contact" className="nav-item nav-link">
-                      联系我们
+                    <Link href="/contact">
+                      <a className="nav-item nav-link">联系我们</a>
                     </Link>
                   </div>
             <a href="#" className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
