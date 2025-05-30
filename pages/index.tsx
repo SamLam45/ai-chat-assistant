@@ -20,45 +20,34 @@ declare global {
 export default function Home() {
   const router = useRouter();
 
-  useEffect(() => {
-    let wowInstance: { init(): void; sync(): void } | undefined;
-  
-    const initWOW = () => {
-      if (typeof window !== 'undefined' && window.WOW) {
-        wowInstance = new window.WOW({
-          boxClass: 'wow',
-          animateClass: 'animate__animated',
-          offset: 100,
-          mobile: true,
-          live: true,
-        });
-        wowInstance.init();
-        window.addEventListener('scroll', () => wowInstance?.sync());
-  
-        window.addEventListener('DOMContentLoaded', () => {
-          setTimeout(() => wowInstance?.sync(), 500);
-        });
-      }
-    };
-  
-    if (typeof window !== 'undefined') {
-      if (window.WOW) initWOW();
-      else {
-        const checkWOW = setInterval(() => {
-          if (window.WOW) {
-            initWOW();
-            clearInterval(checkWOW);
-          }
-        }, 100);
-      }
+useEffect(() => {
+  const initWOW = () => {
+    if (typeof window !== 'undefined' && window.WOW) {
+      const wow = new window.WOW({
+        boxClass: 'wow',
+        animateClass: 'animate__animated',
+        offset: 0,
+        mobile: true,
+        live: true,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      });
+      wow.init();
+      window.addEventListener('scroll', () => wow.sync());
     }
-  
-    return () => {
-      if (wowInstance) {
-        window.removeEventListener('scroll', () => wowInstance?.sync());
-      }
-    };
-  }, [router.pathname]); // 添加 router.pathname 作为依赖
+  };
+
+  if (typeof window !== 'undefined') {
+    if (window.WOW) initWOW();
+    else {
+      const checkWOW = setInterval(() => {
+        if (window.WOW) {
+          initWOW();
+          clearInterval(checkWOW);
+        }
+      }, 100);
+    }
+  }
+}, []);
 
   
 
@@ -204,50 +193,50 @@ export default function Home() {
       </div>
       {/* About End */}
 
-      {/* Services Start */}
-<div className="container-fluid training bg-white py-5">
-  <div className="container py-5">
-    <div className="pb-5">
-      <div className="row g-4 align-items-end">
-        <div className="col-xl-8">
-          <h4 className="text-secondary sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">服务项目</h4>
-          <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">全球视野新一代精英少年培训计划</h1>
-        </div>
-        <div className="col-xl-4 text-xl-end wow fadeInUp" data-wow-delay="0.3s">
-          <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">查看所有课程</a>
+            {/* Services Start */}
+      <div className="container-fluid training bg-white py-5">
+        <div className="container py-5">
+          <div className="pb-5">
+            <div className="row g-4 align-items-end">
+              <div className="col-xl-8">
+                <h4 className="text-secondary sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">服务项目</h4>
+                <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">全球视野新一代精英少年培训计划</h1>
+              </div>
+               <div className="col-xl-4 text-xl-end wow fadeInUp" data-wow-delay="0.3s">
+                <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">查看所有课程</a>
+              </div>
+            </div>
+          </div>
+          <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
+            {[
+              { img: 1, title: '沉浸式课程', desc: '12个月课程，每月围绕AI、国际关系等12大主题展开' },
+              { img: 3, title: '精英导师辅导', desc: '香港及海外顶尖大学生1对2小组辅导，非大班网课' },
+              { img: 2, title: '双语教学', desc: '结合新闻分析与批判性思维训练，全面提升能力' },
+              { img: 4, title: '高端体验', desc: '独家企业参观、名师大师班及一线城市高端沙龙' },
+              { img: 3, title: '国际认证', desc: '结业颁发香港精英教育机构认证的国际素养证书' }
+            ].map((item, idx) => (
+              <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
+                <div className="training-img rounded-top">
+                    <Image
+                      src={`/img/service-${item.img}.jpg`}
+                      className="img-fluid rounded-top w-100"
+                      alt="服务图片"
+                      width={600}
+                      height={400}
+                    />
+                  <h1 className="fs-1 fw-bold bg-primary text-white d-inline-block rounded p-2 position-absolute" style={{top: 0, left: 0}}>{`0${idx+1}`}</h1>
+                </div>
+                <div className="rounded-bottom border border-top-0 p-4">
+                  <a href="#" className="h4 mb-3 d-block">{item.title}</a>
+                  <p className="mb-3 text-dark">{item.desc}</p>
+                  <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">了解详情</a>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-    <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
-      {[
-        { img: 1, title: '沉浸式课程', desc: '12个月课程，每月围绕AI、国际关系等12大主题展开' },
-        { img: 3, title: '精英导师辅导', desc: '香港及海外顶尖大学生1对2小组辅导，非大班网课' },
-        { img: 2, title: '双语教学', desc: '结合新闻分析与批判性思维训练，全面提升能力' },
-        { img: 4, title: '高端体验', desc: '独家企业参观、名师大师班及一线城市高端沙龙' },
-        { img: 3, title: '国际认证', desc: '结业颁发香港精英教育机构认证的国际素养证书' }
-      ].map((item, idx) => (
-        <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx * 0.2}s`} key={idx}>
-          <div className="training-img rounded-top">
-            <Image
-              src={`/img/service-${item.img}.jpg`}
-              className="img-fluid rounded-top w-100 warm-filter"
-              alt="服务图片"
-              width={600}
-              height={400}
-            />
-            <h1 className="fs-1 fw-bold bg-primary text-white d-inline-block rounded p-2 position-absolute" style={{ top: 0, left: 0 }}>{`0${idx + 1}`}</h1>
-          </div>
-          <div className="rounded-bottom border border-top-0 p-4">
-            <a href="#" className="h4 mb-3 d-block">{item.title}</a>
-            <p className="mb-3 text-dark">{item.desc}</p>
-            <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">了解详情</a>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
-{/* Services End */}
+      {/* Services End */}
 
       {/* Why Choose Us Start */}
       <div className="container-fluid py-5 bg-light">
