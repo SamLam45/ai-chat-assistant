@@ -26,13 +26,17 @@ useEffect(() => {
       const wow = new window.WOW({
         boxClass: 'wow',
         animateClass: 'animate__animated',
-        offset: 0,
+        offset: 100,
         mobile: true,
         live: true,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       });
       wow.init();
       window.addEventListener('scroll', () => wow.sync());
+      
+      // 添加DOMContentLoaded事件监听
+      window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => wow.sync(), 500);
+      });
     }
   };
 
@@ -47,6 +51,15 @@ useEffect(() => {
       }, 100);
     }
   }
+  
+  // 添加清理函数
+  let wowInstance: { init(): void; sync(): void } | undefined;
+  
+  return () => {
+    if (wowInstance) {
+      window.removeEventListener('scroll', () => wowInstance?.sync());
+    }
+  };
 }, []);
 
   
