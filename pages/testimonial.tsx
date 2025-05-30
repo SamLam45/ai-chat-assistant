@@ -161,7 +161,7 @@ export default function Testimonial() {
       <div className="container-fluid testimonial bg-light py-5">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">我们的学员评价</h4>
+            <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s">我们的学员评价</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">学员的真实反馈</h1>
           </div>
           <div className="owl-carousel testimonial-carousel pt-5 wow fadeInUp" data-wow-delay="0.2s">

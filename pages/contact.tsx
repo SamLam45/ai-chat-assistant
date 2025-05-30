@@ -170,7 +170,7 @@ useEffect(() => {
       <div className="container-fluid contact bg-light py-5">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">联系我们</h4>
+            <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s">联系我们</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">获取联系</h1>
           </div>
           <div className="bg-light rounded p-4 pb-0">

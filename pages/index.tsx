@@ -269,7 +269,7 @@ useEffect(() => {
       <div className="container-fluid team py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">团队介绍</h4>
+            <h4 className="text-warning sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s">团队介绍</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">我们的精英导师团队</h1>
           </div>
           <div className="team-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
@@ -279,7 +279,7 @@ useEffect(() => {
               { name: '黄杰森', title: '青少年心理教练', desc: '常春藤联盟毕业，专注心理韧性与学习方法', img: 'team-3.jpg' }
             ].map((member, idx) => (
               <div className="team-item border rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
-                <div className="team-img bg-warning rounded-top">
+                <div className="team-img team-orange-bg rounded-top">
                   <Image
                       src={`/img/${member.img}`}
                       className="img-fluid rounded-top w-100"

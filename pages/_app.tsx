@@ -64,6 +64,19 @@ export default function App({ Component, pageProps }: AppProps) {
 
     const initOwlCarousel = () => {
       if (typeof window !== 'undefined' && typeof window.$ === 'function') {
+        // Initialize header carousel
+        window.$('.header-carousel').owlCarousel({
+          loop: true,
+          margin: 0,
+          nav: true,
+          dots: false,
+          autoplay: true,
+          smartSpeed: 1000,
+          responsive: {
+            0: { items: 1 }
+          }
+        });
+
         // Initialize team carousel
         window.$('.team-carousel').owlCarousel({
           loop: true,
@@ -97,6 +110,21 @@ export default function App({ Component, pageProps }: AppProps) {
 
         // Initialize testimonial carousel
         window.$('.testimonial-carousel').owlCarousel({
+          loop: true,
+          margin: 30,
+          nav: true,
+          dots: false,
+          autoplay: true,
+          smartSpeed: 1000,
+          responsive: {
+            0: { items: 1 },
+            576: { items: 2 },
+            768: { items: 3 }
+          }
+        });
+
+        // Initialize training carousel
+        window.$('.training-carousel').owlCarousel({
           loop: true,
           margin: 30,
           nav: true,

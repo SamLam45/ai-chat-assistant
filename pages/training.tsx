@@ -184,7 +184,7 @@ export default function Training() {
           <div className="pb-5">
             <div className="row g-4 align-items-end">
               <div className="col-xl-8">
-                <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">
+                <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s">
                   服务项目
                 </h4>
                 <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">

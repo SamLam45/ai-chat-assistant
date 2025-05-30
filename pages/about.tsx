@@ -272,7 +272,7 @@ export default function About() {
       <div className="container-fluid team py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">
+            <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s">
               舞蹈导师
             </h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">
@@ -281,7 +281,7 @@ export default function About() {
           </div>
           <div className="team-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
             <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.1s">
-              <div className="team-img bg-warning rounded-top">
+              <div className="team-img team-orange-bg rounded-top">
                 <Image src="/img/team-1.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
                   <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
@@ -302,7 +302,7 @@ export default function About() {
               </div>
             </div>
             <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.3s">
-              <div className="team-img bg-warning rounded-top">
+              <div className="team-img team-orange-bg rounded-top">
                 <Image src="/img/team-2.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
                   <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
@@ -323,7 +323,7 @@ export default function About() {
               </div>
             </div>
             <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.5s">
-              <div className="team-img bg-warning rounded-top">
+              <div className="team-img team-orange-bg rounded-top">
                 <Image src="/img/team-3.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
                   <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
@@ -344,7 +344,7 @@ export default function About() {
               </div>
             </div>
             <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.7s">
-              <div className="team-img bg-warning rounded-top">
+              <div className="team-img team-orange-bg rounded-top">
                 <Image src="/img/team-4.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
                   <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
@@ -364,7 +364,7 @@ export default function About() {
               </div>
             </div>
             <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.9s">
-              <div className="team-img bg-warning rounded-top">
+              <div className="team-img team-orange-bg rounded-top">
                 <Image src="/img/team-4.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
                   <a className="btn btn-square btn-primary rounded-circle mx-1" href="">

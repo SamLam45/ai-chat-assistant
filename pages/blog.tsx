@@ -170,7 +170,7 @@ export default function Blog() {
       <div className="container-fluid blog py-5 bg-white">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold animate__animated animate__fadeInUp" data-wow-delay="0.1s">博客与新闻</h4>
+            <h4 className="sub-title fw-bold animate__animated animate__fadeInUp team-orange" data-wow-delay="0.1s">博客与新闻</h4>
             <h1 className="display-2 mb-0 animate__animated animate__fadeInUp" data-wow-delay="0.3s">最新新闻与文章</h1>
           </div>
           <div className="blog-carousel owl-carousel pt-5 animate__animated animate__fadeInUp" data-wow-delay="0.1s">

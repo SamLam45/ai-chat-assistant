@@ -971,3 +971,6 @@
 .warm-filter {
   filter: sepia(60%) saturate(1.5) hue-rotate(20deg) brightness(1.1);
 }
+
+.team-orange { color: #f28b00 !important; }
+.team-orange-bg { background-color: #f28b00 !important; }
