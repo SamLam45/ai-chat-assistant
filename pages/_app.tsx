@@ -9,44 +9,6 @@ import "owl.carousel/dist/assets/owl.theme.default.min.css";
 import "lightbox2/dist/css/lightbox.min.css";
 import "animate.css"; // Ensure this is installed
 
-// Add custom styles
-const customStyles = `
-  .text-secondary {
-    color: #FF8C00 !important;
-  }
-  .bg-secondary,
-  .bg-breadcrumb,
-  .footer,
-  .copyright {
-    background-color: #FF8C00 !important;
-  }
-  .btn-secondary {
-    background-color: #FF8C00 !important;
-    border-color: #FF8C00 !important;
-  }
-  .btn-secondary:hover {
-    background-color: #FF7F00 !important;
-    border-color: #FF7F00 !important;
-  }
-  .team-item .team-icon {
-    background-color: #FF8C00 !important;
-  }
-  .owl-nav button {
-    background-color: #FF8C00 !important;
-  }
-  .owl-nav button:hover {
-    background-color: #FF7F00 !important;
-  }
-  .warm-filter {
-    filter: sepia(30%) saturate(150%) hue-rotate(5deg);
-  }
-  .about-img-bg {
-    background-color: #FF8C00 !important;
-  }
-
-  .bg-light { background-color: #FF8C00 !important; 
-`;
-
 interface JQuery {
   owlCarousel(options?: {
     loop?: boolean;
@@ -102,19 +64,6 @@ export default function App({ Component, pageProps }: AppProps) {
 
     const initOwlCarousel = () => {
       if (typeof window !== 'undefined' && typeof window.$ === 'function') {
-        // Initialize header carousel
-        window.$('.header-carousel').owlCarousel({
-          loop: true,
-          margin: 0,
-          nav: true,
-          dots: false,
-          autoplay: true,
-          smartSpeed: 1000,
-          responsive: {
-            0: { items: 1 }
-          }
-        });
-
         // Initialize team carousel
         window.$('.team-carousel').owlCarousel({
           loop: true,
@@ -160,21 +109,6 @@ export default function App({ Component, pageProps }: AppProps) {
             768: { items: 3 }
           }
         });
-
-        // Initialize training carousel
-        window.$('.training-carousel').owlCarousel({
-          loop: true,
-          margin: 30,
-          nav: true,
-          dots: false,
-          autoplay: true,
-          smartSpeed: 1000,
-          responsive: {
-            0: { items: 1 },
-            576: { items: 2 },
-            768: { items: 3 }
-          }
-        });
       }
     };
 
@@ -205,7 +139,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
-        <style>{customStyles}</style>
       </Head>
       <Component {...pageProps} />
     </>

@@ -68,7 +68,7 @@ useEffect(() => {
       <Script src="/js/main.js" strategy="afterInteractive" />
 
       {/* Topbar Start */}
-      <div className="container-fluid bg-secondary px-5 d-none d-lg-block">
+      <div className="container-fluid bg-warning px-5 d-none d-lg-block">
         <div className="row gx-0 align-items-center" style={{ height: '45px' }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
             <div className="d-flex flex-wrap">
@@ -156,7 +156,7 @@ useEffect(() => {
       {/* Header End */}
 
        {/* Banner Start */}
-      <div className="container-fluid bg-secondary wow zoomInDown" data-wow-delay="0.1s">
+      <div className="container-fluid bg-warning wow zoomInDown" data-wow-delay="0.1s">
         <div className="container">
           <div className="d-flex flex-column flex-lg-row align-items-center justify-content-center text-center p-5">
             <h1 className="me-4"><span className="fw-normal">加入我们今日，</span><span>赋能新一代全球青年领袖</span></h1>
@@ -170,7 +170,7 @@ useEffect(() => {
       <div className="container-fluid contact bg-light py-5">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-secondary sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">联系我们</h4>
+            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">联系我们</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">获取联系</h1>
           </div>
           <div className="bg-light rounded p-4 pb-0">

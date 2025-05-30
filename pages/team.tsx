@@ -63,7 +63,7 @@ useEffect(() => {
       <Script src="/js/main.js" strategy="afterInteractive" />
 
       {/* Topbar Start */}
-      <div className="container-fluid bg-secondary px-5 d-none d-lg-block">
+      <div className="container-fluid bg-warning px-5 d-none d-lg-block">
         <div className="row gx-0 align-items-center" style={{ height: '45px' }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
             <div className="d-flex flex-wrap">
@@ -152,7 +152,7 @@ useEffect(() => {
       {/* Header End */}
 
       {/* Banner Start */}
-      <div className="container-fluid bg-secondary animate__animated animate__zoomInDown" data-wow-delay="0.1s">
+      <div className="container-fluid bg-warning animate__animated animate__zoomInDown" data-wow-delay="0.1s">
         <div className="container">
           <div className="d-flex flex-column flex-lg-row align-items-center justify-content-center text-center p-5">
             <h1 className="me-4"><span className="fw-normal">加入我们今日，</span><span>赋能新一代全球青年领袖</span></h1>
@@ -166,12 +166,12 @@ useEffect(() => {
       <div className="container-fluid team py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-secondary sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">导师团队</h4>
+            <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">导师团队</h4>
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">我们的专业导师团队</h1>
           </div>
           <div className="team-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
             <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.1s">
-              <div className="team-img bg-secondary rounded-top">
+              <div className="team-img bg-warning rounded-top">
                 <Image src="/img/team-1.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
                   <a className="btn btn-square btn-primary rounded-circle mx-1" href=""><i className="fab fa-weixin"></i></a>
@@ -186,7 +186,7 @@ useEffect(() => {
               </div>
             </div>
             <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.3s">
-              <div className="team-img bg-secondary rounded-top">
+              <div className="team-img bg-warning rounded-top">
                 <Image src="/img/team-2.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
                   <a className="btn btn-square btn-primary rounded-circle mx-1" href=""><i className="fab fa-weixin"></i></a>
@@ -201,7 +201,7 @@ useEffect(() => {
               </div>
             </div>
             <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.5s">
-              <div className="team-img bg-secondary rounded-top">
+              <div className="team-img bg-warning rounded-top">
                 <Image src="/img/team-3.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
                   <a className="btn btn-square btn-primary rounded-circle mx-1" href=""><i className="fab fa-weixin"></i></a>

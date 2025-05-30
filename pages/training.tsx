@@ -60,7 +60,7 @@ export default function Training() {
       <Script src="/js/main.js" strategy="afterInteractive" />
 
       {/* Topbar Start */}
-      <div className="container-fluid bg-secondary px-5 d-none d-lg-block">
+      <div className="container-fluid bg-warning px-5 d-none d-lg-block">
         <div className="row gx-0 align-items-center" style={{ height: "45px" }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
             <div className="d-flex flex-wrap">
@@ -163,7 +163,7 @@ export default function Training() {
       {/* Header End */}
 
       {/* Banner Start */}
-      <div className="container-fluid bg-secondary wow zoomInDown" data-wow-delay="0.1s">
+      <div className="container-fluid bg-warning wow zoomInDown" data-wow-delay="0.1s">
         <div className="container">
           <div className="d-flex flex-column flex-lg-row align-items-center justify-content-center text-center p-5">
             <h1 className="me-4">
@@ -184,7 +184,7 @@ export default function Training() {
           <div className="pb-5">
             <div className="row g-4 align-items-end">
               <div className="col-xl-8">
-                <h4 className="text-secondary sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">
+                <h4 className="text-warning sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s">
                   服务项目
                 </h4>
                 <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">
@@ -273,7 +273,7 @@ export default function Training() {
       <div className="container-fluid gallery py-5 bg-white">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="text-secondary sub-title fw-bold animate__animated animate__fadeInUp" data-wow-delay="0.1s">
+            <h4 className="text-warning sub-title fw-bold animate__animated animate__fadeInUp" data-wow-delay="0.1s">
               我们的服务图库
             </h4>
             <h1 className="display-2 mb-0 animate__animated animate__fadeInUp" data-wow-delay="0.3s">
