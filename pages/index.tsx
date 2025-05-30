@@ -20,36 +20,52 @@ declare global {
 export default function Home() {
   const router = useRouter();
 
-useEffect(() => {
-  const initWOW = () => {
-    if (typeof window !== 'undefined' && window.WOW) {
-      const wow = new window.WOW({
-        boxClass: 'wow',
-        animateClass: 'animate__animated',
-        offset: 0,
-        mobile: true,
-        live: true,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      });
-      wow.init();
-      window.addEventListener('scroll', () => wow.sync());
-    }
-  };
+  useEffect(() => {
+    const initWOW = () => {
+      if (typeof window !== 'undefined' && window.WOW) {
+        const wow = new window.WOW({
+          boxClass: 'wow',
+          animateClass: 'animate__animated',
+          offset: 0,
+          mobile: true,
+          live: true,
+        });
+        wow.init();
+        window.addEventListener('scroll', () => wow.sync());
+      }
+    };
 
-  if (typeof window !== 'undefined') {
-    if (window.WOW) initWOW();
-    else {
-      const checkWOW = setInterval(() => {
-        if (window.WOW) {
-          initWOW();
-          clearInterval(checkWOW);
-        }
-      }, 100);
-    }
-  }
-}, []);
+    const loadScripts = () => {
+      if (typeof window !== 'undefined') {
+        // Load jQuery first
+        const jqueryScript = document.createElement('script');
+        jqueryScript.src = '/js/jquery.min.js';
+        jqueryScript.async = true;
+        document.body.appendChild(jqueryScript);
 
-  
+        // Load WOW.js after jQuery
+        jqueryScript.onload = () => {
+          const wowScript = document.createElement('script');
+          wowScript.src = '/js/wow.min.js';
+          wowScript.async = true;
+          document.body.appendChild(wowScript);
+
+          wowScript.onload = () => {
+            initWOW();
+          };
+        };
+      }
+    };
+
+    loadScripts();
+
+    // Cleanup function
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', () => {});
+      }
+    };
+  }, [router.pathname]);
 
   return (
     <>
