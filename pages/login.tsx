@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-// import { useRouter } from 'next/router'; // Removed as it's unused
+import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -13,6 +13,7 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     // 檢查用戶是否已登入
@@ -46,6 +47,7 @@ export default function Login() {
         setUser(data.user);
         setInfo('登录成功！');
         setError(null);
+         router.push('/');
       }
     } catch (error: unknown) {
       if (error instanceof Error) {

@@ -1,12 +1,10 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import 'animate.css';
 import Link from 'next/link';
-import { supabase } from '../lib/supabase';
-import type { User } from '@supabase/supabase-js';
 
 declare global {
   interface Window {
@@ -21,56 +19,37 @@ declare global {
 
 export default function Home() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loadingUser, setLoadingUser] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
-      setLoadingUser(false);
-    };
-    fetchUser();
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoadingUser(false);
-    });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    const initWOW = () => {
-      if (typeof window !== 'undefined' && window.WOW) {
-        const wow = new window.WOW({
-          boxClass: 'wow',
-          animateClass: 'animate__animated',
-          offset: 0,
-          mobile: true,
-          live: true,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        });
-        wow.init();
-        window.addEventListener('scroll', () => wow.sync());
-      }
-    };
-
-    if (typeof window !== 'undefined') {
-      if (window.WOW) initWOW();
-      else {
-        const checkWOW = setInterval(() => {
-          if (window.WOW) {
-            initWOW();
-            clearInterval(checkWOW);
-          }
-        }, 100);
-      }
+useEffect(() => {
+  const initWOW = () => {
+    if (typeof window !== 'undefined' && window.WOW) {
+      const wow = new window.WOW({
+        boxClass: 'wow',
+        animateClass: 'animate__animated',
+        offset: 0,
+        mobile: true,
+        live: true,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      });
+      wow.init();
+      window.addEventListener('scroll', () => wow.sync());
     }
-  }, []);
+  };
 
-  console.log('Rendering index.tsx. User:', user, 'Loading:', loadingUser);
+  if (typeof window !== 'undefined') {
+    if (window.WOW) initWOW();
+    else {
+      const checkWOW = setInterval(() => {
+        if (window.WOW) {
+          initWOW();
+          clearInterval(checkWOW);
+        }
+      }, 100);
+    }
+  }
+}, []);
+
+  
 
   return (
     <>
@@ -81,9 +60,11 @@ export default function Home() {
         <meta content="" name="description" />
       </Head>
 
+
       <Script src="/js/main.js" strategy="afterInteractive" />
 
-      {/* Topbar Start */}
+
+     {/* Topbar Start */}
       <div className="container-fluid px-5 d-none d-lg-block" style={{ backgroundColor: '#f28b00' }}>
         <div className="row gx-0 align-items-center" style={{ height: '45px' }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
@@ -143,21 +124,9 @@ export default function Home() {
                       <a className="nav-item nav-link">联系我们</a>
                     </Link>
                   </div>
-            {/* Only render after loadingUser is false */}
-            {loadingUser ? (
-              <div className="ms-3 text-dark">载入中...</div>
-            ) : user && user.email ? (
-              <Link href="/login">
-                <a className="d-flex align-items-center ms-3 text-decoration-none" style={{ cursor: 'pointer' }}>
-                  <span className="me-2"><i className="fa fa-user-circle fa-lg text-primary"></i></span>
-                  <span className="me-2 text-dark">{user.email}</span>
-                </a>
-              </Link>
-            ) : (
-              <Link href="/login">
-                <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">登录/注册</a>
-              </Link>
-            )}
+            <Link href="/login">
+              <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
+            </Link>
           </div>
         </nav>
       </div>
