@@ -101,7 +101,7 @@ export default function Home({ user }: HomeProps) {
       <div className="container-fluid position-relative p-0">
         <nav className="navbar navbar-expand-lg navbar-light bg-white px-4 px-lg-5 py-3 py-lg-0">
           <Link href="/">
-            <a className="navbar-brand p-0">
+            <a className="navbar-brand p-0" style={{ textDecoration: 'none', position: 'relative', top: '3px' }}>
               <h1 className="text-primary m-0"><i className="fas fa-globe me-3"></i>全球视野</h1>
             </a>
           </Link>
