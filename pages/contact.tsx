@@ -1,11 +1,10 @@
 import Head from 'next/head';
 import Script from 'next/script';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import 'animate.css';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { supabase } from '../lib/supabase';
-import type { User } from '@supabase/supabase-js';
+import { useAuth } from '../pages/_app'; // Import useAuth hook
 
 declare global {
   interface Window {
@@ -20,26 +19,7 @@ declare global {
 
 export default function Contact() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    // 檢查用戶是否已登入
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-    // 監聽登入狀態變化
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
+  const { user, logout } = useAuth(); // Use the global user state and logout function
 
   useEffect(() => {
     const initWOW = () => {
@@ -158,7 +138,7 @@ export default function Contact() {
                     <span className="d-none d-md-inline">{user.email}</span>
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><button className="dropdown-item" onClick={handleLogout}>登出</button></li>
+                    <li><button className="dropdown-item" onClick={logout}>登出</button></li>
                   </ul>
                 </div>
               </div>
