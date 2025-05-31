@@ -163,6 +163,9 @@ export default function Contact() {
               </div>
             ) : (
               <Link href="/login">
+                <a className="btn btn-primary rounded-circle">
+                  <i className="fas fa-user"></i>
+                </a>
                 <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
               </Link>
             )}
