@@ -35,6 +35,11 @@ export default function Home() {
     };
   }, []);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
   useEffect(() => {
     const initWOW = () => {
       if (typeof window !== 'undefined' && window.WOW) {
@@ -135,9 +140,26 @@ export default function Home() {
                 <a className="nav-item nav-link">联系我们</a>
               </Link>
               {user ? (
-                <div className="nav-item nav-link d-flex align-items-center">
-                  <i className="fa fa-user-circle fa-lg me-2" style={{ color: '#f28b00' }}></i>
-                  {user.email}
+                <div className="nav-item dropdown">
+                  <a
+                    className="nav-link dropdown-toggle d-flex align-items-center"
+                    href="#"
+                    id="userDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <i className="fa fa-user-circle fa-lg me-2" style={{ color: '#f28b00' }}></i>
+                    {user.email}
+                  </a>
+                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li>
+                      <button className="dropdown-item" onClick={handleLogout}>
+                        登出
+                      </button>
+                    </li>
+                  </ul>
                 </div>
               ) : (
                 <Link href="/login">
