@@ -325,45 +325,61 @@ export default function Home({ user }: HomeProps) {
       </div>
       {/* Team End */}
 
-
-            {/* Blog Start */}
+      {/* Blogs Start */}
       <div className="container-fluid blog py-5 bg-white">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>最新博客 / 新闻</h4>
-            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">前沿资讯与见解</h1>
+            <h4 className="sub-title fw-bold animate__animated animate__fadeInUp team-orange" data-wow-delay="0.1s">博客与新闻</h4>
+            <h1 className="display-2 mb-0 animate__animated animate__fadeInUp" data-wow-delay="0.3s">最新新闻与文章</h1>
           </div>
-          <div className="blog-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
-            {[
-              { title: 'AI如何改变未来职业：学生必备知识', img: 'class-1.jpg', date: '2025年5月20日' },
-              { title: '跨文化沟通技巧，助力留学成功', img: 'class-2.jpg', date: '2025年5月15日' },
-              { title: '导师分享：如何平衡学习与心理健康', img: 'class-3.jpg', date: '2025年5月10日' }
-            ].map((post, idx) => (
-              <div className="blog-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
-                <div className="blog-img rounded-top">
-                  <Image
-                    src={`/img/${post.img}`}
-                    className="img-fluid rounded-top w-100"
-                    alt="博客图片"
-                    width={600}
-                    height={400}
-                  />  
-                </div>
-                <div className="bg-light rounded-bottom p-4">
-                  <div className="d-flex justify-content-between mb-4">
-                    <a href="#" className="text-muted"><i className="fa fa-calendar-alt text-primary"></i> {post.date}</a>
-                    <a href="#" className="text-muted"><span className="fa fa-comments text-primary"></span> 3 条评论</a>
-                  </div>
-                  <a href="#" className="h4 mb-3 d-block">{post.title}</a>
-                  <p className="mb-3 text-dark">了解更多关于{post.title.toLowerCase()}的最新见解。</p>
-                  <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">阅读全文</a>
-                </div>
+          <div className="blog-carousel owl-carousel pt-5 animate__animated animate__fadeInUp" data-wow-delay="0.1s">
+            <div className="blog-item bg-white rounded animate__animated animate__fadeInUp" data-wow-delay="0.1s">
+              <div className="blog-img rounded-top">
+                <img src="/img/teaching-blog-1.jpg" className="img-fluid rounded-top w-100" alt="教师教导学生" />
               </div>
-            ))}
+              <div className="bg-light rounded-bottom p-4">
+                <div className="d-flex justify-content-between mb-4">
+                  <a href="#" className="text-muted"><i className="fa fa-calendar-alt text-primary"></i> 2025年8月28日</a>
+                  <a href="#" className="text-muted"><span className="fa fa-comments text-primary"></span> 3条评论</a>
+                </div>
+                <a href="#" className="h4 mb-3 d-block">人工智能如何改变未来职业：学生必备知识</a>
+                <p className="mb-3">探讨人工智能对职业发展的影响，帮助学生了解未来职场趋势。</p>
+                <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">阅读更多</a>
+              </div>
+            </div>
+            <div className="blog-item bg-white rounded animate__animated animate__fadeInUp" data-wow-delay="0.3s">
+              <div className="blog-img rounded-top">
+                <img src="/img/teaching-blog-2.jpg" className="img-fluid rounded-top w-100" alt="教师教导学生" />
+              </div>
+              <div className="bg-light rounded-bottom p-4">
+                <div className="d-flex justify-content-between mb-4">
+                  <a href="#" className="text-muted"><i className="fa fa-calendar-alt text-primary"></i> 2025年8月28日</a>
+                  <a href="#" className="text-muted"><span className="fa fa-comments text-primary"></span> 3条评论</a>
+                </div>
+                <a href="#" className="h4 mb-3 d-block">跨文化沟通技巧，助力留学成功</a>
+                <p className="mb-3">学习如何在不同文化背景下有效沟通，为海外留学铺平道路。</p>
+                <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">阅读更多</a>
+              </div>
+            </div>
+            <div className="blog-item bg-white rounded animate__animated animate__fadeInUp" data-wow-delay="0.5s">
+              <div className="blog-img rounded-top">
+                <img src="/img/teaching-blog-3.jpg" className="img-fluid rounded-top w-100" alt="教师教导学生" />
+              </div>
+              <div className="bg-light rounded-bottom p-4">
+                <div className="d-flex justify-content-between mb-4">
+                  <a href="#" className="text-muted"><i className="fa fa-calendar-alt text-primary"></i> 2025年8月28日</a>
+                  <a href="#" className="text-muted"><span className="fa fa-comments text-primary"></span> 3条评论</a>
+                </div>
+                <a href="#" className="h4 mb-3 d-block">导师分享：如何平衡学习与心理健康</a>
+                <p className="mb-3">导师提供实用建议，帮助学生在高压学业中保持心理健康。</p>
+                <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">阅读更多</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      {/* Blog End */}
+      {/* Blogs End */}
+
 
             {/* Testimonial Start */}
       <div className="container-fluid testimonial bg-light py-5">
