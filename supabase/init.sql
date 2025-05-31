@@ -1,39 +1,40 @@
--- Create a table for public profiles
-create table profiles (
-  id uuid references auth.users on delete cascade not null primary key,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  email text not null,
-  name text,
-  avatar_url text,
-  constraint profiles_email_key unique (email)
+-- Create profiles table
+CREATE TABLE IF NOT EXISTS profiles (
+    id UUID REFERENCES auth.users ON DELETE CASCADE,
+    email TEXT UNIQUE,
+    full_name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    PRIMARY KEY (id)
 );
 
--- Set up Row Level Security (RLS)
-alter table profiles enable row level security;
+-- Enable Row Level Security
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- Create policies
-create policy "Public profiles are viewable by everyone."
-  on profiles for select
-  using ( true );
+CREATE POLICY "Public profiles are viewable by everyone."
+    ON profiles FOR SELECT
+    USING (true);
 
-create policy "Users can insert their own profile."
-  on profiles for insert
-  with check ( auth.uid() = id );
+CREATE POLICY "Users can insert their own profile."
+    ON profiles FOR INSERT
+    WITH CHECK (auth.uid() = id);
 
-create policy "Users can update their own profile."
-  on profiles for update
-  using ( auth.uid() = id );
+CREATE POLICY "Users can update their own profile."
+    ON profiles FOR UPDATE
+    USING (auth.uid() = id);
 
--- Create a trigger to handle new user signups
-create function public.handle_new_user()
-returns trigger as $$
-begin
-  insert into public.profiles (id, email)
-  values (new.id, new.email);
-  return new;
-end;
-$$ language plpgsql security definer;
+-- Create function to handle user creation
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.profiles (id, email, full_name)
+    VALUES (new.id, new.email, '');
+    RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user(); 
+-- Create trigger for new user creation
+CREATE OR REPLACE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
