@@ -1,12 +1,16 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import 'animate.css';
 import Link from 'next/link';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
+
+interface HomeProps {
+  user: User | null;
+}
 
 declare global {
   interface Window {
@@ -19,23 +23,8 @@ declare global {
   }
 }
 
-export default function Home() {
+export default function Home({ user }: HomeProps) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    // 檢查用戶是否已登入
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-    // 監聽登入狀態變化
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -51,7 +40,6 @@ export default function Home() {
           offset: 0,
           mobile: true,
           live: true,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         });
         wow.init();
         window.addEventListener('scroll', () => wow.sync());
@@ -167,9 +155,9 @@ export default function Home() {
       <div className="header-carousel owl-carousel">
         <div className="header-carousel-item">
           <Image
-            src="/img/carousel-1.jpg"
+            src="/img/teaching-1.jpg"
             className="img-fluid w-100 warm-filter"
-            alt="横幅图片"
+            alt="教师教导学生"
             width={1920}
             height={1080}
             priority
@@ -181,6 +169,11 @@ export default function Home() {
               <p id="main-desc" className="fs-5 wow animate__animated animate__fadeInUp" data-wow-delay="0.6s">线上授课，精英导师，真实体验，助力孩子成为具有国际视野的未来领袖。</p>
               <div className="pt-2">
                 <Link href="#" className="btn btn-primary rounded-pill text-white py-3 px-5 m-2 wow animate__animated animate__fadeInLeft" data-wow-delay="0.1s">立即报名</Link>
+                {user && (
+                  <Link href="#" className="btn rounded-pill text-white py-3 px-5 m-2 wow animate__animated animate__fadeInUp" data-wow-delay="0.2s" style={{ backgroundColor: '#4CAF50', borderColor: '#4CAF50' }}>
+                    <i className="fas fa-robot me-2"></i>开始使用AI助手
+                  </Link>
+                )}
                 <Link href="#" className="btn rounded-pill text-white py-3 px-5 m-2 wow animate__animated animate__fadeInRight" data-wow-delay="0.3s" style={{ backgroundColor: '#f28b00', borderColor: '#f28b00' }}>下载课程手册</Link>
               </div>
             </div>
@@ -206,7 +199,7 @@ export default function Home() {
           <div className="row g-5 align-items-center">
             <div className="col-lg-5 wow fadeInLeft" data-wow-delay="0.1s">
               <div className="border rounded" style={{ backgroundColor: '#f28b00' }}>
-                <Image src="/img/about-2.png" className="img-fluid w-100 rounded" alt="关于我们图片" width={500} height={500} />
+                <Image src="/img/teaching-2.jpg" className="img-fluid w-100 rounded" alt="教师教导学生" width={500} height={500} />
               </div>
             </div>
             <div className="col-lg-7 wow fadeInRight" data-wow-delay="0.3s">
@@ -236,16 +229,16 @@ export default function Home() {
           </div>
           <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
             {[
-              { img: 1, title: '沉浸式课程', desc: '12个月课程，每月围绕AI、国际关系等12大主题展开' },
-              { img: 3, title: '精英导师辅导', desc: '香港及海外顶尖大学生1对2小组辅导，非大班网课' },
-              { img: 2, title: '双语教学', desc: '结合新闻分析与批判性思维训练，全面提升能力' },
-              { img: 4, title: '高端体验', desc: '独家企业参观、名师大师班及一线城市高端沙龙' },
-              { img: 3, title: '国际认证', desc: '结业颁发香港精英教育机构认证的国际素养证书' }
+              { img: 'teaching-3', title: '沉浸式课程', desc: '12个月课程，每月围绕AI、国际关系等12大主题展开' },
+              { img: 'teaching-4', title: '精英导师辅导', desc: '香港及海外顶尖大学生1对2小组辅导，非大班网课' },
+              { img: 'teaching-5', title: '双语教学', desc: '结合新闻分析与批判性思维训练，全面提升能力' },
+              { img: 'teaching-6', title: '高端体验', desc: '独家企业参观、名师大师班及一线城市高端沙龙' },
+              { img: 'teaching-7', title: '国际认证', desc: '结业颁发香港精英教育机构认证的国际素养证书' }
             ].map((item, idx) => (
               <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
                 <div className="training-img rounded-top">
                     <Image
-                      src={`/img/service-${item.img}.jpg`}
+                      src={`/img/${item.img}.jpg`}
                       className="img-fluid rounded-top w-100"
                       alt="服务图片"
                       width={600}

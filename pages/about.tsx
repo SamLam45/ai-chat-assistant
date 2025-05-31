@@ -197,7 +197,7 @@ export default function About({ user }: AboutProps) {
           <div className="row g-5 align-items-center">
             <div className="col-lg-5 wow fadeInLeft" data-wow-delay="0.1s">
               <div className="border rounded" style={{ backgroundColor: '#f28b00' }}>
-                <Image src="/img/about-2.png" className="img-fluid w-100 rounded" alt="Image" width={500} height={500} />
+                <Image src="/img/teaching-about-1.jpg" className="img-fluid w-100 rounded" alt="教师教导学生" width={500} height={500} />
               </div>
             </div>
             <div className="col-lg-7 wow fadeInRight" data-wow-delay="0.3s">

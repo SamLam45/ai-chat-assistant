@@ -228,43 +228,47 @@ export default function Training({ user }: TrainingProps) {
                 icon: "fas fa-calendar-alt",
                 title: "12个月沉浸式课程",
                 description: "每月围绕AI、国际关系等12大主题展开，系统化培养全球视野。",
+                image: "/img/teaching-training-1.jpg"
               },
               {
                 icon: "fas fa-users",
                 title: "1对2小组辅导",
                 description: "香港及海外精英大学生导师，非大班网课，个性化指导。",
+                image: "/img/teaching-training-2.jpg"
               },
               {
                 icon: "fas fa-language",
                 title: "双语课程",
                 description: "结合新闻分析与批判性思维训练，提升语言与思维能力。",
+                image: "/img/teaching-training-3.jpg"
               },
               {
                 icon: "fas fa-building",
                 title: "独家企业参观与大师班",
                 description: "每年两次一线城市高端沙龙（北京、上海、深圳、香港）。",
+                image: "/img/teaching-training-4.jpg"
               },
               {
                 icon: "fas fa-certificate",
                 title: "国际素养证书",
                 description: "结业颁发由香港精英教育机构认证的国际素养证书。",
-              },
-              {
-                icon: "fas fa-laptop",
-                title: "灵活线上课程",
-                description: "周末固定时间，轻松完成思考作业，高效学习。",
-              },
-            ].map((item, idx) => (
-              <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay={`${0.1 + idx * 0.2}s`} key={idx}>
-                <div className="training-item bg-white rounded shadow p-4 h-100">
-                  <div className="d-flex align-items-center mb-3">
-                    <i className={`${item.icon} text-primary me-3`} style={{ fontSize: "2rem" }}></i>
-                    <h4 className="mb-0">{item.title}</h4>
+                image: "/img/teaching-training-5.jpg"
+              }
+            ].map((item, index) => (
+              <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay={`${0.1 * (index + 1)}s`} key={index}>
+                <div className="training-item bg-white rounded">
+                  <div className="training-img rounded-top">
+                    <img src={item.image} className="img-fluid rounded-top w-100" alt="教师教导学生" />
                   </div>
-                  <p className="mb-3 text-dark">{item.description}</p>
-                  <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">
-                    了解更多
-                  </a>
+                  <div className="bg-light rounded-bottom p-4">
+                    <div className="d-flex align-items-center mb-3">
+                      <div className="btn-square bg-primary rounded-circle me-3">
+                        <i className={`${item.icon} text-white`}></i>
+                      </div>
+                      <h4 className="mb-0">{item.title}</h4>
+                    </div>
+                    <p className="mb-0">{item.description}</p>
+                  </div>
                 </div>
               </div>
             ))}

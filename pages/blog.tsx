@@ -200,7 +200,7 @@ export default function Blog({ user }: BlogProps) {
           <div className="blog-carousel owl-carousel pt-5 animate__animated animate__fadeInUp" data-wow-delay="0.1s">
             <div className="blog-item bg-white rounded animate__animated animate__fadeInUp" data-wow-delay="0.1s">
               <div className="blog-img rounded-top">
-                <img src="/img/class-1.jpg" className="img-fluid rounded-top w-100" alt="Image" />
+                <img src="/img/teaching-blog-1.jpg" className="img-fluid rounded-top w-100" alt="教师教导学生" />
               </div>
               <div className="bg-light rounded-bottom p-4">
                 <div className="d-flex justify-content-between mb-4">
@@ -214,7 +214,7 @@ export default function Blog({ user }: BlogProps) {
             </div>
             <div className="blog-item bg-white rounded animate__animated animate__fadeInUp" data-wow-delay="0.3s">
               <div className="blog-img rounded-top">
-                <img src="/img/class-2.jpg" className="img-fluid rounded-top w-100" alt="Image" />
+                <img src="/img/teaching-blog-2.jpg" className="img-fluid rounded-top w-100" alt="教师教导学生" />
               </div>
               <div className="bg-light rounded-bottom p-4">
                 <div className="d-flex justify-content-between mb-4">
@@ -228,7 +228,7 @@ export default function Blog({ user }: BlogProps) {
             </div>
             <div className="blog-item bg-white rounded animate__animated animate__fadeInUp" data-wow-delay="0.5s">
               <div className="blog-img rounded-top">
-                <img src="/img/class-3.jpg" className="img-fluid rounded-top w-100" alt="Image" />
+                <img src="/img/teaching-blog-3.jpg" className="img-fluid rounded-top w-100" alt="教师教导学生" />
               </div>
               <div className="bg-light rounded-bottom p-4">
                 <div className="d-flex justify-content-between mb-4">
