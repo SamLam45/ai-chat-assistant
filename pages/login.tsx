@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase';
 import Head from 'next/head';
 import Link from 'next/link';
-import { AuthError } from '@supabase/supabase-js';
 import Script from 'next/script';
 
 export default function Login() {
@@ -11,12 +10,23 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    // 檢查用戶是否已登入
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        router.push('/');
+      }
+    });
+  }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setInfo(null);
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -29,9 +39,9 @@ export default function Login() {
       if (data.user) {
         router.push('/');
       }
-    } catch (error) {
-      if (error instanceof AuthError) {
-        setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || '登录时发生错误，请稍后重试');
       } else {
         setError('登录时发生错误，请稍后重试');
       }
@@ -44,33 +54,20 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setInfo(null);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (error) throw error;
 
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: data.user.id,
-              email: data.user.email,
-              full_name: '',
-            },
-          ]);
-
-        if (profileError) throw profileError;
-
-        router.push('/');
-      }
-    } catch (error) {
-      if (error instanceof AuthError) {
-        setError(error.message);
+      setInfo('注册成功，请前往邮箱点击确认链接完成注册。');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || '注册时发生错误，请稍后重试');
       } else {
         setError('注册时发生错误，请稍后重试');
       }
@@ -166,6 +163,12 @@ export default function Login() {
                 {error && (
                   <div className="alert alert-danger" role="alert">
                     {error}
+                  </div>
+                )}
+
+                {info && (
+                  <div className="alert alert-info" role="alert">
+                    {info}
                   </div>
                 )}
 
