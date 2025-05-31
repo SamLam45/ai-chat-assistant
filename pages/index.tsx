@@ -1,10 +1,12 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import 'animate.css';
 import Link from 'next/link';
+import { supabase } from '../lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 declare global {
   interface Window {
@@ -19,35 +21,54 @@ declare global {
 
 export default function Home() {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
 
-useEffect(() => {
-  const initWOW = () => {
-    if (typeof window !== 'undefined' && window.WOW) {
-      const wow = new window.WOW({
-        boxClass: 'wow',
-        animateClass: 'animate__animated',
-        offset: 0,
-        mobile: true,
-        live: true,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      });
-      wow.init();
-      window.addEventListener('scroll', () => wow.sync());
-    }
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    router.reload();
   };
 
-  if (typeof window !== 'undefined') {
-    if (window.WOW) initWOW();
-    else {
-      const checkWOW = setInterval(() => {
-        if (window.WOW) {
-          initWOW();
-          clearInterval(checkWOW);
-        }
-      }, 100);
+  useEffect(() => {
+    const initWOW = () => {
+      if (typeof window !== 'undefined' && window.WOW) {
+        const wow = new window.WOW({
+          boxClass: 'wow',
+          animateClass: 'animate__animated',
+          offset: 0,
+          mobile: true,
+          live: true,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        });
+        wow.init();
+        window.addEventListener('scroll', () => wow.sync());
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      if (window.WOW) initWOW();
+      else {
+        const checkWOW = setInterval(() => {
+          if (window.WOW) {
+            initWOW();
+            clearInterval(checkWOW);
+          }
+        }, 100);
+      }
     }
-  }
-}, []);
+  }, []);
 
   
 
@@ -124,9 +145,21 @@ useEffect(() => {
                       <a className="nav-item nav-link">联系我们</a>
                     </Link>
                   </div>
-            <Link href="/login">
-              <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">登录/注册</a>
-            </Link>
+            {user ? (
+              <div className="dropdown d-inline-block ms-3">
+                <button className="btn btn-light rounded-pill py-2 px-4 dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i className="fa fa-user-circle me-2" style={{ fontSize: 22, color: '#f28b00' }}></i>
+                  <span className="d-none d-md-inline">{user.email}</span>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                  <li><button className="dropdown-item" onClick={handleLogout}>登出</button></li>
+                </ul>
+              </div>
+            ) : (
+              <Link href="/login">
+                <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">登录/注册</a>
+              </Link>
+            )}
           </div>
         </nav>
       </div>
