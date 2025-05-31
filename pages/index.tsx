@@ -7,7 +7,6 @@ import 'animate.css';
 import Link from 'next/link';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
-import { PrevArrow, NextArrow } from '../components/CarouselArrows';
 
 interface HomeProps {
   user: User | null;
@@ -229,8 +228,6 @@ export default function Home({ user }: HomeProps) {
             </div>
           </div>
           <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
-            <PrevArrow />
-            <NextArrow />
             {[
               { img: 'teaching-3', title: '沉浸式课程', desc: '12个月课程，每月围绕AI、国际关系等12大主题展开' },
               { img: 'teaching-4', title: '精英导师辅导', desc: '香港及海外顶尖大学生1对2小组辅导，非大班网课' },
@@ -392,8 +389,6 @@ export default function Home({ user }: HomeProps) {
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">学员的真实反馈</h1>
           </div>
           <div className="owl-carousel testimonial-carousel pt-5 wow fadeInUp" data-wow-delay="0.2s">
-            <PrevArrow />
-            <NextArrow />
             {[1, 2, 3, 3].map((num, idx) => (
               <div className="testimonial-item border text-center rounded" key={idx}>
                 <div className="rounded-circle position-absolute" style={{ width: 100, height: 100, top: 25, left: '50%', transform: 'translateX(-50%)' }}>
