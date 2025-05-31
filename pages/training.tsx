@@ -1,11 +1,12 @@
 import Head from "next/head";
 import Script from "next/script";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "animate.css";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from '../pages/_app'; // Import useAuth hook
+import { supabase } from '../lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 declare global {
   interface Window {
@@ -20,7 +21,7 @@ declare global {
 
 export default function Training() {
   const router = useRouter();
-  const { user, logout } = useAuth(); // Use the global user state and logout function
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const initWOW = () => {
@@ -48,7 +49,24 @@ export default function Training() {
         }, 100);
       }
     }
+
+    // 檢查用戶是否已登入
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+    // 監聽登入狀態變化
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
 
   return (
     <>
@@ -114,38 +132,37 @@ export default function Training() {
           <div className="collapse navbar-collapse" id="navbarCollapse">
             <div className="navbar-nav ms-auto py-0">
               <Link href="/">
-                <a className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>首页</a>
+                <a className={`nav-item nav-link${router.pathname === "/" ? " active" : ""}`}>首页</a>
               </Link>
               <Link href="/about">
-                <a className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>关于我们</a>
+                <a className={`nav-item nav-link${router.pathname === "/about" ? " active" : ""}`}>关于我们</a>
               </Link>
               <Link href="/training">
-                <a className={`nav-item nav-link${router.pathname === '/training' ? ' active' : ''}`}>服务项目</a>
+                <a className={`nav-item nav-link${router.pathname === "/training" ? " active" : ""}`}>服务项目</a>
               </Link>
               <Link href="/team">
-                <a className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>团队介绍</a>
+                <a className={`nav-item nav-link${router.pathname === "/team" ? " active" : ""}`}>团队介绍</a>
               </Link>
               <Link href="/testimonial">
-                <a className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>学员评价</a>
+                <a className={`nav-item nav-link${router.pathname === "/testimonial" ? " active" : ""}`}>学员评价</a>
               </Link>
               <Link href="/blog">
-                <a className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>博客资讯</a>
+                <a className={`nav-item nav-link${router.pathname === "/blog" ? " active" : ""}`}>博客资讯</a>
               </Link>
               <Link href="/contact">
                 <a className="nav-item nav-link">联系我们</a>
               </Link>
             </div>
             {user ? (
-              <div className="d-flex align-items-center">
-                <div className="dropdown">
-                  <button className="btn btn-link text-dark dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i className="fas fa-user-circle fa-2x me-2"></i>
-                    <span className="d-none d-md-inline">{user.email}</span>
-                  </button>
-                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><button className="dropdown-item" onClick={logout}>登出</button></li>
-                  </ul>
-                </div>
+              <div className="dropdown">
+                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i className="fas fa-user"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                  <li><span className="dropdown-item-text">{user.email}</span></li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li><button className="dropdown-item" onClick={handleLogout}>登出</button></li>
+                </ul>
               </div>
             ) : (
               <Link href="/login">

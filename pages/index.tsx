@@ -1,11 +1,12 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import 'animate.css';
 import Link from 'next/link';
-import { useAuth } from '../pages/_app'; // Import useAuth hook
+import { supabase } from '../lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 declare global {
   interface Window {
@@ -20,7 +21,26 @@ declare global {
 
 export default function Home() {
   const router = useRouter();
-  const { user, logout } = useAuth(); // Use the global user state and logout function
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // 檢查用戶是否已登入
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+    // 監聽登入狀態變化
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
 
   useEffect(() => {
     const initWOW = () => {
@@ -123,16 +143,15 @@ export default function Home() {
               </Link>
             </div>
             {user ? (
-              <div className="d-flex align-items-center">
-                <div className="dropdown">
-                  <button className="btn btn-link text-dark dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i className="fas fa-user-circle fa-2x me-2"></i>
-                    <span className="d-none d-md-inline">{user.email}</span>
-                  </button>
-                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><button className="dropdown-item" onClick={logout}>登出</button></li>
-                  </ul>
-                </div>
+              <div className="dropdown">
+                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i className="fas fa-user"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                  <li><span className="dropdown-item-text">{user.email}</span></li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li><button className="dropdown-item" onClick={handleLogout}>登出</button></li>
+                </ul>
               </div>
             ) : (
               <Link href="/login">
