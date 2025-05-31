@@ -22,13 +22,19 @@ declare global {
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
       setUser(data.user);
-    });
+      setLoadingUser(false);
+    };
+    fetchUser();
+
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      setLoadingUser(false);
     });
     return () => {
       listener?.subscription.unsubscribe();
@@ -63,6 +69,8 @@ export default function Home() {
       }
     }
   }, []);
+
+  console.log('Rendering index.tsx. User:', user, 'Loading:', loadingUser);
 
   return (
     <>
@@ -135,7 +143,10 @@ export default function Home() {
                       <a className="nav-item nav-link">联系我们</a>
                     </Link>
                   </div>
-            {user ? (
+            {/* Only render after loadingUser is false */}
+            {loadingUser ? (
+              <div className="ms-3 text-dark">载入中...</div>
+            ) : user && user.email ? (
               <Link href="/login">
                 <a className="d-flex align-items-center ms-3 text-decoration-none" style={{ cursor: 'pointer' }}>
                   <span className="me-2"><i className="fa fa-user-circle fa-lg text-primary"></i></span>
