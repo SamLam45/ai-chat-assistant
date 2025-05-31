@@ -1,13 +1,15 @@
 import "@/styles/globals.css"; // Your global styles
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import "owl.carousel/dist/assets/owl.theme.default.min.css";
 import "lightbox2/dist/css/lightbox.min.css";
 import "animate.css"; // Ensure this is installed
+import { supabase } from '../lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 interface JQuery {
   owlCarousel(options?: {
@@ -46,6 +48,7 @@ declare global {
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const initWOW = () => {
@@ -156,8 +159,18 @@ export default function App({ Component, pageProps }: AppProps) {
 
     router.events.on('routeChangeComplete', handleRouteChange);
 
+    // 檢查用戶是否已登入
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+    // 監聽登入狀態變化
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
+      listener?.subscription.unsubscribe();
     };
   }, [router]);
 
@@ -168,7 +181,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Component {...pageProps} />
+      <Component {...pageProps} user={user} />
     </>
   );
 }

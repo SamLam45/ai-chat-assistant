@@ -144,7 +144,7 @@ export default function Home() {
             </div>
             {user ? (
               <div className="dropdown">
-                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
                   <i className="fas fa-user"></i>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -155,9 +155,6 @@ export default function Home() {
               </div>
             ) : (
               <Link href="/login">
-                <a className="btn btn-primary rounded-circle">
-                  <i className="fas fa-user"></i>
-                </a>
                 <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
               </Link>
             )}

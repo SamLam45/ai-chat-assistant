@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from "next/link";
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
@@ -17,9 +17,17 @@ declare global {
   }
 }
 
-export default function Blog() {
+interface BlogProps {
+  user: User | null;
+}
+
+export default function Blog({ user }: BlogProps) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
 
   useEffect(() => {
     const initWOW = () => {
@@ -47,32 +55,15 @@ export default function Blog() {
         }, 100);
       }
     }
-
-    // 檢查用戶是否已登入
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-    // 監聽登入狀態變化
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
   }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
 
   return (
     <>
       <Head>
-        <title>全球视野 - 学员评价</title>
+        <title>全球视野 - 博客资讯</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="keywords" content="全球视野, 学员评价, 精英教育, 青少年培训, 国际视野" />
-        <meta name="description" content="了解全球视野学员的真实反馈，体验精英教育带来的改变。" />
+        <meta name="keywords" content="全球视野, 博客资讯, 精英教育, 青少年培训, 国际视野" />
+        <meta name="description" content="探索全球视野的博客资讯，了解最新的教育动态和成功案例。" />
         <link href="/lib/animate/animate.min.css" rel="stylesheet" />
       </Head>
       {/* Scripts */}
@@ -147,7 +138,7 @@ export default function Blog() {
             </div>
             {user ? (
               <div className="dropdown">
-                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
                   <i className="fas fa-user"></i>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -158,9 +149,6 @@ export default function Blog() {
               </div>
             ) : (
               <Link href="/login">
-                <a className="btn btn-primary rounded-circle">
-                  <i className="fas fa-user"></i>
-                </a>
                 <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
               </Link>
             )}

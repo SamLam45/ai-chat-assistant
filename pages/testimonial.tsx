@@ -1,11 +1,12 @@
 import Head from 'next/head';
 import Script from 'next/script';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
+import 'animate.css';
 
 declare global {
   interface Window {
@@ -18,9 +19,17 @@ declare global {
   }
 }
 
-export default function Testimonial() {
+interface TestimonialProps {
+  user: User | null;
+}
+
+export default function Testimonial({ user }: TestimonialProps) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
 
   useEffect(() => {
     const initWOW = () => {
@@ -48,24 +57,7 @@ export default function Testimonial() {
         }, 100);
       }
     }
-
-    // 檢查用戶是否已登入
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-    // 監聽登入狀態變化
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
   }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
 
   return (
     <>
@@ -139,7 +131,7 @@ export default function Testimonial() {
             </div>
             {user ? (
               <div className="dropdown">
-                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
                   <i className="fas fa-user"></i>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -150,9 +142,6 @@ export default function Testimonial() {
               </div>
             ) : (
               <Link href="/login">
-                <a className="btn btn-primary rounded-circle">
-                  <i className="fas fa-user"></i>
-                </a>
                 <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
               </Link>
             )}

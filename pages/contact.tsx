@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Script from 'next/script';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import 'animate.css';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -18,23 +18,12 @@ declare global {
   }
 }
 
-export default function Contact() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+interface ContactProps {
+  user: User | null;
+}
 
-  useEffect(() => {
-    // 檢查用戶是否已登入
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-    // 監聽登入狀態變化
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
+export default function Contact({ user }: ContactProps) {
+  const router = useRouter();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -50,7 +39,6 @@ export default function Contact() {
           offset: 0,
           mobile: true,
           live: true,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         });
         wow.init();
         window.addEventListener('scroll', () => wow.sync());
@@ -152,7 +140,7 @@ export default function Contact() {
             </div>
             {user ? (
               <div className="dropdown">
-                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
                   <i className="fas fa-user"></i>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -163,9 +151,6 @@ export default function Contact() {
               </div>
             ) : (
               <Link href="/login">
-                <a className="btn btn-primary rounded-circle">
-                  <i className="fas fa-user"></i>
-                </a>
                 <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
               </Link>
             )}
