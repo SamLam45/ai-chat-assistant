@@ -1,12 +1,10 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import 'animate.css';
 import Link from 'next/link';
-import { supabase } from '../lib/supabase';
-import type { User } from '@supabase/supabase-js';
 
 declare global {
   interface Window {
@@ -21,53 +19,37 @@ declare global {
 
 export default function Home() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+useEffect(() => {
+  const initWOW = () => {
+    if (typeof window !== 'undefined' && window.WOW) {
+      const wow = new window.WOW({
+        boxClass: 'wow',
+        animateClass: 'animate__animated',
+        offset: 0,
+        mobile: true,
+        live: true,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      });
+      wow.init();
+      window.addEventListener('scroll', () => wow.sync());
+    }
   };
 
-  useEffect(() => {
-    const initWOW = () => {
-      if (typeof window !== 'undefined' && window.WOW) {
-        const wow = new window.WOW({
-          boxClass: 'wow',
-          animateClass: 'animate__animated',
-          offset: 0,
-          mobile: true,
-          live: true,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        });
-        wow.init();
-        window.addEventListener('scroll', () => wow.sync());
-      }
-    };
-
-    if (typeof window !== 'undefined') {
-      if (window.WOW) initWOW();
-      else {
-        const checkWOW = setInterval(() => {
-          if (window.WOW) {
-            initWOW();
-            clearInterval(checkWOW);
-          }
-        }, 100);
-      }
+  if (typeof window !== 'undefined') {
+    if (window.WOW) initWOW();
+    else {
+      const checkWOW = setInterval(() => {
+        if (window.WOW) {
+          initWOW();
+          clearInterval(checkWOW);
+        }
+      }, 100);
     }
-  }, []);
+  }
+}, []);
+
+  
 
   return (
     <>
@@ -78,9 +60,11 @@ export default function Home() {
         <meta content="" name="description" />
       </Head>
 
+
       <Script src="/js/main.js" strategy="afterInteractive" />
 
-      {/* Topbar Start */}
+
+     {/* Topbar Start */}
       <div className="container-fluid px-5 d-none d-lg-block" style={{ backgroundColor: '#f28b00' }}>
         <div className="row gx-0 align-items-center" style={{ height: '45px' }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
@@ -117,56 +101,32 @@ export default function Home() {
             <span className="fa fa-bars"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarCollapse">
-            <div className="navbar-nav ms-auto py-0">
-              <Link href="/">
-                <a className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>首页</a>
-              </Link>
-              <Link href="/about">
-                <a className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>关于我们</a>
-              </Link>
-              <Link href="/training">
-                <a className={`nav-item nav-link${router.pathname === '/training' ? ' active' : ''}`}>服务项目</a>
-              </Link>
-              <Link href="/team">
-                <a className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>团队介绍</a>
-              </Link>
-              <Link href="/testimonial">
-                <a className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>学员评价</a>
-              </Link>
-              <Link href="/blog">
-                <a className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>博客资讯</a>
-              </Link>
-              <Link href="/contact">
-                <a className="nav-item nav-link">联系我们</a>
-              </Link>
-              {user ? (
-                <div className="nav-item dropdown">
-                  <a
-                    className="nav-link dropdown-toggle d-flex align-items-center"
-                    href="#"
-                    id="userDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <i className="fa fa-user-circle fa-lg me-2" style={{ color: '#f28b00' }}></i>
-                    {user.email}
-                  </a>
-                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li>
-                      <button className="dropdown-item" onClick={handleLogout}>
-                        登出
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              ) : (
-                <Link href="/login">
-                  <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">登录/注册</a>
-                </Link>
-              )}
-            </div>
+                  <div className="navbar-nav ms-auto py-0">
+                    <Link href="/">
+                      <a className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>首页</a>
+                    </Link>
+                    <Link href="/about">
+                      <a className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>关于我们</a>
+                    </Link>
+                    <Link href="/training">
+                      <a className={`nav-item nav-link${router.pathname === '/training' ? ' active' : ''}`}>服务项目</a>
+                    </Link>
+                    <Link href="/team">
+                      <a className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>团队介绍</a>
+                    </Link>
+                    <Link href="/testimonial">
+                      <a className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>学员评价</a>
+                    </Link>
+                    <Link href="/blog">
+                      <a className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>博客资讯</a>
+                    </Link>
+                    <Link href="/contact">
+                      <a className="nav-item nav-link">联系我们</a>
+                    </Link>
+                  </div>
+            <Link href="/login">
+              <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">登录/注册</a>
+            </Link>
           </div>
         </nav>
       </div>
