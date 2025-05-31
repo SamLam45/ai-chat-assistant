@@ -557,7 +557,29 @@ export default function Home({ user }: HomeProps) {
       {/* Copyright End */}
 
       {/* Back to Top */}
-      <a href="#" className="btn btn-primary btn-lg-square back-to-top"><i className="fa fa-arrow-up"></i></a>
+      <a href="#" className="btn btn-primary btn-lg-square back-to-top">
+        <i className="fa fa-arrow-up"></i>
+      </a>
+
+      {/* Script to update carousel navigation text */}
+      <Script id="update-carousel-nav">
+        {`
+          document.addEventListener('DOMContentLoaded', function() {
+            // Use a slight delay to ensure Owl Carousel is initialized
+            setTimeout(function() {
+              const prevButtons = document.querySelectorAll('.owl-prev');
+              prevButtons.forEach(button => {
+                button.innerHTML = '<i class="bi bi-arrow-left"></i> <';
+              });
+
+              const nextButtons = document.querySelectorAll('.owl-next');
+              nextButtons.forEach(button => {
+                button.innerHTML = '<i class="bi bi-arrow-right"></i> >';
+              });
+            }, 500);
+          });
+        `}
+      </Script>
     </>
   );
 }
