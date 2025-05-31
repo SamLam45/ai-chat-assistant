@@ -132,22 +132,22 @@ export default function About() {
           <div className="collapse navbar-collapse" id="navbarCollapse">
             <div className="navbar-nav ms-auto py-0">
               <Link href="/">
-                <a className={`nav-item nav-link${router.pathname === "/" ? " active" : ""}`}>首页</a>
+                <a className={`nav-item nav-link${router.pathname === '/' ? ' active' : ''}`}>首页</a>
               </Link>
               <Link href="/about">
-                <a className={`nav-item nav-link${router.pathname === "/about" ? " active" : ""}`}>关于我们</a>
+                <a className={`nav-item nav-link${router.pathname === '/about' ? ' active' : ''}`}>关于我们</a>
               </Link>
               <Link href="/training">
-                <a className={`nav-item nav-link${router.pathname === "/training" ? " active" : ""}`}>服务项目</a>
+                <a className={`nav-item nav-link${router.pathname === '/training' ? ' active' : ''}`}>服务项目</a>
               </Link>
               <Link href="/team">
-                <a className={`nav-item nav-link${router.pathname === "/team" ? " active" : ""}`}>团队介绍</a>
+                <a className={`nav-item nav-link${router.pathname === '/team' ? ' active' : ''}`}>团队介绍</a>
               </Link>
               <Link href="/testimonial">
-                <a className={`nav-item nav-link${router.pathname === "/testimonial" ? " active" : ""}`}>学员评价</a>
+                <a className={`nav-item nav-link${router.pathname === '/testimonial' ? ' active' : ''}`}>学员评价</a>
               </Link>
               <Link href="/blog">
-                <a className={`nav-item nav-link${router.pathname === "/blog" ? " active" : ""}`}>博客资讯</a>
+                <a className={`nav-item nav-link${router.pathname === '/blog' ? ' active' : ''}`}>博客资讯</a>
               </Link>
               <Link href="/contact">
                 <a className="nav-item nav-link">联系我们</a>
