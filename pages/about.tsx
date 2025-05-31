@@ -155,7 +155,7 @@ export default function About({ user }: AboutProps) {
       {/* Navbar & Hero End */}
 
       {/* Header Start */}
-      <div className="container-fluid bg-breadcrumb">
+      <div className="container-fluid bg-breadcrumb" style={{ backgroundImage: 'url(/img/teaching-1.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="container text-center py-5" style={{ maxWidth: "900px" }}>
           <h3 className="text-primary display-3 animate__animated animate__fadeInDown" data-wow-delay="0.1s">
             关于我们

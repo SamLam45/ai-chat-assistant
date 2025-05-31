@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import "animate.css";
 import Link from "next/link";
-import Image from "next/image";
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
@@ -166,7 +165,7 @@ export default function Training({ user }: TrainingProps) {
       {/* Navbar & Hero End */}
 
       {/* Header Start */}
-      <div className="container-fluid bg-breadcrumb">
+      <div className="container-fluid bg-breadcrumb" style={{ backgroundImage: 'url(/img/teaching-1.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="container text-center py-5" style={{ maxWidth: "900px" }}>
           <h3 className="text-primary display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">
             服务项目
@@ -297,161 +296,6 @@ export default function Training({ user }: TrainingProps) {
       </div>
       {/* Modal End */}
 
-      {/* Video Gallery Start */}
-      <div className="container-fluid gallery py-5 bg-white">
-        <div className="container py-5">
-          <div className="pb-5">
-            <h4 className="text-warning sub-title fw-bold animate__animated animate__fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>
-              我们的服务图库
-            </h4>
-            <h1 className="display-2 mb-0 animate__animated animate__fadeInUp" data-wow-delay="0.3s">
-              服务项目图库
-            </h1>
-          </div>
-          <div className="tab-class animate__animated animate__fadeInUp" data-wow-delay="0.1s">
-            <ul className="nav nav-pills d-inline-flex justify-content-center pb-4">
-              <li className="nav-item bg-light border border-primary rounded-pill mb-4 animate__animated animate__fadeInUp" data-wow-delay="0.1s">
-                <a className="d-flex py-2 px-5 rounded-pill active" data-bs-toggle="pill" href="#GalleryTab-1">
-                  <span className="text-dark">全部</span>
-                </a>
-              </li>
-              <li className="nav-item bg-light border border-primary rounded-pill mb-4 animate__animated animate__fadeInUp" data-wow-delay="0.2s">
-                <a className="d-flex py-2 px-5 rounded-pill" data-bs-toggle="pill" href="#GalleryTab-2">
-                  <span className="text-dark">AI课程</span>
-                </a>
-              </li>
-              <li className="nav-item bg-light border border-primary rounded-pill mb-4 animate__animated animate__fadeInUp" data-wow-delay="0.3s">
-                <a className="d-flex py-2 px-5 rounded-pill" data-bs-toggle="pill" href="#GalleryTab-3">
-                  <span className="text-dark">国际关系</span>
-                </a>
-              </li>
-              <li className="nav-item bg-light border border-primary rounded-pill mb-4 animate__animated animate__fadeInUp" data-wow-delay="0.4s">
-                <a className="d-flex py-2 px-5 rounded-pill" data-bs-toggle="pill" href="#GalleryTab-4">
-                  <span className="text-dark">批判性思维</span>
-                </a>
-              </li>
-              <li className="nav-item bg-light border border-primary rounded-pill mb-4 animate__animated animate__fadeInUp" data-wow-delay="0.5s">
-                <a className="d-flex py-2 px-5 rounded-pill" data-bs-toggle="pill" href="#GalleryTab-5">
-                  <span className="text-dark">企业参观</span>
-                </a>
-              </li>
-            </ul>
-            <div className="tab-content">
-              <div id="GalleryTab-1" className="tab-pane fade show p-0 active">
-                <div className="row g-2">
-                  <div className="col-sm-6 col-md-6 col-lg-4 col-xl-2 wow fadeInUp" data-wow-delay="0.1s">
-                    <div className="video h-100">
-                      <Image
-                        src="/img/class-1.jpg"
-                        className="img-fluid rounded w-100 h-100"
-                        style={{ objectFit: "cover" }}
-                        alt=""
-                        width={400}
-                        height={300}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-play"
-                        data-bs-toggle="modal"
-                        data-src="https://www.youtube.com/embed/DWRcNpR6Kdc"
-                        data-bs-target="#videoModal"
-                      >
-                        <span></span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.3s">
-                    <div className="video h-100">
-                      <Image
-                        src="/img/class-2.jpg"
-                        className="img-fluid rounded w-100 h-100"
-                        style={{ objectFit: "cover" }}
-                        alt=""
-                        width={400}
-                        height={300}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-play"
-                        data-bs-toggle="modal"
-                        data-src="https://www.youtube.com/embed/DWRcNpR6Kdc"
-                        data-bs-target="#videoModal"
-                      >
-                        <span></span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="col-sm-6 col-md-6 col-lg-4 col-xl-2 wow fadeInUp" data-wow-delay="0.5s">
-                    <div className="video h-100">
-                      <Image
-                        src="/img/class-3.jpg"
-                        className="img-fluid rounded w-100 h-100"
-                        style={{ objectFit: "cover" }}
-                        alt=""
-                        width={400}
-                        height={300}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-play"
-                        data-bs-toggle="modal"
-                        data-src="https://www.youtube.com/embed/DWRcNpR6Kdc"
-                        data-bs-target="#videoModal"
-                      >
-                        <span></span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.3s">
-                    <div className="video h-100">
-                      <Image
-                        src="/img/class-2.jpg"
-                        className="img-fluid rounded w-100 h-100"
-                        style={{ objectFit: "cover" }}
-                        alt=""
-                        width={400}
-                        height={300}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-play"
-                        data-bs-toggle="modal"
-                        data-src="https://www.youtube.com/embed/DWRcNpR6Kdc"
-                        data-bs-target="#videoModal"
-                      >
-                        <span></span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.3s">
-                    <div className="video h-100">
-                      <Image
-                        src="/img/class-2.jpg"
-                        className="img-fluid rounded w-100 h-100"
-                        style={{ objectFit: "cover" }}
-                        alt=""
-                        width={400}
-                        height={300}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-play"
-                        data-bs-toggle="modal"
-                        data-src="https://www.youtube.com/embed/DWRcNpR6Kdc"
-                        data-bs-target="#videoModal"
-                      >
-                        <span></span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* Other tab-pane can be added as needed */}
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Video Gallery End */}
 
       {/* Footer Start */}
       <div className="container-fluid footer py-5 wow fadeIn" data-wow-delay="0.1s">

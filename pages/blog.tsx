@@ -158,7 +158,7 @@ export default function Blog({ user }: BlogProps) {
       {/* Navbar & Hero End */}
 
      {/* Header Start */}
-      <div className="container-fluid bg-breadcrumb">
+      <div className="container-fluid bg-breadcrumb" style={{ backgroundImage: 'url(/img/teaching-1.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="container text-center py-5" style={{ maxWidth: "900px" }}>
           <h3 className="text-primary display-3 animate__animated animate__fadeInDown" data-wow-delay="0.1s">
             博客资讯
@@ -313,14 +313,14 @@ export default function Blog({ user }: BlogProps) {
             </div>
           </div>
           <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
-            {[1,3,2,4,3].map((num, idx) => (
+            {[1,2,3,4,5].map((num, idx) => (
               <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
                 <div className="training-img rounded-top">
-                  <img src={`/img/service-${num}.jpg`} className="img-fluid rounded-top w-100" alt="Image" />
+                  <img src={`/img/teaching-training-${num}.jpg`} className="img-fluid rounded-top w-100" alt="Image" />
                   <h1 className="fs-1 fw-bold bg-primary text-white d-inline-block rounded p-2 position-absolute" style={{top: 0, left: 0}}>{`0${idx+1}`}</h1>
                 </div>
                 <div className="rounded-bottom border border-top-0 p-4">
-                  <a href="#" className="h4 mb-3 d-block">{num === 1 || num === 4 ? '全球视野课程' : num === 2 ? '双语教学' : '批判性思维训练'}</a>
+                  <a href="#" className="h4 mb-3 d-block">{num === 1 ? '全球视野课程' : num === 2 ? '双语教学' : num === 3 ? '批判性思维训练' : num === 4 ? '国际关系研讨' : '企业参访'}</a>
                   <p className="mb-3 text-muted">通过前沿话题讨论和实践活动，培养学生的国际素养与未来竞争力。</p>
                   <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">阅读更多</a>
                 </div>

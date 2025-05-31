@@ -151,7 +151,7 @@ export default function Testimonial({ user }: TestimonialProps) {
       {/* Navbar & Hero End */}
 
       {/* Header Start */}
-      <div className="container-fluid bg-breadcrumb">
+      <div className="container-fluid bg-breadcrumb" style={{ backgroundImage: 'url(/img/teaching-1.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="container text-center py-5" style={{ maxWidth: "900px" }}>
           <h3 className="text-primary display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">
             学员评价
