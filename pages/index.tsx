@@ -35,12 +35,6 @@ export default function Home() {
     };
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    router.reload();
-  };
-
   useEffect(() => {
     const initWOW = () => {
       if (typeof window !== 'undefined' && window.WOW) {
@@ -70,8 +64,6 @@ export default function Home() {
     }
   }, []);
 
-  
-
   return (
     <>
       <Head>
@@ -81,11 +73,9 @@ export default function Home() {
         <meta content="" name="description" />
       </Head>
 
-
       <Script src="/js/main.js" strategy="afterInteractive" />
 
-
-     {/* Topbar Start */}
+      {/* Topbar Start */}
       <div className="container-fluid px-5 d-none d-lg-block" style={{ backgroundColor: '#f28b00' }}>
         <div className="row gx-0 align-items-center" style={{ height: '45px' }}>
           <div className="col-lg-8 text-center text-lg-start mb-lg-0">
@@ -146,15 +136,12 @@ export default function Home() {
                     </Link>
                   </div>
             {user ? (
-              <div className="dropdown d-inline-block ms-3">
-                <button className="btn btn-light rounded-pill py-2 px-4 dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i className="fa fa-user-circle me-2" style={{ fontSize: 22, color: '#f28b00' }}></i>
-                  <span className="d-none d-md-inline">{user.email}</span>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                  <li><button className="dropdown-item" onClick={handleLogout}>登出</button></li>
-                </ul>
-              </div>
+              <Link href="/login">
+                <a className="d-flex align-items-center ms-3 text-decoration-none" style={{ cursor: 'pointer' }}>
+                  <span className="me-2"><i className="fa fa-user-circle fa-lg text-primary"></i></span>
+                  <span className="me-2 text-dark">{user.email}</span>
+                </a>
+              </Link>
             ) : (
               <Link href="/login">
                 <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">登录/注册</a>
