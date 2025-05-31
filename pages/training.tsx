@@ -1,10 +1,12 @@
 import Head from "next/head";
 import Script from "next/script";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "animate.css";
 import Link from "next/link";
 import Image from "next/image";
+import { supabase } from '../lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 declare global {
   interface Window {
@@ -19,6 +21,7 @@ declare global {
 
 export default function Training() {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const initWOW = () => {
@@ -46,7 +49,24 @@ export default function Training() {
         }, 100);
       }
     }
+
+    // 檢查用戶是否已登入
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+    // 監聽登入狀態變化
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
 
   return (
     <>
@@ -133,9 +153,23 @@ export default function Training() {
                 <a className="nav-item nav-link">联系我们</a>
               </Link>
             </div>
-            <Link href="/login">
-              <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
-            </Link>
+            {user ? (
+              <div className="d-flex align-items-center">
+                <div className="dropdown">
+                  <button className="btn btn-link text-dark dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i className="fas fa-user-circle fa-2x me-2"></i>
+                    <span className="d-none d-md-inline">{user.email}</span>
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><button className="dropdown-item" onClick={handleLogout}>登出</button></li>
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <Link href="/login">
+                <a className="btn btn-primary rounded-pill text-white py-2 px-4 flex-wrap flex-sm-shrink-0">立即註冊</a>
+              </Link>
+            )}
           </div>
         </nav>
       </div>
