@@ -60,13 +60,7 @@ useEffect(() => {
         <meta content="" name="description" />
       </Head>
 
-      {/* Load jQuery first */}
-      
-      
-      {/* Load other dependencies */}
-      
-      
-      {/* Load main.js last */}
+
       <Script src="/js/main.js" strategy="afterInteractive" />
 
 
@@ -265,7 +259,7 @@ useEffect(() => {
       </div>
       {/* Why Choose Us End */}
 
-            {/* Team Start */}
+    {/* Team Start */}
       <div className="container-fluid team py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
