@@ -12,11 +12,13 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     // 檢查用戶是否已登入
     supabase.auth.getUser().then(({ data }) => {
+      // Do not redirect here, let the other effect handle it
       setUser(data.user);
     });
     // 監聽登入狀態變化
@@ -28,6 +30,34 @@ export default function Login() {
     };
   }, []);
 
+  // Effect to redirect user if logged in
+  useEffect(() => {
+    if (user) {
+      setIsRedirecting(true);
+      const getProfileAndRedirect = async () => {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile) {
+          setError('获取用户信息失败，请联系管理员。');
+          await supabase.auth.signOut();
+          setIsRedirecting(false);
+          return;
+        }
+
+        if (profile.role === 'admin') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/student/dashboard');
+        }
+      };
+      getProfileAndRedirect();
+    }
+  }, [user, router]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -35,35 +65,16 @@ export default function Login() {
     setInfo(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+      
+      // The useEffect hooks now handle redirection.
+      // No need to do anything here after successful login.
 
-      if (data.user) {
-        // Fetch profile and redirect based on role
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
-
-        if (profileError) {
-            throw new Error('获取用户信息失败，请联系管理员。');
-        }
-
-        if (profile) {
-          if (profile.role === 'admin') {
-            router.push('/admin/dashboard');
-          } else {
-            router.push('/student/dashboard');
-          }
-        } else {
-            throw new Error('未找到用户角色，请联系管理员。');
-        }
-      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message || '登录时发生错误，请稍后重试');
@@ -108,6 +119,21 @@ export default function Login() {
     setError(null);
     // router.push('/'); // 可選：登出後導回首頁
   };
+
+  if (isRedirecting) {
+    return (
+        <Layout title="跳转中...">
+            <div className="container-fluid py-5 text-center" style={{ minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div>
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Redirecting...</span>
+                    </div>
+                    <p className="mt-3 fs-5">登录成功，正在跳转...</p>
+                </div>
+            </div>
+        </Layout>
+    );
+  }
 
   return (
     <Layout title="登录/注册">
