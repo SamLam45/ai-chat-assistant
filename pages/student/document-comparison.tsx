@@ -3,28 +3,117 @@ import Head from 'next/head';
 import Layout from '../../components/Layout'; // Assuming a Layout component exists
 
 // Step 1: Upload Resumes Component
-const UploadStep = () => (
-  <div>
-    <h4 className="mb-4">Upload Resumes</h4>
-    <div
-      className="d-flex flex-column align-items-center justify-content-center"
-      style={{
-        border: '2px dashed #ccc',
-        borderRadius: '10px',
-        padding: '50px',
-        textAlign: 'center',
-      }}
-    >
-      <i className="bi bi-upload fs-1 text-primary"></i> {/* Placeholder for an icon */}
-      <h5 className="mt-3">Drag & drop resumes here, or click to select</h5>
-      <p className="text-muted">Supports PDF, TXT, DOC, and DOCX files (max 5MB each)</p>
+const allowedTypes = [
+  'application/pdf',
+  'text/plain',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+const UploadStep = () => {
+  const [files, setFiles] = useState<File[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFiles = (selectedFiles: FileList | null) => {
+    if (!selectedFiles) return;
+    let newFiles: File[] = [];
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Only PDF, TXT, DOC, and DOCX files are allowed.');
+        continue;
+      }
+      if (file.size > maxFileSize) {
+        setError('Each file must be less than 5MB.');
+        continue;
+      }
+      // Prevent duplicate file names
+      if (files.some(f => f.name === file.name)) continue;
+      newFiles.push(file);
+    }
+    if (newFiles.length > 0) {
+      setFiles(prev => [...prev, ...newFiles]);
+      setError(null);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFiles(e.target.files);
+    e.target.value = '';
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    handleFiles(e.dataTransfer.files);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const removeFile = (name: string) => {
+    setFiles(prev => prev.filter(f => f.name !== name));
+  };
+
+  return (
+    <div>
+      <h4 className="mb-4">Upload Resumes</h4>
+      <div
+        className="d-flex flex-column align-items-center justify-content-center"
+        style={{
+          border: '2px dashed #ccc',
+          borderRadius: '10px',
+          padding: '50px',
+          textAlign: 'center',
+          background: '#fafbfc',
+          cursor: 'pointer',
+        }}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onClick={() => document.getElementById('resume-upload-input')?.click()}
+      >
+        <i className="bi bi-upload fs-1 text-primary"></i>
+        <h5 className="mt-3">Drag & drop resumes here, or click to select</h5>
+        <p className="text-muted">Supports PDF, TXT, DOC, and DOCX files (max 5MB each)</p>
+        <input
+          id="resume-upload-input"
+          type="file"
+          accept=".pdf,.txt,.doc,.docx"
+          multiple
+          style={{ display: 'none' }}
+          onChange={handleInputChange}
+        />
+      </div>
+      {error && (
+        <div className="alert alert-danger mt-3" role="alert">
+          <i className="bi bi-x-circle me-2"></i>
+          {error}
+        </div>
+      )}
+      {files.length > 0 ? (
+        <div className="mt-4">
+          <h6>Uploaded Files:</h6>
+          <ul className="list-group">
+            {files.map(file => (
+              <li key={file.name} className="list-group-item d-flex justify-content-between align-items-center">
+                <span>{file.name}</span>
+                <button className="btn btn-sm btn-outline-danger" onClick={() => removeFile(file.name)}>
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <div className="alert alert-warning mt-4" role="alert">
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+          No resumes uploaded. Upload at least one resume to proceed with the evaluation.
+        </div>
+      )}
     </div>
-    <div className="alert alert-warning mt-4" role="alert">
-      <i className="bi bi-exclamation-triangle-fill me-2"></i> {/* Placeholder for an icon */}
-      No resumes uploaded. Upload at least one resume to proceed with the evaluation.
-    </div>
-  </div>
-);
+  );
+};
 
 // Step 2: Job Requirements Component
 const RequirementsStep = () => {
