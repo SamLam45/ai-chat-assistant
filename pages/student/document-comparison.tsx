@@ -33,8 +33,7 @@ const allowedTypes = [
 ];
 const maxFileSize = 5 * 1024 * 1024; // 5MB
 
-const UploadStep = () => {
-  const [files, setFiles] = useState<File[]>([]);
+const UploadStep = ({ files, onFilesChange }: { files: File[], onFilesChange: (files: File[]) => void }) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleFiles = (selectedFiles: FileList | null) => {
@@ -50,12 +49,12 @@ const UploadStep = () => {
         setError('每個檔案必須小於 5MB。');
         continue;
       }
-      // Prevent duplicate file names
+      // Prevent duplicate file names by checking against the files from props
       if (files.some(f => f.name === file.name)) continue;
       newFiles.push(file);
     }
     if (newFiles.length > 0) {
-      setFiles(prev => [...prev, ...newFiles]);
+      onFilesChange([...files, ...newFiles]);
       setError(null);
     }
   };
@@ -75,7 +74,7 @@ const UploadStep = () => {
   };
 
   const removeFile = (name: string) => {
-    setFiles(prev => prev.filter(f => f.name !== name));
+    onFilesChange(files.filter(f => f.name !== name));
   };
 
   return (
@@ -138,7 +137,7 @@ const UploadStep = () => {
 };
 
 // Step 3: Saved Requirements Component
-const SavedRequirementsStep = ({ requirements, onEdit, onSubmit }: { requirements: RequirementData | null, onEdit: () => void, onSubmit: () => void }) => {
+const SavedRequirementsStep = ({ requirements, files, onEdit, onSubmit }: { requirements: RequirementData | null, files: File[], onEdit: () => void, onSubmit: () => void }) => {
     if (!requirements) {
         return (
             <div className="text-center">
@@ -152,78 +151,99 @@ const SavedRequirementsStep = ({ requirements, onEdit, onSubmit }: { requirement
 
     return (
         <div>
-            <h4 className="mb-4">確認您的期望要求</h4>
-            <div className="card">
-                <div className="card-body">
-                    <div className="row mb-3">
-                        <div className="col-md-6">
-                            <strong>職位名稱:</strong>
-                            <p>{formData.jobTitle}</p>
-                        </div>
-                        <div className="col-md-6">
-                            <strong>職位描述:</strong>
-                            <p>{formData.jobDescription || '未提供'}</p>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-md-4">
-                            <strong>期望學校:</strong>
-                            <p>{formData.school}</p>
-                        </div>
-                        <div className="col-md-4">
-                            <strong>期望學系:</strong>
-                            <p>{formData.department || '未提供'}</p>
-                        </div>
-                        <div className="col-md-4">
-                            <strong>年級:</strong>
-                            <p>{formData.grade || '未提供'}</p>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-md-6">
-                            <strong>必要技能:</strong>
-                            <div>
-                                {requiredSkills.map((skill: string) => <span key={skill} className="badge bg-primary me-2 mb-2 p-2">{skill}</span>)}
+            <h4 className="mb-4 text-center">✅ 確認您的期望要求</h4>
+            <p className="text-center text-muted mb-4">請仔細核對以下資料，確認無誤後即可遞交。</p>
+            <div className="row g-4">
+                {/* Left Column */}
+                <div className="col-lg-7">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body p-4">
+                            <h5 className="card-title mb-1">{formData.jobTitle}</h5>
+                            <p className="text-muted">{formData.jobDescription || '未提供職位描述'}</p>
+                            <hr />
+                            
+                            <h6 className="mb-3"><i className="bi bi-file-earmark-text-fill text-primary me-2"></i>已上傳履歷</h6>
+                            {files.length > 0 ? (
+                                <ul className="list-group list-group-flush mb-3">
+                                    {files.map(file => (
+                                        <li key={file.name} className="list-group-item">{file.name}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-muted">尚未上傳履歷</p>
+                            )}
+                            
+                            <h6 className="mb-3"><i className="bi bi-mortarboard-fill text-primary me-2"></i>學術背景</h6>
+                            <div className="row">
+                                <div className="col-sm-6 mb-3">
+                                    <label className="form-label text-muted small">期望學校</label>
+                                    <p className="fw-bold">{formData.school}</p>
+                                </div>
+                                <div className="col-sm-6 mb-3">
+                                    <label className="form-label text-muted small">期望學系</label>
+                                    <p className="fw-bold">{formData.department || '未提供'}</p>
+                                </div>
+                                <div className="col-sm-6 mb-3">
+                                    <label className="form-label text-muted small">年級</label>
+                                    <p className="fw-bold">{formData.grade || '未提供'}</p>
+                                </div>
+                                <div className="col-sm-6 mb-3">
+                                    <label className="form-label text-muted small">現時學歷</label>
+                                    <p className="fw-bold">{formData.educationRequirements}</p>
+                                </div>
                             </div>
+
+                             <h6 className="mb-3 mt-2"><i className="bi bi-person-workspace text-primary me-2"></i>經驗與備註</h6>
+                             <label className="form-label text-muted small">經驗</label>
+                             <p className="fw-bold">{formData.experienceRequirements || '未提供'}</p>
+                             <label className="form-label text-muted small">其他備註</label>
+                             <p className="fw-bold">{formData.additionalNotes || '未提供'}</p>
                         </div>
-                        <div className="col-md-6">
-                            <strong>偏好技能:</strong>
-                            <div>
-                                {preferredSkills.length > 0 ? preferredSkills.map((skill: string) => <span key={skill} className="badge bg-secondary me-2 mb-2 p-2">{skill}</span>) : '未提供'}
+                    </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="col-lg-5">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body p-4">
+                            <h6 className="mb-3"><i className="bi bi-star-fill text-primary me-2"></i>技能要求</h6>
+                            <label className="form-label text-muted small">必要技能</label>
+                            <div className="mb-3">
+                                {requiredSkills.map((skill: string) => <span key={skill} className="badge bg-primary me-1 mb-1 p-2">{skill}</span>)}
                             </div>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-md-6">
-                            <strong>經驗:</strong>
-                            <p>{formData.experienceRequirements || '未提供'}</p>
-                        </div>
-                        <div className="col-md-6">
-                            <strong>現時學歷:</strong>
-                            <p>{formData.educationRequirements}</p>
-                        </div>
-                    </div>
-                    <hr />
-                    <h5 className="mb-3">評分權重</h5>
-                    <div className="d-flex justify-content-around">
-                        <div className="text-center">
-                            <h6>技能權重</h6>
-                            <p className="fs-4">{weights.skills}%</p>
-                        </div>
-                         <div className="text-center">
-                            <h6>經驗權重</h6>
-                            <p className="fs-4">{weights.experience}%</p>
-                        </div>
-                         <div className="text-center">
-                            <h6>學歷權重</h6>
-                            <p className="fs-4">{weights.education}%</p>
+
+                            <label className="form-label text-muted small">偏好技能</label>
+                            <div>
+                                {preferredSkills.length > 0 ? preferredSkills.map((skill: string) => <span key={skill} className="badge bg-secondary me-1 mb-1 p-2">{skill}</span>) : <p className="text-muted">未提供</p>}
+                            </div>
+                            <hr/>
+                             <h6 className="mb-3"><i className="bi bi-sliders text-primary me-2"></i>評分權重</h6>
+                             <div className="mb-3">
+                                <label className="form-label">技能權重</label>
+                                <div className="progress">
+                                    <div className="progress-bar" role="progressbar" style={{width: `${weights.skills}%`}} aria-valuenow={weights.skills} aria-valuemin={0} aria-valuemax={100}>{weights.skills}%</div>
+                                </div>
+                             </div>
+                             <div className="mb-3">
+                                <label className="form-label">經驗權重</label>
+                                <div className="progress">
+                                    <div className="progress-bar" role="progressbar" style={{width: `${weights.experience}%`}} aria-valuenow={weights.experience} aria-valuemin={0} aria-valuemax={100}>{weights.experience}%</div>
+                                </div>
+                             </div>
+                             <div>
+                                <label className="form-label">學歷權重</label>
+                                <div className="progress">
+                                    <div className="progress-bar" role="progressbar" style={{width: `${weights.education}%`}} aria-valuenow={weights.education} aria-valuemin={0} aria-valuemax={100}>{weights.education}%</div>
+                                </div>
+                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div className="d-flex justify-content-end mt-4">
-                <button className="btn btn-outline-secondary me-2" onClick={onEdit}>返回修改</button>
-                <button className="btn btn-primary" onClick={onSubmit}>確認遞交</button>
+                <button className="btn btn-outline-secondary me-3" onClick={onEdit}><i className="bi bi-pencil-square me-2"></i>返回修改</button>
+                <button className="btn btn-primary" onClick={onSubmit}><i className="bi bi-check-circle-fill me-2"></i>確認遞交</button>
             </div>
         </div>
     );
@@ -496,6 +516,7 @@ const DocumentComparisonPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isStudent, setIsStudent] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [submittedRequirements, setSubmittedRequirements] = useState<RequirementData | null>(null);
   
   const [requirementsState, setRequirementsState] = useState<RequirementData>({
@@ -528,7 +549,10 @@ const DocumentComparisonPage = () => {
   const finalSubmit = () => {
       alert('已成功遞交！後續將儲存至資料庫。');
       // Here you would typically save `submittedRequirements` to your database
-      console.log("Final data to be submitted:", submittedRequirements);
+      console.log("Final data to be submitted:", {
+          requirements: submittedRequirements,
+          files: uploadedFiles.map(f => f.name) // Example: logging file names
+      });
   };
 
 
@@ -566,11 +590,11 @@ const DocumentComparisonPage = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <UploadStep />;
+        return <UploadStep files={uploadedFiles} onFilesChange={setUploadedFiles} />;
       case 2:
         return <RequirementsStep initialData={requirementsState} onFormSubmit={handleRequirementSubmit} />;
       case 3:
-        return <SavedRequirementsStep requirements={submittedRequirements} onEdit={() => setCurrentStep(2)} onSubmit={finalSubmit} />;
+        return <SavedRequirementsStep requirements={submittedRequirements} files={uploadedFiles} onEdit={() => setCurrentStep(2)} onSubmit={finalSubmit} />;
       // Add cases for other steps here
       default:
         return <div>Step not found</div>;
