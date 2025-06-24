@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Layout from '../../components/Layout'; // Assuming a Layout component exists
+import { useRouter } from 'next/router';
+import { supabase } from '../../lib/supabase';
 
 // Step 1: Upload Resumes Component
 const allowedTypes = [
@@ -120,6 +122,67 @@ const RequirementsStep = () => {
     const [skillsWeight, setSkillsWeight] = useState(50);
     const [experienceWeight, setExperienceWeight] = useState(30);
     const [educationWeight, setEducationWeight] = useState(20);
+    const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
+    const [preferredSkills, setPreferredSkills] = useState<string[]>([]);
+    const [requiredSkillInput, setRequiredSkillInput] = useState('');
+    const [preferredSkillInput, setPreferredSkillInput] = useState('');
+
+    const handleWeightChange = (
+        changedKey: 'skills' | 'experience' | 'education',
+        newValue: number
+      ) => {
+        newValue = Math.max(0, Math.min(100, parseInt(newValue.toString(), 10)));
+    
+        const currentWeights = {
+            skills: skillsWeight,
+            experience: experienceWeight,
+            education: educationWeight,
+        };
+    
+        if (currentWeights[changedKey] === newValue) return;
+    
+        const otherKeys = (['skills', 'experience', 'education'] as const).filter(
+          k => k !== changedKey
+        );
+        const oldSumOfOthers = otherKeys.reduce((sum, key) => sum + currentWeights[key], 0);
+        const newSumOfOthers = 100 - newValue;
+    
+        const newWeights = { ...currentWeights, [changedKey]: newValue };
+    
+        if (oldSumOfOthers > 0) {
+            const ratio = newWeights[otherKeys[0]] / oldSumOfOthers;
+            newWeights[otherKeys[0]] = Math.round(newSumOfOthers * ratio);
+            newWeights[otherKeys[1]] = newSumOfOthers - newWeights[otherKeys[0]];
+        } else {
+            newWeights[otherKeys[0]] = Math.floor(newSumOfOthers / 2);
+            newWeights[otherKeys[1]] = Math.ceil(newSumOfOthers / 2);
+        }
+    
+        setSkillsWeight(newWeights.skills);
+        setExperienceWeight(newWeights.experience);
+        setEducationWeight(newWeights.education);
+      };
+
+    const handleAddSkill = (
+        skill: string,
+        skills: string[],
+        setSkills: React.Dispatch<React.SetStateAction<string[]>>,
+        setInput: React.Dispatch<React.SetStateAction<string>>
+    ) => {
+        const trimmedSkill = skill.trim();
+        if (trimmedSkill && !skills.includes(trimmedSkill)) {
+            setSkills([...skills, trimmedSkill]);
+            setInput('');
+        }
+    };
+
+    const handleRemoveSkill = (
+        skillToRemove: string,
+        skills: string[],
+        setSkills: React.Dispatch<React.SetStateAction<string[]>>
+    ) => {
+        setSkills(skills.filter(skill => skill !== skillToRemove));
+    };
 
     return (
         <div>
@@ -164,18 +227,74 @@ const RequirementsStep = () => {
                         <div className="mb-3">
                             <label className="form-label">Required Skills</label>
                             <div className="input-group">
-                                <input type="text" className="form-control" placeholder="Add a required skill"/>
-                                <button className="btn btn-outline-primary" type="button">+</button>
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    placeholder="Add a required skill"
+                                    value={requiredSkillInput}
+                                    onChange={(e) => setRequiredSkillInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput);
+                                        }
+                                    }}
+                                />
+                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}>+</button>
                             </div>
-                            <div className="form-text">No required skills added yet</div>
+                            <div className="mt-2 d-flex flex-wrap">
+                                {requiredSkills.length > 0 ? (
+                                    requiredSkills.map(skill => (
+                                        <span key={skill} className="badge bg-primary me-2 mb-2 p-2 d-flex align-items-center">
+                                            {skill}
+                                            <button 
+                                                type="button" 
+                                                className="btn-close btn-close-white ms-2" 
+                                                style={{fontSize: '0.65em'}} 
+                                                onClick={() => handleRemoveSkill(skill, requiredSkills, setRequiredSkills)}>
+                                            </button>
+                                        </span>
+                                    ))
+                                ) : (
+                                    <div className="form-text">No required skills added yet</div>
+                                )}
+                            </div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Preferred Skills</label>
                             <div className="input-group">
-                                <input type="text" className="form-control" placeholder="Add a preferred skill"/>
-                                <button className="btn btn-outline-primary" type="button">+</button>
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    placeholder="Add a preferred skill"
+                                    value={preferredSkillInput}
+                                    onChange={(e) => setPreferredSkillInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput);
+                                        }
+                                    }}
+                                />
+                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}>+</button>
                             </div>
-                            <div className="form-text">No preferred skills added yet</div>
+                           <div className="mt-2 d-flex flex-wrap">
+                                {preferredSkills.length > 0 ? (
+                                    preferredSkills.map(skill => (
+                                        <span key={skill} className="badge bg-secondary me-2 mb-2 p-2 d-flex align-items-center">
+                                            {skill}
+                                            <button 
+                                                type="button" 
+                                                className="btn-close btn-close-white ms-2" 
+                                                style={{fontSize: '0.65em'}} 
+                                                onClick={() => handleRemoveSkill(skill, preferredSkills, setPreferredSkills)}>
+                                            </button>
+                                        </span>
+                                    ))
+                                ) : (
+                                    <div className="form-text">No preferred skills added yet</div>
+                                )}
+                            </div>
                         </div>
                          <div className="row">
                             <div className="col-md-6 mb-3">
@@ -199,17 +318,17 @@ const RequirementsStep = () => {
 
                         <div className="mb-3">
                             <label htmlFor="skillsWeight" className="form-label">Skills Weight: {skillsWeight}%</label>
-                            <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => setSkillsWeight(parseInt(e.target.value))} />
+                            <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => handleWeightChange('skills', parseInt(e.target.value))} />
                         </div>
 
                         <div className="mb-3">
                             <label htmlFor="experienceWeight" className="form-label">Experience Weight: {experienceWeight}%</label>
-                            <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => setExperienceWeight(parseInt(e.target.value))} />
+                            <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => handleWeightChange('experience', parseInt(e.target.value))} />
                         </div>
 
                         <div className="mb-3">
                             <label htmlFor="educationWeight" className="form-label">Education Weight: {educationWeight}%</label>
-                            <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => setEducationWeight(parseInt(e.target.value))} />
+                            <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => handleWeightChange('education', parseInt(e.target.value))} />
                         </div>
 
 
@@ -225,6 +344,40 @@ const RequirementsStep = () => {
 const DocumentComparisonPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ['Upload Resumes', 'Job Requirements', 'Saved Requirements', 'View Results'];
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [isStudent, setIsStudent] = useState(false);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Assuming you have a 'profiles' table with a 'role' column.
+        // You'll need to set up Row Level Security on this table.
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+          router.push('/login');
+        } else if (profile && profile.role === 'student') {
+          setIsStudent(true);
+        } else {
+          // Not a student, redirect
+          router.push('/login');
+        }
+      } else {
+        // No user, redirect
+        router.push('/login');
+      }
+      setLoading(false);
+    };
+
+    checkUser();
+  }, [router]);
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -238,12 +391,20 @@ const DocumentComparisonPage = () => {
     }
   };
 
-
-  // NOTE: This is a placeholder for auth logic.
-  // You should replace this with your actual authentication check.
-  const isStudent = true; 
+  if (loading) {
+    return (
+        <Layout title="Loading...">
+            <div className="container py-5 text-center">
+                <h2>Loading...</h2>
+                <p>Verifying your access rights.</p>
+            </div>
+        </Layout>
+    );
+  }
 
   if (!isStudent) {
+    // This part might be briefly visible before the redirect kicks in,
+    // or if the redirect fails for some reason.
     return (
       <Layout title="Access Denied">
         <div className="container py-5 text-center">
