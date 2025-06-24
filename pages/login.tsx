@@ -36,32 +36,37 @@ export default function Login() {
     setInfo(null);
 
     try {
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (loginError) throw loginError;
+      if (error) throw error;
 
-      if (loginData.user) {
-        // Fetch user profile to get the role
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', loginData.user.id)
-          .single();
-
-        if (profileError) throw profileError;
-        
-        setUser(loginData.user);
+      if (data.user) {
+        setUser(data.user);
         setInfo('登录成功！');
         setError(null);
 
-        // Redirect based on role
-        if (profileData?.role === 'admin') {
-          router.push('/admin/dashboard');
+        // Fetch profile and redirect based on role
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileError) {
+            throw new Error('获取用户信息失败，请联系管理员。');
+        }
+
+        if (profile) {
+          if (profile.role === 'admin') {
+            router.push('/admin/dashboard');
+          } else {
+            router.push('/student/dashboard');
+          }
         } else {
-          router.push('/student/dashboard');
+            throw new Error('未找到用户角色，请联系管理员。');
         }
       }
     } catch (error: unknown) {

@@ -1,64 +1,51 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { supabase } from '../../lib/supabase';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 
-interface AdminDashboardProps {
-  user: User;
-}
+const AdminDashboard = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
-export default function AdminDashboard({ user }: AdminDashboardProps) {
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/login';
-  };
-
-  return (
-    <div className="container py-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1>管理員儀表板</h1>
-        <button onClick={handleLogout} className="btn btn-danger">登出</button>
-      </div>
-      <div className="alert alert-success" role="alert">
-        <h4 className="alert-heading">歡迎, {user.email}!</h4>
-        <p>這裡是管理員專屬的操作後台。</p>
-        <hr />
-        <p className="mb-0">你的用戶 ID 是: {user.id}</p>
-      </div>
-    </div>
-  );
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const { req } = ctx;
-  const { data: { user } } = await supabase.auth.getUser(req.cookies['supabase-auth-token']);
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+        
+      if (profile?.role !== 'admin') {
+        // If not an admin, redirect to student dashboard or a generic page
+        router.push('/student/dashboard'); 
+      } else {
+        setUser(user);
+      }
+    };
+    
+    checkUser();
+  }, [router]);
 
   if (!user) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-  
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (profile?.role !== 'admin') {
-    return {
-      redirect: {
-        destination: '/student/dashboard', // or to a generic unauthorized page
-        permanent: false,
-      },
-    };
+    return <div>Loading...</div>; // Or a spinner
   }
 
-  return {
-    props: {
-      user,
-    },
-  };
-}; 
+  return (
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>Welcome, {user.email}</p>
+      <button onClick={async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+      }}>Logout</button>
+    </div>
+  );
+};
+
+export default AdminDashboard; 

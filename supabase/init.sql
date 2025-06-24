@@ -1,9 +1,12 @@
+-- Create user_role type
+CREATE TYPE user_role AS ENUM ('student', 'admin');
+
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS profiles (
     id UUID REFERENCES auth.users ON DELETE CASCADE,
     email TEXT UNIQUE,
     full_name TEXT,
-    role TEXT DEFAULT 'student',
+    role user_role DEFAULT 'student' NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     PRIMARY KEY (id)
@@ -29,8 +32,8 @@ CREATE POLICY "Users can update their own profile."
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO public.profiles (id, email, full_name, role)
-    VALUES (new.id, new.email, '', 'student');
+    INSERT INTO public.profiles (id, email, full_name)
+    VALUES (new.id, new.email, '');
     RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
