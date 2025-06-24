@@ -118,6 +118,23 @@ const UploadStep = () => {
 };
 
 // Step 2: Job Requirements Component
+interface Requirement {
+    jobTitle: string;
+    jobDescription: string;
+    school: string;
+    department: string;
+    experienceRequirements: string;
+    educationRequirements: string;
+    additionalNotes: string;
+    requiredSkills: string[];
+    preferredSkills: string[];
+    weights: {
+        skills: number;
+        experience: number;
+        education: number;
+    };
+}
+
 const RequirementsStep = () => {
     const [skillsWeight, setSkillsWeight] = useState(50);
     const [experienceWeight, setExperienceWeight] = useState(30);
@@ -126,6 +143,77 @@ const RequirementsStep = () => {
     const [preferredSkills, setPreferredSkills] = useState<string[]>([]);
     const [requiredSkillInput, setRequiredSkillInput] = useState('');
     const [preferredSkillInput, setPreferredSkillInput] = useState('');
+
+    const [savedRequirements, setSavedRequirements] = useState<Requirement[]>([]);
+    const [activeTab, setActiveTab] = useState<'create' | 'manage'>('create');
+
+    const [formData, setFormData] = useState({
+        jobTitle: '',
+        jobDescription: '',
+        school: '',
+        department: '',
+        experienceRequirements: '',
+        educationRequirements: '',
+        additionalNotes: '',
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({ ...prev, [id]: value }));
+    };
+
+    const resetForm = () => {
+        setFormData({
+            jobTitle: '',
+            jobDescription: '',
+            school: '',
+            department: '',
+            experienceRequirements: '',
+            educationRequirements: '',
+            additionalNotes: '',
+        });
+        setRequiredSkills([]);
+        setPreferredSkills([]);
+        setSkillsWeight(50);
+        setExperienceWeight(30);
+        setEducationWeight(20);
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formData.jobTitle.trim()) {
+            alert('「職位名稱」是必填欄位。');
+            return;
+        }
+        if (!formData.school.trim()) {
+            alert('「期望學校」是必填欄位。');
+            return;
+        }
+        if (!formData.educationRequirements.trim()) {
+            alert('「現時學歷」是必填欄位。');
+            return;
+        }
+        if (requiredSkills.length === 0) {
+            alert('請至少新增一項「必要技能」。');
+            return;
+        }
+    
+        const newRequirement: Requirement = {
+            ...formData,
+            requiredSkills,
+            preferredSkills,
+            weights: {
+                skills: skillsWeight,
+                experience: experienceWeight,
+                education: educationWeight
+            }
+        };
+
+        setSavedRequirements(prev => [...prev, newRequirement]);
+        alert('建立成功！已將要求儲存至管理列表。'); 
+        resetForm();
+        setActiveTab('manage');
+    };
 
     const handleWeightChange = (
         changedKey: 'skills' | 'experience' | 'education',
@@ -189,149 +277,173 @@ const RequirementsStep = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <ul className="nav nav-pills">
                     <li className="nav-item">
-                        <a className="nav-link active" href="#">建立新期望要求</a>
+                        <a className={`nav-link ${activeTab === 'create' ? 'active' : ''}`} href="#" onClick={(e) => { e.preventDefault(); setActiveTab('create'); }}>建立新期望要求</a>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="#">管理期望要求 (0)</a>
+                        <a className={`nav-link ${activeTab === 'manage' ? 'active' : ''}`} href="#" onClick={(e) => { e.preventDefault(); setActiveTab('manage'); }}>管理期望要求 ({savedRequirements.length})</a>
                     </li>
                 </ul>
             </div>
-            <div className="card">
-                <div className="card-body">
-                    <h5 className="card-title mb-4">期望工作要求詳情</h5>
-                    <form>
-                        <div className="row">
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="jobTitle" className="form-label">職位名稱</label>
-                                <input type="text" className="form-control" id="jobTitle" placeholder="例如：資深前端工程師" />
+            {activeTab === 'create' && (
+                <div className="card">
+                    <div className="card-body">
+                        <h5 className="card-title mb-4">期望工作要求詳情</h5>
+                        <form onSubmit={handleSubmit}>
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label htmlFor="jobTitle" className="form-label">職位名稱 <span className="text-danger">*</span></label>
+                                    <input type="text" className="form-control" id="jobTitle" placeholder="例如：資深前端工程師" value={formData.jobTitle} onChange={handleInputChange} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="jobDescription" className="form-label">職位描述</label>
-                            <textarea className="form-control" id="jobDescription" rows={3} placeholder="輸入職位角色和職責的簡要描述"></textarea>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-4 mb-3">
-                                <label htmlFor="school" className="form-label">期望學校 (School)</label>
-                                <input type="text" className="form-control" id="school" placeholder="e.g. National Taiwan University" />
+                            <div className="mb-3">
+                                <label htmlFor="jobDescription" className="form-label">職位描述</label>
+                                <textarea className="form-control" id="jobDescription" rows={3} placeholder="輸入職位角色和職責的簡要描述" value={formData.jobDescription} onChange={handleInputChange}></textarea>
                             </div>
-                             <div className="col-md-4 mb-3">
-                                <label htmlFor="department" className="form-label">期望學系 (Department)</label>
-                                <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" />
+                            <div className="row">
+                                <div className="col-md-4 mb-3">
+                                    <label htmlFor="school" className="form-label">期望學校 (School) <span className="text-danger">*</span></label>
+                                    <input type="text" className="form-control" id="school" placeholder="e.g. National Taiwan University" value={formData.school} onChange={handleInputChange} />
+                                </div>
+                                 <div className="col-md-4 mb-3">
+                                    <label htmlFor="department" className="form-label">期望學系 (Department)</label>
+                                    <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" value={formData.department} onChange={handleInputChange} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">必要技能</label>
-                            <div className="input-group">
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="新增一項必要技能"
-                                    value={requiredSkillInput}
-                                    onChange={(e) => setRequiredSkillInput(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput);
-                                        }
-                                    }}
-                                />
-                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}>+</button>
+                            <div className="mb-3">
+                                <label className="form-label">必要技能 <span className="text-danger">*</span></label>
+                                <div className="input-group">
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        placeholder="新增一項必要技能"
+                                        value={requiredSkillInput}
+                                        onChange={(e) => setRequiredSkillInput(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput);
+                                            }
+                                        }}
+                                    />
+                                    <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}>+</button>
+                                </div>
+                                <div className="mt-2 d-flex flex-wrap">
+                                    {requiredSkills.length > 0 ? (
+                                        requiredSkills.map(skill => (
+                                            <span key={skill} className="badge bg-primary me-2 mb-2 p-2 d-flex align-items-center">
+                                                {skill}
+                                                <button 
+                                                    type="button" 
+                                                    className="btn-close btn-close-white ms-2" 
+                                                    style={{fontSize: '0.65em'}} 
+                                                    onClick={() => handleRemoveSkill(skill, requiredSkills, setRequiredSkills)}>
+                                                </button>
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <div className="form-text">尚未新增必要技能</div>
+                                    )}
+                                </div>
                             </div>
-                            <div className="mt-2 d-flex flex-wrap">
-                                {requiredSkills.length > 0 ? (
-                                    requiredSkills.map(skill => (
-                                        <span key={skill} className="badge bg-primary me-2 mb-2 p-2 d-flex align-items-center">
-                                            {skill}
-                                            <button 
-                                                type="button" 
-                                                className="btn-close btn-close-white ms-2" 
-                                                style={{fontSize: '0.65em'}} 
-                                                onClick={() => handleRemoveSkill(skill, requiredSkills, setRequiredSkills)}>
-                                            </button>
-                                        </span>
-                                    ))
-                                ) : (
-                                    <div className="form-text">尚未新增必要技能</div>
-                                )}
+                            <div className="mb-3">
+                                <label className="form-label">偏好技能</label>
+                                <div className="input-group">
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        placeholder="新增一項偏好技能"
+                                        value={preferredSkillInput}
+                                        onChange={(e) => setPreferredSkillInput(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput);
+                                            }
+                                        }}
+                                    />
+                                    <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}>+</button>
+                                </div>
+                               <div className="mt-2 d-flex flex-wrap">
+                                    {preferredSkills.length > 0 ? (
+                                        preferredSkills.map(skill => (
+                                            <span key={skill} className="badge bg-secondary me-2 mb-2 p-2 d-flex align-items-center">
+                                                {skill}
+                                                <button 
+                                                    type="button" 
+                                                    className="btn-close btn-close-white ms-2" 
+                                                    style={{fontSize: '0.65em'}} 
+                                                    onClick={() => handleRemoveSkill(skill, preferredSkills, setPreferredSkills)}>
+                                                </button>
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <div className="form-text">尚未新增偏好技能</div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">偏好技能</label>
-                            <div className="input-group">
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="新增一項偏好技能"
-                                    value={preferredSkillInput}
-                                    onChange={(e) => setPreferredSkillInput(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput);
-                                        }
-                                    }}
-                                />
-                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}>+</button>
+                             <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label htmlFor="experienceRequirements" className="form-label">經驗</label>
+                                    <input type="text" className="form-control" id="experienceRequirements" placeholder="例如：比賽" value={formData.experienceRequirements} onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-6 mb-3">
+                                    <label htmlFor="educationRequirements" className="form-label">現時學歷 <span className="text-danger">*</span></label>
+                                    <input type="text" className="form-control" id="educationRequirements" placeholder="例如：電腦科學或相關領域學士學位" value={formData.educationRequirements} onChange={handleInputChange} />
+                                </div>
                             </div>
-                           <div className="mt-2 d-flex flex-wrap">
-                                {preferredSkills.length > 0 ? (
-                                    preferredSkills.map(skill => (
-                                        <span key={skill} className="badge bg-secondary me-2 mb-2 p-2 d-flex align-items-center">
-                                            {skill}
-                                            <button 
-                                                type="button" 
-                                                className="btn-close btn-close-white ms-2" 
-                                                style={{fontSize: '0.65em'}} 
-                                                onClick={() => handleRemoveSkill(skill, preferredSkills, setPreferredSkills)}>
-                                            </button>
-                                        </span>
-                                    ))
-                                ) : (
-                                    <div className="form-text">尚未新增偏好技能</div>
-                                )}
+                             <div className="mb-3">
+                                <label htmlFor="additionalNotes" className="form-label">其他備註</label>
+                                <textarea className="form-control" id="additionalNotes" rows={2} placeholder="任何關於此職位的額外要求或說明" value={formData.additionalNotes} onChange={handleInputChange}></textarea>
                             </div>
-                        </div>
-                         <div className="row">
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="experienceRequirements" className="form-label">經驗</label>
-                                <input type="text" className="form-control" id="experienceRequirements" placeholder="例如：3年以上 React 開發經驗" />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="educationRequirements" className="form-label">學歷</label>
-                                <input type="text" className="form-control" id="educationRequirements" placeholder="例如：電腦科學或相關領域學士學位" />
-                            </div>
-                        </div>
-                         <div className="mb-3">
-                            <label htmlFor="additionalNotes" className="form-label">其他備註</label>
-                            <textarea className="form-control" id="additionalNotes" rows={2} placeholder="任何關於此職位的額外要求或說明"></textarea>
-                        </div>
 
-                        <hr className="my-4" />
+                            <hr className="my-4" />
 
-                        <h5 className="mb-3">評分標準權重</h5>
-                        <p className="text-muted">調整各個評分項目的重要性，總權重將維持 100%。</p>
+                            <h5 className="mb-3">評分標準權重</h5>
+                            <p className="text-muted">調整各個評分項目的重要性，總權重將維持 100%。</p>
 
-                        <div className="mb-3">
-                            <label htmlFor="skillsWeight" className="form-label">技能權重: {skillsWeight}%</label>
-                            <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => handleWeightChange('skills', parseInt(e.target.value))} />
-                        </div>
+                            <div className="mb-3">
+                                <label htmlFor="skillsWeight" className="form-label">技能權重: {skillsWeight}%</label>
+                                <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => handleWeightChange('skills', parseInt(e.target.value))} />
+                            </div>
 
-                        <div className="mb-3">
-                            <label htmlFor="experienceWeight" className="form-label">經驗權重: {experienceWeight}%</label>
-                            <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => handleWeightChange('experience', parseInt(e.target.value))} />
-                        </div>
+                            <div className="mb-3">
+                                <label htmlFor="experienceWeight" className="form-label">經驗權重: {experienceWeight}%</label>
+                                <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => handleWeightChange('experience', parseInt(e.target.value))} />
+                            </div>
 
-                        <div className="mb-3">
-                            <label htmlFor="educationWeight" className="form-label">學歷權重: {educationWeight}%</label>
-                            <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => handleWeightChange('education', parseInt(e.target.value))} />
-                        </div>
+                            <div className="mb-3">
+                                <label htmlFor="educationWeight" className="form-label">學歷權重: {educationWeight}%</label>
+                                <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => handleWeightChange('education', parseInt(e.target.value))} />
+                            </div>
 
 
-                        <button type="submit" className="btn btn-primary float-end mt-3">建立期望工作要求</button>
-                    </form>
+                            <button type="submit" className="btn btn-primary float-end mt-3">建立期望工作要求</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            )}
+            {activeTab === 'manage' && (
+                <div className="card">
+                    <div className="card-body">
+                        <h5 className="card-title mb-4">已儲存的期望要求</h5>
+                        {savedRequirements.length > 0 ? (
+                            <ul className="list-group">
+                                {savedRequirements.map((req, index) => (
+                                    <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                        {req.jobTitle}
+                                        <div>
+                                            <button className="btn btn-sm btn-outline-secondary me-2">編輯</button>
+                                            <button className="btn btn-sm btn-outline-danger">刪除</button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-muted">尚未建立任何期望要求。請切換到「建立新期望要求」分頁來新增一個。</p>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
