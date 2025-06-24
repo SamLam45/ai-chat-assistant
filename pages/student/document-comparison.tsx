@@ -4,6 +4,26 @@ import Layout from '../../components/Layout'; // Assuming a Layout component exi
 import { useRouter } from 'next/router';
 import { supabase } from '../../lib/supabase';
 
+interface RequirementData {
+    formData: {
+      jobTitle: string;
+      jobDescription: string;
+      school: string;
+      department: string;
+      grade: string;
+      experienceRequirements: string;
+      educationRequirements: string;
+      additionalNotes: string;
+    };
+    requiredSkills: string[];
+    preferredSkills: string[];
+    weights: {
+      skills: number;
+      experience: number;
+      education: number;
+    };
+  }
+
 // Step 1: Upload Resumes Component
 const allowedTypes = [
   'application/pdf',
@@ -117,25 +137,109 @@ const UploadStep = () => {
   );
 };
 
+// Step 3: Saved Requirements Component
+const SavedRequirementsStep = ({ requirements, onEdit, onSubmit }: { requirements: RequirementData | null, onEdit: () => void, onSubmit: () => void }) => {
+    if (!requirements) {
+        return (
+            <div className="text-center">
+                <p className="text-muted">您尚未建立期望要求。</p>
+                <p>請先返回第二步填寫您的期望要求。</p>
+            </div>
+        );
+    }
+
+    const { formData, requiredSkills, preferredSkills, weights } = requirements;
+
+    return (
+        <div>
+            <h4 className="mb-4">確認您的期望要求</h4>
+            <div className="card">
+                <div className="card-body">
+                    <div className="row mb-3">
+                        <div className="col-md-6">
+                            <strong>職位名稱:</strong>
+                            <p>{formData.jobTitle}</p>
+                        </div>
+                        <div className="col-md-6">
+                            <strong>職位描述:</strong>
+                            <p>{formData.jobDescription || '未提供'}</p>
+                        </div>
+                    </div>
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <strong>期望學校:</strong>
+                            <p>{formData.school}</p>
+                        </div>
+                        <div className="col-md-4">
+                            <strong>期望學系:</strong>
+                            <p>{formData.department || '未提供'}</p>
+                        </div>
+                        <div className="col-md-4">
+                            <strong>年級:</strong>
+                            <p>{formData.grade || '未提供'}</p>
+                        </div>
+                    </div>
+                    <div className="row mb-3">
+                        <div className="col-md-6">
+                            <strong>必要技能:</strong>
+                            <div>
+                                {requiredSkills.map((skill: string) => <span key={skill} className="badge bg-primary me-2 mb-2 p-2">{skill}</span>)}
+                            </div>
+                        </div>
+                        <div className="col-md-6">
+                            <strong>偏好技能:</strong>
+                            <div>
+                                {preferredSkills.length > 0 ? preferredSkills.map((skill: string) => <span key={skill} className="badge bg-secondary me-2 mb-2 p-2">{skill}</span>) : '未提供'}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row mb-3">
+                        <div className="col-md-6">
+                            <strong>經驗:</strong>
+                            <p>{formData.experienceRequirements || '未提供'}</p>
+                        </div>
+                        <div className="col-md-6">
+                            <strong>現時學歷:</strong>
+                            <p>{formData.educationRequirements}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    <h5 className="mb-3">評分權重</h5>
+                    <div className="d-flex justify-content-around">
+                        <div className="text-center">
+                            <h6>技能權重</h6>
+                            <p className="fs-4">{weights.skills}%</p>
+                        </div>
+                         <div className="text-center">
+                            <h6>經驗權重</h6>
+                            <p className="fs-4">{weights.experience}%</p>
+                        </div>
+                         <div className="text-center">
+                            <h6>學歷權重</h6>
+                            <p className="fs-4">{weights.education}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="d-flex justify-content-end mt-4">
+                <button className="btn btn-outline-secondary me-2" onClick={onEdit}>返回修改</button>
+                <button className="btn btn-primary" onClick={onSubmit}>確認遞交</button>
+            </div>
+        </div>
+    );
+};
+
 // Step 2: Job Requirements Component
-const RequirementsStep = () => {
-    const [skillsWeight, setSkillsWeight] = useState(50);
-    const [experienceWeight, setExperienceWeight] = useState(30);
-    const [educationWeight, setEducationWeight] = useState(20);
-    const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
-    const [preferredSkills, setPreferredSkills] = useState<string[]>([]);
+const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: RequirementData, onFormSubmit: (data: RequirementData) => void }) => {
+    const [skillsWeight, setSkillsWeight] = useState(initialData.weights.skills);
+    const [experienceWeight, setExperienceWeight] = useState(initialData.weights.experience);
+    const [educationWeight, setEducationWeight] = useState(initialData.weights.education);
+    const [requiredSkills, setRequiredSkills] = useState(initialData.requiredSkills);
+    const [preferredSkills, setPreferredSkills] = useState(initialData.preferredSkills);
     const [requiredSkillInput, setRequiredSkillInput] = useState('');
     const [preferredSkillInput, setPreferredSkillInput] = useState('');
 
-    const [formData, setFormData] = useState({
-        jobTitle: '',
-        jobDescription: '',
-        school: '',
-        department: '',
-        experienceRequirements: '',
-        educationRequirements: '',
-        additionalNotes: '',
-    });
+    const [formData, setFormData] = useState(initialData.formData);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
@@ -144,6 +248,7 @@ const RequirementsStep = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        // Validation
         if (!formData.jobTitle.trim()) {
             alert('「職位名稱」是必填欄位。');
             return;
@@ -162,7 +267,7 @@ const RequirementsStep = () => {
         }
     
         const fullFormData = {
-            ...formData,
+            formData,
             requiredSkills,
             preferredSkills,
             weights: {
@@ -171,8 +276,7 @@ const RequirementsStep = () => {
                 education: educationWeight
             }
         };
-        console.log('Submitting form data:', fullFormData);
-        alert('建立成功！'); 
+        onFormSubmit(fullFormData);
     };
 
     const handleWeightChange = (
@@ -239,9 +343,6 @@ const RequirementsStep = () => {
                     <li className="nav-item">
                         <a className="nav-link active" href="#">建立新期望要求</a>
                     </li>
-                    <li className="nav-item">
-                        <a className="nav-link" href="#">管理期望要求 (0)</a>
-                    </li>
                 </ul>
             </div>
             <div className="card">
@@ -267,6 +368,10 @@ const RequirementsStep = () => {
                                 <label htmlFor="department" className="form-label">期望學系 (Department)</label>
                                 <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" value={formData.department} onChange={handleInputChange} />
                             </div>
+                             <div className="col-md-4 mb-3">
+                                <label htmlFor="grade" className="form-label">年級 (Grade)</label>
+                                <input type="text" className="form-control" id="grade" placeholder="e.g. 4th year" value={formData.grade} onChange={handleInputChange} />
+                            </div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">必要技能 <span className="text-danger">*</span></label>
@@ -288,7 +393,7 @@ const RequirementsStep = () => {
                             </div>
                             <div className="mt-2 d-flex flex-wrap">
                                 {requiredSkills.length > 0 ? (
-                                    requiredSkills.map(skill => (
+                                    requiredSkills.map((skill: string) => (
                                         <span key={skill} className="badge bg-primary me-2 mb-2 p-2 d-flex align-items-center">
                                             {skill}
                                             <button 
@@ -324,7 +429,7 @@ const RequirementsStep = () => {
                             </div>
                            <div className="mt-2 d-flex flex-wrap">
                                 {preferredSkills.length > 0 ? (
-                                    preferredSkills.map(skill => (
+                                    preferredSkills.map((skill: string) => (
                                         <span key={skill} className="badge bg-secondary me-2 mb-2 p-2 d-flex align-items-center">
                                             {skill}
                                             <button 
@@ -391,6 +496,41 @@ const DocumentComparisonPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isStudent, setIsStudent] = useState(false);
+  const [submittedRequirements, setSubmittedRequirements] = useState<RequirementData | null>(null);
+  
+  const [requirementsState, setRequirementsState] = useState<RequirementData>({
+    formData: {
+        jobTitle: '',
+        jobDescription: '',
+        school: '',
+        department: '',
+        grade: '',
+        experienceRequirements: '',
+        educationRequirements: '',
+        additionalNotes: '',
+    },
+    requiredSkills: [],
+    preferredSkills: [],
+    weights: {
+        skills: 50,
+        experience: 30,
+        education: 20
+    }
+  });
+
+
+  const handleRequirementSubmit = (fullFormData: RequirementData) => {
+    setRequirementsState(fullFormData); // Save the latest data
+    setSubmittedRequirements(fullFormData);
+    setCurrentStep(3);
+  };
+
+  const finalSubmit = () => {
+      alert('已成功遞交！後續將儲存至資料庫。');
+      // Here you would typically save `submittedRequirements` to your database
+      console.log("Final data to be submitted:", submittedRequirements);
+  };
+
 
   useEffect(() => {
     const checkUser = async () => {
@@ -428,7 +568,9 @@ const DocumentComparisonPage = () => {
       case 1:
         return <UploadStep />;
       case 2:
-        return <RequirementsStep />;
+        return <RequirementsStep initialData={requirementsState} onFormSubmit={handleRequirementSubmit} />;
+      case 3:
+        return <SavedRequirementsStep requirements={submittedRequirements} onEdit={() => setCurrentStep(2)} onSubmit={finalSubmit} />;
       // Add cases for other steps here
       default:
         return <div>Step not found</div>;
