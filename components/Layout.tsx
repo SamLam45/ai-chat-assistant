@@ -2,7 +2,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 interface LayoutProps {
   children: ReactNode;
@@ -11,6 +13,31 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, title }) => {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const getSession = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+    };
+
+    getSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/'); // Redirect to homepage after logout
+  };
 
   return (
     <>
@@ -85,6 +112,13 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
                 <a className="nav-item nav-link">联系我们</a>
               </Link>
             </div>
+            {user ? (
+                <button onClick={handleLogout} className="btn btn-primary rounded-pill px-4 py-2 ms-lg-3">登出</button>
+            ) : (
+                <Link href="/login">
+                    <a className="btn btn-primary rounded-pill px-4 py-2 ms-lg-3">登入</a>
+                </Link>
+            )}
           </div>
         </nav>
       </div>
