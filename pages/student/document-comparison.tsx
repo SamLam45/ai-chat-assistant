@@ -27,61 +27,110 @@ const UploadStep = () => (
 );
 
 // Step 2: Job Requirements Component
-const RequirementsStep = () => (
-    <div>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-            <ul className="nav nav-pills">
-                <li className="nav-item">
-                    <a className="nav-link active" href="#">Create New Requirement</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" href="#">Manage Requirements (0)</a>
-                </li>
-            </ul>
-        </div>
-        <div className="card">
-            <div className="card-body">
-                <h5 className="card-title mb-4">Job Requirement Details</h5>
-                <form>
-                    <div className="mb-3">
-                        <label htmlFor="school" className="form-label">學校 (School)</label>
-                        <input type="text" className="form-control" id="school" placeholder="e.g. National Taiwan University" />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="department" className="form-label">大學生學系 (Department)</label>
-                        <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="grade" className="form-label">年級 (Grade)</label>
-                        <input type="text" className="form-control" id="grade" placeholder="e.g. 4th year" />
-                    </div>
+const RequirementsStep = () => {
+    const [skillsWeight, setSkillsWeight] = useState(50);
+    const [experienceWeight, setExperienceWeight] = useState(30);
+    const [educationWeight, setEducationWeight] = useState(20);
 
-                    <div className="mb-3">
-                        <label className="form-label">所需技能 (Required Skills)</label>
-                        {/* A proper skill input would require more complex state management */}
-                        <div className="input-group">
-                            <input type="text" className="form-control" placeholder="Add a required skill"/>
-                            <button className="btn btn-outline-primary" type="button">+</button>
+    return (
+        <div>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <ul className="nav nav-pills">
+                    <li className="nav-item">
+                        <a className="nav-link active" href="#">Create New Requirement</a>
+                    </li>
+                    <li className="nav-item">
+                        <a className="nav-link" href="#">Manage Requirements (0)</a>
+                    </li>
+                </ul>
+            </div>
+            <div className="card">
+                <div className="card-body">
+                    <h5 className="card-title mb-4">Job Requirement Details</h5>
+                    <form>
+                        <div className="row">
+                            <div className="col-md-6 mb-3">
+                                <label htmlFor="jobTitle" className="form-label">Job Title</label>
+                                <input type="text" className="form-control" id="jobTitle" placeholder="e.g. Senior Frontend Developer" />
+                            </div>
                         </div>
-                        <div className="form-text">No required skills added yet</div>
-                    </div>
-
-                     <div className="mb-4">
-                        <label className="form-label">偏好技能 (Preferred Skills)</label>
-                        <div className="input-group">
-                            <input type="text" className="form-control" placeholder="Add a preferred skill"/>
-                            <button className="btn btn-outline-primary" type="button">+</button>
+                        <div className="mb-3">
+                            <label htmlFor="jobDescription" className="form-label">Job Description</label>
+                            <textarea className="form-control" id="jobDescription" rows={3} placeholder="Enter a brief description of the job role and responsibilities"></textarea>
                         </div>
-                        <div className="form-text">No preferred skills added yet</div>
-                    </div>
+                        <div className="row">
+                            <div className="col-md-4 mb-3">
+                                <label htmlFor="school" className="form-label">學校 (School)</label>
+                                <input type="text" className="form-control" id="school" placeholder="e.g. National Taiwan University" />
+                            </div>
+                             <div className="col-md-4 mb-3">
+                                <label htmlFor="department" className="form-label">大學生學系 (Department)</label>
+                                <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" />
+                            </div>
+                             <div className="col-md-4 mb-3">
+                                <label htmlFor="grade" className="form-label">年級 (Grade)</label>
+                                <input type="text" className="form-control" id="grade" placeholder="e.g. 4th year" />
+                            </div>
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Required Skills</label>
+                            <div className="input-group">
+                                <input type="text" className="form-control" placeholder="Add a required skill"/>
+                                <button className="btn btn-outline-primary" type="button">+</button>
+                            </div>
+                            <div className="form-text">No required skills added yet</div>
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Preferred Skills</label>
+                            <div className="input-group">
+                                <input type="text" className="form-control" placeholder="Add a preferred skill"/>
+                                <button className="btn btn-outline-primary" type="button">+</button>
+                            </div>
+                            <div className="form-text">No preferred skills added yet</div>
+                        </div>
+                         <div className="row">
+                            <div className="col-md-6 mb-3">
+                                <label htmlFor="experienceRequirements" className="form-label">Experience Requirements</label>
+                                <input type="text" className="form-control" id="experienceRequirements" placeholder="e.g. 3+ years of experience with React" />
+                            </div>
+                            <div className="col-md-6 mb-3">
+                                <label htmlFor="educationRequirements" className="form-label">Education Requirements</label>
+                                <input type="text" className="form-control" id="educationRequirements" placeholder="e.g. Bachelor's degree in Computer Science or related field" />
+                            </div>
+                        </div>
+                         <div className="mb-3">
+                            <label htmlFor="additionalNotes" className="form-label">Additional Notes</label>
+                            <textarea className="form-control" id="additionalNotes" rows={2} placeholder="Any additional requirements or notes about the position"></textarea>
+                        </div>
+
+                        <hr className="my-4" />
+
+                        <h5 className="mb-3">Evaluation Criteria Weights</h5>
+                        <p className="text-muted">Adjust the importance of each factor in the overall evaluation. The total will always equal 100%.</p>
+
+                        <div className="mb-3">
+                            <label htmlFor="skillsWeight" className="form-label">Skills Weight: {skillsWeight}%</label>
+                            <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => setSkillsWeight(parseInt(e.target.value))} />
+                        </div>
+
+                        <div className="mb-3">
+                            <label htmlFor="experienceWeight" className="form-label">Experience Weight: {experienceWeight}%</label>
+                            <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => setExperienceWeight(parseInt(e.target.value))} />
+                        </div>
+
+                        <div className="mb-3">
+                            <label htmlFor="educationWeight" className="form-label">Education Weight: {educationWeight}%</label>
+                            <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => setEducationWeight(parseInt(e.target.value))} />
+                        </div>
 
 
-                    <button type="submit" className="btn btn-primary float-end">Create Job Requirement</button>
-                </form>
+                        <button type="submit" className="btn btn-primary float-end mt-3">Create Job Requirement</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 
 const DocumentComparisonPage = () => {
