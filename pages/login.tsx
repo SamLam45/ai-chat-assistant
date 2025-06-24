@@ -36,18 +36,33 @@ export default function Login() {
     setInfo(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (loginError) throw loginError;
 
-      if (data.user) {
-        setUser(data.user);
+      if (loginData.user) {
+        // Fetch user profile to get the role
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', loginData.user.id)
+          .single();
+
+        if (profileError) throw profileError;
+        
+        setUser(loginData.user);
         setInfo('登录成功！');
         setError(null);
-         router.push('/');
+
+        // Redirect based on role
+        if (profileData?.role === 'admin') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/student/dashboard');
+        }
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
