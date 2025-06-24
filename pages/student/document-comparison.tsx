@@ -189,16 +189,16 @@ const RequirementsStep = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <ul className="nav nav-pills">
                     <li className="nav-item">
-                        <a className="nav-link active" href="#">建立新要求</a>
+                        <a className="nav-link active" href="#">建立新期望要求</a>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="#">管理要求 (0)</a>
+                        <a className="nav-link" href="#">管理期望要求 (0)</a>
                     </li>
                 </ul>
             </div>
             <div className="card">
                 <div className="card-body">
-                    <h5 className="card-title mb-4">工作要求詳情</h5>
+                    <h5 className="card-title mb-4">期望工作要求詳情</h5>
                     <form>
                         <div className="row">
                             <div className="col-md-6 mb-3">
@@ -212,16 +212,12 @@ const RequirementsStep = () => {
                         </div>
                         <div className="row">
                             <div className="col-md-4 mb-3">
-                                <label htmlFor="school" className="form-label">學校 (School)</label>
+                                <label htmlFor="school" className="form-label">期望學校 (School)</label>
                                 <input type="text" className="form-control" id="school" placeholder="e.g. National Taiwan University" />
                             </div>
                              <div className="col-md-4 mb-3">
-                                <label htmlFor="department" className="form-label">大學生學系 (Department)</label>
+                                <label htmlFor="department" className="form-label">期望學系 (Department)</label>
                                 <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" />
-                            </div>
-                             <div className="col-md-4 mb-3">
-                                <label htmlFor="grade" className="form-label">年級 (Grade)</label>
-                                <input type="text" className="form-control" id="grade" placeholder="e.g. 4th year" />
                             </div>
                         </div>
                         <div className="mb-3">
@@ -298,11 +294,11 @@ const RequirementsStep = () => {
                         </div>
                          <div className="row">
                             <div className="col-md-6 mb-3">
-                                <label htmlFor="experienceRequirements" className="form-label">經驗要求</label>
+                                <label htmlFor="experienceRequirements" className="form-label">經驗</label>
                                 <input type="text" className="form-control" id="experienceRequirements" placeholder="例如：3年以上 React 開發經驗" />
                             </div>
                             <div className="col-md-6 mb-3">
-                                <label htmlFor="educationRequirements" className="form-label">學歷要求</label>
+                                <label htmlFor="educationRequirements" className="form-label">學歷</label>
                                 <input type="text" className="form-control" id="educationRequirements" placeholder="例如：電腦科學或相關領域學士學位" />
                             </div>
                         </div>
@@ -332,7 +328,7 @@ const RequirementsStep = () => {
                         </div>
 
 
-                        <button type="submit" className="btn btn-primary float-end mt-3">建立工作要求</button>
+                        <button type="submit" className="btn btn-primary float-end mt-3">建立期望工作要求</button>
                     </form>
                 </div>
             </div>
@@ -343,7 +339,7 @@ const RequirementsStep = () => {
 
 const DocumentComparisonPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const steps = ['上傳履歷', '工作要求', '已存要求', '查看結果'];
+  const steps = ['上傳履歷', '期望工作要求', '已存要求', '查看結果'];
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isStudent, setIsStudent] = useState(false);
@@ -456,4 +452,4 @@ const DocumentComparisonPage = () => {
   );
 };
 
-export default DocumentComparisonPage; 
+export default DocumentComparisonPage;
