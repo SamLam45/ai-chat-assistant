@@ -33,7 +33,7 @@ const allowedTypes = [
 ];
 const maxFileSize = 5 * 1024 * 1024; // 5MB
 
-const UploadStep = ({ files, onFilesChange }: { files: File[], onFilesChange: (files: File[]) => void }) => {
+const UploadStep = ({ files, onFilesChange, onNext }: { files: File[], onFilesChange: (files: File[]) => void, onNext: () => void }) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleFiles = (selectedFiles: FileList | null) => {
@@ -137,6 +137,15 @@ const UploadStep = ({ files, onFilesChange }: { files: File[], onFilesChange: (f
           尚未上傳履歷。請至少上傳一份履歷以進行評估。
         </div>
       )}
+      <div className="d-flex justify-content-end mt-4">
+        <button 
+          className="btn btn-primary btn-lg px-5" 
+          onClick={onNext} 
+          disabled={files.length === 0}
+        >
+          下一步 <i className="bi bi-arrow-right"></i>
+        </button>
+      </div>
     </div>
   );
 };
@@ -427,7 +436,7 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         }
                                     }}
                                 />
-                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}><i className="bi bi-plus-lg"></i></button>
+                                <button className="btn btn-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}><i className="bi bi-plus-lg"></i></button>
                             </div>
                             <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
                                 {requiredSkills.length > 0 ? (
@@ -463,7 +472,7 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         }
                                     }}
                                 />
-                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}><i className="bi bi-plus-lg"></i></button>
+                                <button className="btn btn-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}><i className="bi bi-plus-lg"></i></button>
                             </div>
                            <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
                                 {preferredSkills.length > 0 ? (
@@ -614,7 +623,7 @@ const DocumentComparisonPage = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <UploadStep files={uploadedFiles} onFilesChange={setUploadedFiles} />;
+        return <UploadStep files={uploadedFiles} onFilesChange={setUploadedFiles} onNext={() => setCurrentStep(2)} />;
       case 2:
         return <RequirementsStep initialData={requirementsState} onFormSubmit={handleRequirementSubmit} />;
       case 3:
