@@ -23,11 +23,11 @@ const UploadStep = () => {
     for (let i = 0; i < selectedFiles.length; i++) {
       const file = selectedFiles[i];
       if (!allowedTypes.includes(file.type)) {
-        setError('Only PDF, TXT, DOC, and DOCX files are allowed.');
+        setError('只允許 PDF, TXT, DOC, 和 DOCX 檔案。');
         continue;
       }
       if (file.size > maxFileSize) {
-        setError('Each file must be less than 5MB.');
+        setError('每個檔案必須小於 5MB。');
         continue;
       }
       // Prevent duplicate file names
@@ -60,7 +60,7 @@ const UploadStep = () => {
 
   return (
     <div>
-      <h4 className="mb-4">Upload Resumes</h4>
+      <h4 className="mb-4">上傳履歷</h4>
       <div
         className="d-flex flex-column align-items-center justify-content-center"
         style={{
@@ -76,8 +76,8 @@ const UploadStep = () => {
         onClick={() => document.getElementById('resume-upload-input')?.click()}
       >
         <i className="bi bi-upload fs-1 text-primary"></i>
-        <h5 className="mt-3">Drag & drop resumes here, or click to select</h5>
-        <p className="text-muted">Supports PDF, TXT, DOC, and DOCX files (max 5MB each)</p>
+        <h5 className="mt-3">拖曳或點擊此處選擇履歷</h5>
+        <p className="text-muted">支援 PDF, TXT, DOC, DOCX 檔案 (每個檔案上限 5MB)</p>
         <input
           id="resume-upload-input"
           type="file"
@@ -95,13 +95,13 @@ const UploadStep = () => {
       )}
       {files.length > 0 ? (
         <div className="mt-4">
-          <h6>Uploaded Files:</h6>
+          <h6>已上傳檔案:</h6>
           <ul className="list-group">
             {files.map(file => (
               <li key={file.name} className="list-group-item d-flex justify-content-between align-items-center">
                 <span>{file.name}</span>
                 <button className="btn btn-sm btn-outline-danger" onClick={() => removeFile(file.name)}>
-                  Remove
+                  移除
                 </button>
               </li>
             ))}
@@ -110,7 +110,7 @@ const UploadStep = () => {
       ) : (
         <div className="alert alert-warning mt-4" role="alert">
           <i className="bi bi-exclamation-triangle-fill me-2"></i>
-          No resumes uploaded. Upload at least one resume to proceed with the evaluation.
+          尚未上傳履歷。請至少上傳一份履歷以進行評估。
         </div>
       )}
     </div>
@@ -189,26 +189,26 @@ const RequirementsStep = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <ul className="nav nav-pills">
                     <li className="nav-item">
-                        <a className="nav-link active" href="#">Create New Requirement</a>
+                        <a className="nav-link active" href="#">建立新要求</a>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="#">Manage Requirements (0)</a>
+                        <a className="nav-link" href="#">管理要求 (0)</a>
                     </li>
                 </ul>
             </div>
             <div className="card">
                 <div className="card-body">
-                    <h5 className="card-title mb-4">Job Requirement Details</h5>
+                    <h5 className="card-title mb-4">工作要求詳情</h5>
                     <form>
                         <div className="row">
                             <div className="col-md-6 mb-3">
-                                <label htmlFor="jobTitle" className="form-label">Job Title</label>
-                                <input type="text" className="form-control" id="jobTitle" placeholder="e.g. Senior Frontend Developer" />
+                                <label htmlFor="jobTitle" className="form-label">職位名稱</label>
+                                <input type="text" className="form-control" id="jobTitle" placeholder="例如：資深前端工程師" />
                             </div>
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="jobDescription" className="form-label">Job Description</label>
-                            <textarea className="form-control" id="jobDescription" rows={3} placeholder="Enter a brief description of the job role and responsibilities"></textarea>
+                            <label htmlFor="jobDescription" className="form-label">職位描述</label>
+                            <textarea className="form-control" id="jobDescription" rows={3} placeholder="輸入職位角色和職責的簡要描述"></textarea>
                         </div>
                         <div className="row">
                             <div className="col-md-4 mb-3">
@@ -225,12 +225,12 @@ const RequirementsStep = () => {
                             </div>
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Required Skills</label>
+                            <label className="form-label">必要技能</label>
                             <div className="input-group">
                                 <input 
                                     type="text" 
                                     className="form-control" 
-                                    placeholder="Add a required skill"
+                                    placeholder="新增一項必要技能"
                                     value={requiredSkillInput}
                                     onChange={(e) => setRequiredSkillInput(e.target.value)}
                                     onKeyDown={(e) => {
@@ -256,17 +256,17 @@ const RequirementsStep = () => {
                                         </span>
                                     ))
                                 ) : (
-                                    <div className="form-text">No required skills added yet</div>
+                                    <div className="form-text">尚未新增必要技能</div>
                                 )}
                             </div>
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Preferred Skills</label>
+                            <label className="form-label">偏好技能</label>
                             <div className="input-group">
                                 <input 
                                     type="text" 
                                     className="form-control" 
-                                    placeholder="Add a preferred skill"
+                                    placeholder="新增一項偏好技能"
                                     value={preferredSkillInput}
                                     onChange={(e) => setPreferredSkillInput(e.target.value)}
                                     onKeyDown={(e) => {
@@ -292,47 +292,47 @@ const RequirementsStep = () => {
                                         </span>
                                     ))
                                 ) : (
-                                    <div className="form-text">No preferred skills added yet</div>
+                                    <div className="form-text">尚未新增偏好技能</div>
                                 )}
                             </div>
                         </div>
                          <div className="row">
                             <div className="col-md-6 mb-3">
-                                <label htmlFor="experienceRequirements" className="form-label">Experience Requirements</label>
-                                <input type="text" className="form-control" id="experienceRequirements" placeholder="e.g. 3+ years of experience with React" />
+                                <label htmlFor="experienceRequirements" className="form-label">經驗要求</label>
+                                <input type="text" className="form-control" id="experienceRequirements" placeholder="例如：3年以上 React 開發經驗" />
                             </div>
                             <div className="col-md-6 mb-3">
-                                <label htmlFor="educationRequirements" className="form-label">Education Requirements</label>
-                                <input type="text" className="form-control" id="educationRequirements" placeholder="e.g. Bachelor's degree in Computer Science or related field" />
+                                <label htmlFor="educationRequirements" className="form-label">學歷要求</label>
+                                <input type="text" className="form-control" id="educationRequirements" placeholder="例如：電腦科學或相關領域學士學位" />
                             </div>
                         </div>
                          <div className="mb-3">
-                            <label htmlFor="additionalNotes" className="form-label">Additional Notes</label>
-                            <textarea className="form-control" id="additionalNotes" rows={2} placeholder="Any additional requirements or notes about the position"></textarea>
+                            <label htmlFor="additionalNotes" className="form-label">其他備註</label>
+                            <textarea className="form-control" id="additionalNotes" rows={2} placeholder="任何關於此職位的額外要求或說明"></textarea>
                         </div>
 
                         <hr className="my-4" />
 
-                        <h5 className="mb-3">Evaluation Criteria Weights</h5>
-                        <p className="text-muted">Adjust the importance of each factor in the overall evaluation. The total will always equal 100%.</p>
+                        <h5 className="mb-3">評分標準權重</h5>
+                        <p className="text-muted">調整各個評分項目的重要性，總權重將維持 100%。</p>
 
                         <div className="mb-3">
-                            <label htmlFor="skillsWeight" className="form-label">Skills Weight: {skillsWeight}%</label>
+                            <label htmlFor="skillsWeight" className="form-label">技能權重: {skillsWeight}%</label>
                             <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => handleWeightChange('skills', parseInt(e.target.value))} />
                         </div>
 
                         <div className="mb-3">
-                            <label htmlFor="experienceWeight" className="form-label">Experience Weight: {experienceWeight}%</label>
+                            <label htmlFor="experienceWeight" className="form-label">經驗權重: {experienceWeight}%</label>
                             <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => handleWeightChange('experience', parseInt(e.target.value))} />
                         </div>
 
                         <div className="mb-3">
-                            <label htmlFor="educationWeight" className="form-label">Education Weight: {educationWeight}%</label>
+                            <label htmlFor="educationWeight" className="form-label">學歷權重: {educationWeight}%</label>
                             <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => handleWeightChange('education', parseInt(e.target.value))} />
                         </div>
 
 
-                        <button type="submit" className="btn btn-primary float-end mt-3">Create Job Requirement</button>
+                        <button type="submit" className="btn btn-primary float-end mt-3">建立工作要求</button>
                     </form>
                 </div>
             </div>
@@ -343,7 +343,7 @@ const RequirementsStep = () => {
 
 const DocumentComparisonPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const steps = ['Upload Resumes', 'Job Requirements', 'Saved Requirements', 'View Results'];
+  const steps = ['上傳履歷', '工作要求', '已存要求', '查看結果'];
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isStudent, setIsStudent] = useState(false);
@@ -393,10 +393,10 @@ const DocumentComparisonPage = () => {
 
   if (loading) {
     return (
-        <Layout title="Loading...">
+        <Layout title="載入中...">
             <div className="container py-5 text-center">
-                <h2>Loading...</h2>
-                <p>Verifying your access rights.</p>
+                <h2>載入中...</h2>
+                <p>正在驗證您的存取權限。</p>
             </div>
         </Layout>
     );
@@ -406,19 +406,19 @@ const DocumentComparisonPage = () => {
     // This part might be briefly visible before the redirect kicks in,
     // or if the redirect fails for some reason.
     return (
-      <Layout title="Access Denied">
+      <Layout title="禁止存取">
         <div className="container py-5 text-center">
-          <h2>Access Denied</h2>
-          <p>You must be logged in as a student to view this page.</p>
+          <h2>禁止存取</h2>
+          <p>您必須以學生身份登入才能瀏覽此頁面。</p>
         </div>
       </Layout>
     );
   }
 
   return (
-    <Layout title="AI Resume Evaluation System">
+    <Layout title="AI 履歷評估系統">
       <Head>
-        <title>AI Resume Evaluation System</title>
+        <title>AI 履歷評估系統</title>
          {/* You might need to add Bootstrap CSS if not globally available */}
          {/* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" /> */}
          {/* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" /> */}
@@ -426,9 +426,9 @@ const DocumentComparisonPage = () => {
 
       <div className="container-fluid bg-light py-5">
         <div className="container text-center">
-            <h1 className="display-5">AI Resume Evaluation System</h1>
+            <h1 className="display-5">AI 履歷評估系統</h1>
             <p className="lead">
-                Compare multiple resumes against various job requirements, customize evaluation criteria, and generate detailed AI-powered analysis reports.
+                根據不同的工作要求對多份履歷進行比較，客製化評估標準，並生成詳細的 AI 分析報告。
             </p>
         </div>
       </div>
