@@ -51,7 +51,7 @@ export default function Login() {
         if (profile.role === 'admin') {
           router.push('/admin/dashboard');
         } else {
-          router.push('/student/dashboard');
+          router.push('/student/document-comparison');
         }
       };
       getProfileAndRedirect();
