@@ -81,22 +81,23 @@ const UploadStep = ({ files, onFilesChange }: { files: File[], onFilesChange: (f
     <div>
       <h4 className="mb-4">上傳履歷</h4>
       <div
-        className="d-flex flex-column align-items-center justify-content-center"
+        className="d-flex flex-column align-items-center justify-content-center p-5 text-center"
         style={{
-          border: '2px dashed #ccc',
-          borderRadius: '10px',
-          padding: '50px',
-          textAlign: 'center',
-          background: '#fafbfc',
+          border: '2px dashed var(--bs-primary)',
+          borderRadius: '15px',
+          background: 'rgba(var(--bs-primary-rgb), 0.05)',
           cursor: 'pointer',
+          transition: 'background-color 0.3s ease'
         }}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={() => document.getElementById('resume-upload-input')?.click()}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--bs-primary-rgb), 0.1)'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--bs-primary-rgb), 0.05)'}
       >
-        <i className="bi bi-upload fs-1 text-primary"></i>
-        <h5 className="mt-3">拖曳或點擊此處選擇履歷</h5>
-        <p className="text-muted">支援 PDF, TXT, DOC, DOCX 檔案 (每個檔案上限 5MB)</p>
+        <i className="bi bi-cloud-arrow-up-fill fs-1 text-primary mb-3"></i>
+        <h5 className="mt-3">拖曳或點擊此處上傳履歷</h5>
+        <p className="text-muted small">支援 PDF, TXT, DOC, DOCX 檔案 (每個檔案上限 5MB)</p>
         <input
           id="resume-upload-input"
           type="file"
@@ -114,21 +115,25 @@ const UploadStep = ({ files, onFilesChange }: { files: File[], onFilesChange: (f
       )}
       {files.length > 0 ? (
         <div className="mt-4">
-          <h6>已上傳檔案:</h6>
-          <ul className="list-group">
+          <h6 className="mb-3">已上傳檔案:</h6>
+          <div className="list-group">
             {files.map(file => (
-              <li key={file.name} className="list-group-item d-flex justify-content-between align-items-center">
-                <span>{file.name}</span>
+              <div key={file.name} className="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <i className="bi bi-file-earmark-text me-2"></i>
+                  <span className="fw-bold">{file.name}</span>
+                  <span className="text-muted ms-2 small">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                </div>
                 <button className="btn btn-sm btn-outline-danger" onClick={() => removeFile(file.name)}>
-                  移除
+                  <i className="bi bi-trash3-fill"></i>
                 </button>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       ) : (
-        <div className="alert alert-warning mt-4" role="alert">
-          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+        <div className="alert alert-secondary text-center mt-4" role="alert">
+          <i className="bi bi-info-circle me-2"></i>
           尚未上傳履歷。請至少上傳一份履歷以進行評估。
         </div>
       )}
@@ -358,41 +363,54 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
 
     return (
         <div>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <ul className="nav nav-pills">
-                    <li className="nav-item">
-                        <a className="nav-link active" href="#">建立新期望要求</a>
-                    </li>
-                </ul>
-            </div>
-            <div className="card">
-                <div className="card-body">
-                    <h5 className="card-title mb-4">期望工作要求詳情</h5>
-                    <form onSubmit={handleSubmit}>
-                        <div className="row">
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="jobTitle" className="form-label">職位名稱 <span className="text-danger">*</span></label>
-                                <input type="text" className="form-control" id="jobTitle" placeholder="例如：資深前端工程師" value={formData.jobTitle} onChange={handleInputChange} />
-                            </div>
-                        </div>
+            <form onSubmit={handleSubmit}>
+                <div className="card shadow-sm mb-4">
+                    <div className="card-header bg-light">
+                        <h5 className="mb-0"><i className="bi bi-journal-text me-2 text-primary"></i>基本資訊</h5>
+                    </div>
+                    <div className="card-body p-4">
                         <div className="mb-3">
+                            <label htmlFor="jobTitle" className="form-label">職位名稱 <span className="text-danger">*</span></label>
+                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：資深前端工程師" value={formData.jobTitle} onChange={handleInputChange} />
+                        </div>
+                        <div>
                             <label htmlFor="jobDescription" className="form-label">職位描述</label>
                             <textarea className="form-control" id="jobDescription" rows={3} placeholder="輸入職位角色和職責的簡要描述" value={formData.jobDescription} onChange={handleInputChange}></textarea>
                         </div>
+                    </div>
+                </div>
+
+                <div className="card shadow-sm mb-4">
+                    <div className="card-header bg-light">
+                         <h5 className="mb-0"><i className="bi bi-mortarboard me-2 text-primary"></i>學術要求</h5>
+                    </div>
+                    <div className="card-body p-4">
                         <div className="row">
-                            <div className="col-md-4 mb-3">
+                            <div className="col-md-6 mb-3">
                                 <label htmlFor="school" className="form-label">期望學校 (School) <span className="text-danger">*</span></label>
                                 <input type="text" className="form-control" id="school" placeholder="e.g. National Taiwan University" value={formData.school} onChange={handleInputChange} />
                             </div>
-                             <div className="col-md-4 mb-3">
+                             <div className="col-md-6 mb-3">
                                 <label htmlFor="department" className="form-label">期望學系 (Department)</label>
                                 <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" value={formData.department} onChange={handleInputChange} />
                             </div>
-                             <div className="col-md-4 mb-3">
+                            <div className="col-md-6 mb-3">
                                 <label htmlFor="grade" className="form-label">年級 (Grade)</label>
                                 <input type="text" className="form-control" id="grade" placeholder="e.g. 4th year" value={formData.grade} onChange={handleInputChange} />
                             </div>
+                            <div className="col-md-6 mb-3">
+                                <label htmlFor="educationRequirements" className="form-label">現時學歷 <span className="text-danger">*</span></label>
+                                <input type="text" className="form-control" id="educationRequirements" placeholder="例如：電腦科學或相關領域學士學位" value={formData.educationRequirements} onChange={handleInputChange} />
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                <div className="card shadow-sm mb-4">
+                     <div className="card-header bg-light">
+                        <h5 className="mb-0"><i className="bi bi-star me-2 text-primary"></i>技能要求</h5>
+                    </div>
+                    <div className="card-body p-4">
                         <div className="mb-3">
                             <label className="form-label">必要技能 <span className="text-danger">*</span></label>
                             <div className="input-group">
@@ -409,12 +427,12 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         }
                                     }}
                                 />
-                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}>+</button>
+                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}><i className="bi bi-plus-lg"></i></button>
                             </div>
-                            <div className="mt-2 d-flex flex-wrap">
+                            <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
                                 {requiredSkills.length > 0 ? (
                                     requiredSkills.map((skill: string) => (
-                                        <span key={skill} className="badge bg-primary me-2 mb-2 p-2 d-flex align-items-center">
+                                        <span key={skill} className="badge fs-6 fw-normal bg-primary me-2 mb-2 p-2 d-flex align-items-center">
                                             {skill}
                                             <button 
                                                 type="button" 
@@ -425,11 +443,11 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         </span>
                                     ))
                                 ) : (
-                                    <div className="form-text">尚未新增必要技能</div>
+                                    <div className="form-text p-2">尚未新增必要技能</div>
                                 )}
                             </div>
                         </div>
-                        <div className="mb-3">
+                        <div>
                             <label className="form-label">偏好技能</label>
                             <div className="input-group">
                                 <input 
@@ -445,12 +463,12 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         }
                                     }}
                                 />
-                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}>+</button>
+                                <button className="btn btn-outline-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}><i className="bi bi-plus-lg"></i></button>
                             </div>
-                           <div className="mt-2 d-flex flex-wrap">
+                           <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
                                 {preferredSkills.length > 0 ? (
                                     preferredSkills.map((skill: string) => (
-                                        <span key={skill} className="badge bg-secondary me-2 mb-2 p-2 d-flex align-items-center">
+                                        <span key={skill} className="badge fs-6 fw-normal bg-secondary me-2 mb-2 p-2 d-flex align-items-center">
                                             {skill}
                                             <button 
                                                 type="button" 
@@ -461,50 +479,56 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         </span>
                                     ))
                                 ) : (
-                                    <div className="form-text">尚未新增偏好技能</div>
+                                    <div className="form-text p-2">尚未新增偏好技能</div>
                                 )}
                             </div>
                         </div>
-                         <div className="row">
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="experienceRequirements" className="form-label">經驗</label>
-                                <input type="text" className="form-control" id="experienceRequirements" placeholder="例如：比賽" value={formData.experienceRequirements} onChange={handleInputChange} />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="educationRequirements" className="form-label">現時學歷 <span className="text-danger">*</span></label>
-                                <input type="text" className="form-control" id="educationRequirements" placeholder="例如：電腦科學或相關領域學士學位" value={formData.educationRequirements} onChange={handleInputChange} />
-                            </div>
-                        </div>
-                         <div className="mb-3">
-                            <label htmlFor="additionalNotes" className="form-label">其他備註</label>
-                            <textarea className="form-control" id="additionalNotes" rows={2} placeholder="任何關於此職位的額外要求或說明" value={formData.additionalNotes} onChange={handleInputChange}></textarea>
-                        </div>
-
-                        <hr className="my-4" />
-
-                        <h5 className="mb-3">評分標準權重</h5>
-                        <p className="text-muted">調整各個評分項目的重要性，總權重將維持 100%。</p>
-
-                        <div className="mb-3">
-                            <label htmlFor="skillsWeight" className="form-label">技能權重: {skillsWeight}%</label>
-                            <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => handleWeightChange('skills', parseInt(e.target.value))} />
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="experienceWeight" className="form-label">經驗權重: {experienceWeight}%</label>
-                            <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => handleWeightChange('experience', parseInt(e.target.value))} />
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="educationWeight" className="form-label">學歷權重: {educationWeight}%</label>
-                            <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => handleWeightChange('education', parseInt(e.target.value))} />
-                        </div>
-
-
-                        <button type="submit" className="btn btn-primary float-end mt-3">建立期望工作要求</button>
-                    </form>
+                    </div>
                 </div>
-            </div>
+
+                <div className="card shadow-sm mb-4">
+                     <div className="card-header bg-light">
+                        <h5 className="mb-0"><i className="bi bi-gem me-2 text-primary"></i>其他要求與權重</h5>
+                    </div>
+                    <div className="card-body p-4">
+                        <div className="row">
+                            <div className="col-lg-6">
+                                <div className="mb-3">
+                                    <label htmlFor="experienceRequirements" className="form-label">經驗</label>
+                                    <input type="text" className="form-control" id="experienceRequirements" placeholder="例如：比賽" value={formData.experienceRequirements} onChange={handleInputChange} />
+                                </div>
+                                <div>
+                                    <label htmlFor="additionalNotes" className="form-label">其他備註</label>
+                                    <textarea className="form-control" id="additionalNotes" rows={5} placeholder="任何關於此職位的額外要求或說明" value={formData.additionalNotes} onChange={handleInputChange}></textarea>
+                                </div>
+                            </div>
+                            <div className="col-lg-6">
+                                <h6 className="mb-3">評分標準權重</h6>
+                                <p className="text-muted small">調整各個評分項目的重要性，總權重將維持 100%。</p>
+                                <div className="mb-3">
+                                    <label htmlFor="skillsWeight" className="form-label">技能權重: {skillsWeight}%</label>
+                                    <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => handleWeightChange('skills', parseInt(e.target.value))} />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="experienceWeight" className="form-label">經驗權重: {experienceWeight}%</label>
+                                    <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => handleWeightChange('experience', parseInt(e.target.value))} />
+                                </div>
+                                <div>
+                                    <label htmlFor="educationWeight" className="form-label">學歷權重: {educationWeight}%</label>
+                                    <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => handleWeightChange('education', parseInt(e.target.value))} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="d-flex justify-content-end mt-4">
+                    <button type="submit" className="btn btn-primary btn-lg px-5">
+                        <i className="bi bi-arrow-right-circle-fill me-2"></i>
+                        建立並預覽要求
+                    </button>
+                </div>
+            </form>
         </div>
     );
 };
@@ -645,16 +669,30 @@ const DocumentComparisonPage = () => {
 
       <div className="container py-5">
         {/* Stepper/Wizard Navigation */}
-        <div className="row g-4 mb-5">
-          {steps.map((title, index) => (
-             <div key={index} className="col-md-3" onClick={() => setCurrentStep(index + 1)} style={{cursor: 'pointer'}}>
-                <div className={`card h-100 ${currentStep === index + 1 ? 'border-primary' : ''}`}>
-                    <div className="card-body text-center">
-                        <h5 className={`card-title ${currentStep === index + 1 ? 'text-primary' : ''}`}>{`${index + 1}. ${title}`}</h5>
+        <div className="row justify-content-center g-0 mb-5">
+          <div className="col-10">
+            <div className="d-flex justify-content-between align-items-center">
+              {steps.map((title, index) => {
+                const stepNumber = index + 1;
+                const isActive = currentStep === stepNumber;
+                const isCompleted = currentStep > stepNumber;
+                return (
+                  <React.Fragment key={index}>
+                    <div className="d-flex flex-column align-items-center text-center" style={{ cursor: 'pointer' }} onClick={() => setCurrentStep(stepNumber)}>
+                      <div 
+                        className={`rounded-circle d-flex justify-content-center align-items-center ${isCompleted ? 'bg-primary text-white' : isActive ? 'bg-white border border-primary text-primary' : 'bg-light'}`}
+                        style={{ width: '50px', height: '50px', transition: 'all 0.3s ease' }}
+                      >
+                        {isCompleted ? <i className="bi bi-check-lg fs-4"></i> : <span className="fs-5 fw-bold">{stepNumber}</span>}
+                      </div>
+                      <p className={`fw-bold mt-2 mb-0 ${isActive || isCompleted ? 'text-primary' : 'text-muted'}`}>{title}</p>
                     </div>
-                </div>
+                    {index < steps.length - 1 && <div className="flex-grow-1 mx-3" style={{ height: '2px', backgroundColor: isCompleted ? 'var(--bs-primary)' : '#e0e0e0', transition: 'background-color 0.3s ease' }}></div>}
+                  </React.Fragment>
+                );
+              })}
             </div>
-          ))}
+          </div>
         </div>
         
         {/* Step Content */}
