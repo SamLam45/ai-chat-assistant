@@ -17,7 +17,7 @@ const UploadStep = () => {
 
   const handleFiles = (selectedFiles: FileList | null) => {
     if (!selectedFiles) return;
-    let newFiles: File[] = [];
+    const newFiles: File[] = [];
     for (let i = 0; i < selectedFiles.length; i++) {
       const file = selectedFiles[i];
       if (!allowedTypes.includes(file.type)) {
