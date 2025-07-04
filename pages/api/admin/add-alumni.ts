@@ -22,17 +22,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const embeddingRes = await fetch(EMBEDDING_API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({ text }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, key: API_KEY }),
     });
-    if (!embeddingRes.ok) throw new Error('embedding 服務失敗');
+    if (!embeddingRes.ok) {
+      const errText = await embeddingRes.text();
+      console.error('Embedding API error:', errText);
+      throw new Error('embedding 服務失敗');
+    }
     const data = await embeddingRes.json();
     embedding = data.embedding;
     if (!embedding || !Array.isArray(embedding)) throw new Error('embedding 格式錯誤');
-  } catch {
+  } catch (err) {
+    console.error('Embedding error:', err);
     return res.status(500).json({ error: '產生 embedding 失敗' });
   }
 
