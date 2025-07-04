@@ -48,10 +48,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     experience,
     resume_content: text,
     embedding,
-    // created_by: 可選，若有 auth 可加上
+    // created_by: 可選
   }]);
 
   if (error) {
+    console.error('Supabase insert error:', error);
     return res.status(500).json({ error: error.message });
   }
 
