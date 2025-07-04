@@ -1,9 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 // 這裡請根據你的 Deepseek AI 服務實際 IP/Port 調整
 const EMBEDDING_API_URL = 'https://api.alphadeepmind.com/embedding';
-const API_KEY = process.env.DEEPSEEK_API_KEY || 'YourCustomKey123'; // 請在 Vercel 設定環境變數
+const API_KEY = process.env.DEEPSEEK_API_KEY;
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_KEY! // 用 service key
+);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
