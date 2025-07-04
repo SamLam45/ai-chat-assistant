@@ -151,7 +151,14 @@ const UploadStep = ({ files, onFilesChange, onNext }: { files: File[], onFilesCh
 };
 
 // Step 3: Saved Requirements Component
-const SavedRequirementsStep = ({ requirements, files, onEdit, onSubmit }: { requirements: RequirementData | null, files: File[], onEdit: () => void, onSubmit: () => void }) => {
+const SavedRequirementsStep = ({ requirements, files, onEdit, onSubmit, isSubmitting, submissionError }: { 
+    requirements: RequirementData | null, 
+    files: File[], 
+    onEdit: () => void, 
+    onSubmit: () => void,
+    isSubmitting: boolean,
+    submissionError: string | null
+}) => {
     if (!requirements) {
         return (
             <div className="text-center">
@@ -255,9 +262,28 @@ const SavedRequirementsStep = ({ requirements, files, onEdit, onSubmit }: { requ
                 </div>
             </div>
 
+            {submissionError && (
+                <div className="alert alert-danger mt-3">
+                    {submissionError}
+                </div>
+            )}
+
             <div className="d-flex justify-content-end mt-4">
-                <button className="btn btn-outline-secondary me-3" onClick={onEdit}><i className="bi bi-pencil-square me-2"></i>返回修改</button>
-                <button className="btn btn-primary" onClick={onSubmit}><i className="bi bi-check-circle-fill me-2"></i>確認遞交</button>
+                <button className="btn btn-outline-secondary me-3" onClick={onEdit} disabled={isSubmitting}>
+                    <i className="bi bi-pencil-square me-2"></i>返回修改
+                </button>
+                <button className="btn btn-primary" onClick={onSubmit} disabled={isSubmitting}>
+                    {isSubmitting ? (
+                        <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            遞交中...
+                        </>
+                    ) : (
+                        <>
+                            <i className="bi bi-check-circle-fill me-2"></i>確認遞交
+                        </>
+                    )}
+                </button>
             </div>
         </div>
     );
@@ -379,11 +405,11 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                     </div>
                     <div className="card-body p-4">
                         <div className="mb-3">
-                            <label htmlFor="jobTitle" className="form-label">職位名稱 <span className="text-danger">*</span></label>
-                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：資深前端工程師" value={formData.jobTitle} onChange={handleInputChange} />
+                            <label htmlFor="jobTitle" className="form-label">現在角色<span className="text-danger">*</span></label>
+                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：中學生" value={formData.jobTitle} onChange={handleInputChange} />
                         </div>
                         <div>
-                            <label htmlFor="jobDescription" className="form-label">職位描述</label>
+                            <label htmlFor="jobDescription" className="form-label">學歷描述</label>
                             <textarea className="form-control" id="jobDescription" rows={3} placeholder="輸入職位角色和職責的簡要描述" value={formData.jobDescription} onChange={handleInputChange}></textarea>
                         </div>
                     </div>
@@ -404,12 +430,12 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                 <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" value={formData.department} onChange={handleInputChange} />
                             </div>
                             <div className="col-md-6 mb-3">
-                                <label htmlFor="grade" className="form-label">年級 (Grade)</label>
-                                <input type="text" className="form-control" id="grade" placeholder="e.g. 4th year" value={formData.grade} onChange={handleInputChange} />
+                                <label htmlFor="grade" className="form-label">晉升年級(Grade)</label>
+                                <input type="text" className="form-control" id="grade" placeholder="e.g. 3th year" value={formData.grade} onChange={handleInputChange} />
                             </div>
                             <div className="col-md-6 mb-3">
-                                <label htmlFor="educationRequirements" className="form-label">現時學歷 <span className="text-danger">*</span></label>
-                                <input type="text" className="form-control" id="educationRequirements" placeholder="例如：電腦科學或相關領域學士學位" value={formData.educationRequirements} onChange={handleInputChange} />
+                                <label htmlFor="educationRequirements" className="form-label">現時學歷<span className="text-danger">*</span></label>
+                                <input type="text" className="form-control" id="educationRequirements" placeholder="例如：中學學位" value={formData.educationRequirements} onChange={handleInputChange} />
                             </div>
                         </div>
                     </div>
@@ -549,6 +575,8 @@ const DocumentComparisonPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isStudent, setIsStudent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [submittedRequirements, setSubmittedRequirements] = useState<RequirementData | null>(null);
   
@@ -579,13 +607,57 @@ const DocumentComparisonPage = () => {
     setCurrentStep(3);
   };
 
-  const finalSubmit = () => {
-      alert('已成功遞交！後續將儲存至資料庫。');
-      // Here you would typically save `submittedRequirements` to your database
-      console.log("Final data to be submitted:", {
-          requirements: submittedRequirements,
-          files: uploadedFiles.map(f => f.name) // Example: logging file names
-      });
+  const finalSubmit = async () => {
+    if (!submittedRequirements || uploadedFiles.length === 0) {
+        alert("資料不完整，無法遞交。");
+        return;
+    }
+
+    setIsSubmitting(true);
+    setSubmissionError(null);
+
+    // Get the user's token
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+        setSubmissionError("驗證失敗，請重新登入後再試。");
+        setIsSubmitting(false);
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('requirements', JSON.stringify(submittedRequirements));
+    uploadedFiles.forEach(file => {
+        formData.append('resumes', file);
+    });
+
+    try {
+        const response = await fetch('/api/submit-requirement', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${session.access_token}`,
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || '遞交失敗，請稍後再試。');
+        }
+
+        alert('已成功遞交！');
+        // Optionally, move to the next step
+        // setCurrentStep(4); 
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setSubmissionError(error.message);
+        alert(`發生錯誤： ${error.message}`);
+      } else {
+        setSubmissionError('未知錯誤');
+        alert('發生未知錯誤');
+      }
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
 
@@ -627,7 +699,14 @@ const DocumentComparisonPage = () => {
       case 2:
         return <RequirementsStep initialData={requirementsState} onFormSubmit={handleRequirementSubmit} />;
       case 3:
-        return <SavedRequirementsStep requirements={submittedRequirements} files={uploadedFiles} onEdit={() => setCurrentStep(2)} onSubmit={finalSubmit} />;
+        return <SavedRequirementsStep 
+                    requirements={submittedRequirements} 
+                    files={uploadedFiles} 
+                    onEdit={() => setCurrentStep(2)} 
+                    onSubmit={finalSubmit}
+                    isSubmitting={isSubmitting}
+                    submissionError={submissionError} 
+                />;
       // Add cases for other steps here
       default:
         return <div>Step not found</div>;
