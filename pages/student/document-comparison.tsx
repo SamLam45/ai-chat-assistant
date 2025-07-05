@@ -664,9 +664,24 @@ const DocumentComparisonPage = () => {
             throw new Error(result.error || '遞交失敗，請稍後再試。');
         }
 
+        // 遞交成功後自動比對學長
+        const matchFormData = new FormData();
+        matchFormData.append('resume', uploadedFiles[0]);
+        matchFormData.append('school', submittedRequirements.formData.school);
+        matchFormData.append('grade', submittedRequirements.formData.grade);
+        matchFormData.append('education', submittedRequirements.formData.educationRequirements);
+        matchFormData.append('experience', submittedRequirements.formData.experienceRequirements);
+        matchFormData.append('skills', submittedRequirements.requiredSkills.join(','));
+
+        const matchRes = await fetch('/api/match-alumni', {
+          method: 'POST',
+          body: matchFormData,
+        });
+        const { alumni } = await matchRes.json();
+        setMatchedAlumni(alumni);
+
+        setCurrentStep(4); // 跳到查看結果
         alert('已成功遞交！');
-        // Optionally, move to the next step
-        // setCurrentStep(4); 
     } catch (error: unknown) {
       if (error instanceof Error) {
         setSubmissionError(error.message);
@@ -678,23 +693,6 @@ const DocumentComparisonPage = () => {
     } finally {
         setIsSubmitting(false);
     }
-  };
-
-  const handleCompare = async () => {
-    const formData = new FormData();
-    formData.append('resume', uploadedFiles[0]); // Assuming you're using the first file
-    formData.append('school', requirementsState.formData.school);
-    formData.append('grade', requirementsState.formData.grade);
-    formData.append('education', requirementsState.formData.educationRequirements);
-    formData.append('experience', requirementsState.formData.experienceRequirements);
-    formData.append('skills', requirementsState.requiredSkills.join(','));
-
-    const res = await fetch('/api/match-alumni', {
-      method: 'POST',
-      body: formData,
-    });
-    const { alumni } = await res.json();
-    setMatchedAlumni(alumni);
   };
 
   useEffect(() => {
@@ -746,133 +744,24 @@ const DocumentComparisonPage = () => {
       case 4:
         return (
           <div>
-            <h4 className="mb-4 text-center">✅ 確認您的期望要求</h4>
-            <p className="text-center text-muted mb-4">請仔細核對以下資料，確認無誤後即可遞交。</p>
-            <div className="row g-4">
-                {/* Left Column */}
-                <div className="col-lg-7">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body p-4">
-                            <h5 className="card-title mb-1">{requirementsState.formData.jobTitle}</h5>
-                            <p className="text-muted">{requirementsState.formData.jobDescription || '未提供職位描述'}</p>
-                            <hr />
-                            
-                            <h6 className="mb-3"><i className="bi bi-file-earmark-text-fill text-primary me-2"></i>已上傳履歷</h6>
-                            {uploadedFiles.length > 0 ? (
-                                <ul className="list-group list-group-flush mb-3">
-                                    {uploadedFiles.map(file => (
-                                        <li key={file.name} className="list-group-item">{file.name}</li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-muted">尚未上傳履歷</p>
-                            )}
-                            
-                            <h6 className="mb-3"><i className="bi bi-mortarboard-fill text-primary me-2"></i>學術背景</h6>
-                            <div className="row">
-                                <div className="col-sm-6 mb-3">
-                                    <label className="form-label text-muted small">期望學校</label>
-                                    <p className="fw-bold">{requirementsState.formData.school}</p>
-                                </div>
-                                <div className="col-sm-6 mb-3">
-                                    <label className="form-label text-muted small">期望學系</label>
-                                    <p className="fw-bold">{requirementsState.formData.department || '未提供'}</p>
-                                </div>
-                                <div className="col-sm-6 mb-3">
-                                    <label className="form-label text-muted small">年級</label>
-                                    <p className="fw-bold">{requirementsState.formData.grade || '未提供'}</p>
-                                </div>
-                                <div className="col-sm-6 mb-3">
-                                    <label className="form-label text-muted small">現時學歷</label>
-                                    <p className="fw-bold">{requirementsState.formData.educationRequirements}</p>
-                                </div>
-                            </div>
-
-                             <h6 className="mb-3 mt-2"><i className="bi bi-person-workspace text-primary me-2"></i>經驗與備註</h6>
-                             <label className="form-label text-muted small">經驗</label>
-                             <p className="fw-bold">{requirementsState.formData.experienceRequirements || '未提供'}</p>
-                             <label className="form-label text-muted small">其他備註</label>
-                             <p className="fw-bold">{requirementsState.formData.additionalNotes || '未提供'}</p>
-                        </div>
-                    </div>
+            <h4 className="mb-4 text-center">最相似的學長</h4>
+            {matchedAlumni && matchedAlumni.length > 0 ? (
+              matchedAlumni.slice(0, 3).map(a => (
+                <div key={a.id} className="card mb-3">
+                  <div className="card-body">
+                    <h5>{a.name}（{a.school} {a.department}）</h5>
+                    <p>年級：{a.grade}，學歷：{a.education}</p>
+                    <p>經驗：{a.experience}</p>
+                    <p>技能：{a.skills?.join('、')}</p>
+                    <p>履歷摘要：{a.resume_content?.slice(0, 100)}...</p>
+                  </div>
                 </div>
-
-                {/* Right Column */}
-                <div className="col-lg-5">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body p-4">
-                            <h6 className="mb-3"><i className="bi bi-star-fill text-primary me-2"></i>技能要求</h6>
-                            <label className="form-label text-muted small">必要技能</label>
-                            <div className="mb-3">
-                                {requirementsState.requiredSkills.map((skill: string) => <span key={skill} className="badge bg-primary me-1 mb-1 p-2">{skill}</span>)}
-                            </div>
-
-                            <label className="form-label text-muted small">偏好技能</label>
-                            <div>
-                                {requirementsState.preferredSkills.length > 0 ? requirementsState.preferredSkills.map((skill: string) => <span key={skill} className="badge bg-secondary me-1 mb-1 p-2">{skill}</span>) : <p className="text-muted">未提供</p>}
-                            </div>
-                            <hr/>
-                             <h6 className="mb-3"><i className="bi bi-sliders text-primary me-2"></i>評分權重</h6>
-                             <div className="mb-3">
-                                <label className="form-label">技能權重</label>
-                                <div className="progress">
-                                    <div className="progress-bar" role="progressbar" style={{width: `${requirementsState.weights.skills}%`}} aria-valuenow={requirementsState.weights.skills} aria-valuemin={0} aria-valuemax={100}>{requirementsState.weights.skills}%</div>
-                                </div>
-                             </div>
-                             <div className="mb-3">
-                                <label className="form-label">經驗權重</label>
-                                <div className="progress">
-                                    <div className="progress-bar" role="progressbar" style={{width: `${requirementsState.weights.experience}%`}} aria-valuenow={requirementsState.weights.experience} aria-valuemin={0} aria-valuemax={100}>{requirementsState.weights.experience}%</div>
-                                </div>
-                             </div>
-                             <div>
-                                <label className="form-label">學歷權重</label>
-                                <div className="progress">
-                                    <div className="progress-bar" role="progressbar" style={{width: `${requirementsState.weights.education}%`}} aria-valuenow={requirementsState.weights.education} aria-valuemin={0} aria-valuemax={100}>{requirementsState.weights.education}%</div>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {submissionError && (
-                <div className="alert alert-danger mt-3">
-                    {submissionError}
-                </div>
+              ))
+            ) : (
+              <div className="alert alert-info">查無相似學長</div>
             )}
-
-            <div className="d-flex justify-content-end mt-4">
-                <button className="btn btn-outline-secondary me-3" onClick={() => setCurrentStep(3)} disabled={isSubmitting}>
-                    <i className="bi bi-pencil-square me-2"></i>返回修改
-                </button>
-                <button className="btn btn-primary" onClick={handleCompare} disabled={isSubmitting}>
-                    {isSubmitting ? (
-                        <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            比對中...
-                        </>
-                    ) : (
-                        <>
-                            <i className="bi bi-check-circle-fill me-2"></i>比對履歷
-                        </>
-                    )}
-                </button>
-            </div>
-
-            {matchedAlumni && matchedAlumni.map(a => (
-              <div key={a.id} className="card mb-3">
-                <div className="card-body">
-                  <h5>{a.name}（{a.school} {a.department}）</h5>
-                  <p>年級：{a.grade}，學歷：{a.education}</p>
-                  <p>經驗：{a.experience}</p>
-                  <p>技能：{a.skills?.join('、')}</p>
-                  <p>履歷摘要：{a.resume_content?.slice(0, 100)}...</p>
-                </div>
-              </div>
-            ))}
-        </div>
-      );
+          </div>
+        );
       default:
         return <div>Step not found</div>;
     }
