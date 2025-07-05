@@ -84,12 +84,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 required_skills: requiredSkills,
                 preferred_skills: preferredSkills,
                 weights: weights,
-                uploaded_cv_paths: uploadedCvPaths,
+                uploaded_cv_paths: JSON.stringify(uploadedCvPaths),
             })
             .select()
             .single();
 
         if (dbError) {
+            console.error('Supabase insert error:', dbError);
             throw new Error(`Database insertion failed: ${dbError.message}`);
         }
 
