@@ -35,15 +35,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     // 其他格式可用 textract 處理
 
-    // 2. 組合查詢文字
-    const queryText = [
-      resumeText,
-      fields.school,
-      fields.grade,
-      fields.education,
-      fields.experience,
-      (fields.skills || []).toString()
-    ].join('\n');
+    // 2. 組合查詢文字（語意豐富版）
+    const school = fields.school || '';
+    const department = fields.department || '';
+    const grade = fields.grade || '';
+    const education = fields.education || '';
+    const experience = fields.experience || '';
+    const skills = (fields.skills || '').toString();
+    const name = fields.name || '';
+    // 組合成一段自然語言描述
+    const queryText = `這是一份履歷內容：${resumeText}\n申請者姓名：${name}。期望學校：${school}，期望學系：${department}，年級：${grade}，現時學歷：${education}，必要技能：${skills}，經驗：${experience}`;
 
     // 3. 呼叫 AI 服務產生 embedding
     const embeddingRes = await fetch(EMBEDDING_API_URL, {
