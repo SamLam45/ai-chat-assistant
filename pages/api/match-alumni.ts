@@ -46,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { embedding } = await embeddingRes.json();
 
     // 4. 先用硬條件過濾（學校、學系），再用 embedding 排序
-    let { data, error } = await supabase.rpc('match_alumni_hard_filter', {
+    let { data, error } = await supabase.rpc('match_alumni_multi_hard_filter', {
       query_embedding: embedding,
       match_count: 3,
       school,
