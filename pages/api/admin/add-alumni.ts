@@ -13,14 +13,15 @@ const supabase = createClient(
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { name, school, department, grade, education, experience } = req.body;
+  const { name, school, department, grade, education, experience, skills } = req.body;
 
   if (!name || !school || !department || !grade || !education) {
     return res.status(400).json({ error: '缺少必要欄位' });
   }
 
-  // 組合文字內容（可依需求調整）
-  const text = `${name}，畢業於${school}（${department}），年級：${grade}，學歷：${education}，經驗：${experience || ''}`;
+  // 組合文字內容（與查詢語句一致，補 skills）
+  const skillsText = Array.isArray(skills) ? skills.join('、') : (skills || '');
+  const text = `學長是：${name}，畢業於${school}（${department}），畢業年份或者年級：${grade}，學歷：${education}，經驗：${experience || ''}，技能：${skillsText}`;
 
   // 1. 呼叫 Deepseek AI 產生 embedding
   let embedding: number[] = [];

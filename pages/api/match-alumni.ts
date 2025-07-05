@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { IncomingForm } from 'formidable';
-import fs from 'fs';
-import pdfParse from 'pdf-parse';
 
 export const config = {
   api: { bodyParser: false }
@@ -20,22 +18,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') return res.status(405).end();
 
   const form = new IncomingForm();
-  form.parse(req, async (err, fields, files) => {
+  form.parse(req, async (err, fields) => {
     if (err) return res.status(500).json({ error: '檔案上傳失敗' });
 
     // 1. 解析履歷檔案內容
-    const file = Array.isArray(files.resume) ? files.resume[0] : files.resume;
-    let resumeText = '';
-    if (file && file.mimetype === 'application/pdf') {
-      const dataBuffer = fs.readFileSync(file.filepath);
-      const pdfData = await pdfParse(dataBuffer);
-      resumeText = pdfData.text;
-    } else if (file && file.mimetype === 'text/plain') {
-      resumeText = fs.readFileSync(file.filepath, 'utf-8');
-    }
-    // 其他格式可用 textract 處理
-
-    // 2. 組合查詢文字（語意豐富版）
+    // 2. 組合查詢文字（語意豐富版，與學長一致）
     const school = fields.school || '';
     const department = fields.department || '';
     const grade = fields.grade || '';
@@ -43,8 +30,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const experience = fields.experience || '';
     const skills = (fields.skills || '').toString();
     const name = fields.name || '';
-    // 組合成一段自然語言描述
-    const queryText = `這是一份履歷內容：${resumeText}\n申請者姓名：${name}。期望學校：${school}，期望學系：${department}，年級：${grade}，現時學歷：${education}，必要技能：${skills}，經驗：${experience}`;
+    // 組合成一段自然語言描述（與學長一致）
+    const queryText = `學生是：${name}，期望學校：${school}，期望學系：${department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
 
     // 3. 呼叫 AI 服務產生 embedding
     const embeddingRes = await fetch(EMBEDDING_API_URL, {
