@@ -653,9 +653,15 @@ const DocumentComparisonPage = () => {
             body: formData,
         });
 
+        let result;
+        try {
+          result = await response.json();
+        } catch {
+          result = { error: 'API 回傳非 JSON，請檢查伺服器 log' };
+        }
+
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || '遞交失敗，請稍後再試。');
+            throw new Error(result.error || '遞交失敗，請稍後再試。');
         }
 
         alert('已成功遞交！');
