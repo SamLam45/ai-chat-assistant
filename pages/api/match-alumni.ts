@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
-import formidable from 'formidable';
+import { IncomingForm } from 'formidable';
 import fs from 'fs';
 import pdfParse from 'pdf-parse';
 
@@ -19,7 +19,7 @@ const API_KEY = process.env.DEEPSEEK_API_KEY;
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const form = new formidable.IncomingForm();
+  const form = new IncomingForm();
   form.parse(req, async (err, fields, files) => {
     if (err) return res.status(500).json({ error: '檔案上傳失敗' });
 
