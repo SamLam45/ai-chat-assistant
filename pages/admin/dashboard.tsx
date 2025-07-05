@@ -3,6 +3,16 @@ import { useRouter } from 'next/router';
 import { supabase } from '../../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import Layout from '../../components/Layout';
+import Papa from 'papaparse';
+
+type AlumniCsvRow = {
+  name: string;
+  school: string;
+  department: string;
+  grade: string;
+  education: string;
+  experience?: string;
+};
 
 const AdminDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -16,6 +26,8 @@ const AdminDashboard = () => {
     experience: '',
   });
   const [submitMsg, setSubmitMsg] = useState('');
+  const [csvMsg, setCsvMsg] = useState('');
+  const [csvUploading, setCsvUploading] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -56,6 +68,49 @@ const AdminDashboard = () => {
     } else {
       setSubmitMsg('新增失敗，請檢查資料或稍後再試。');
     }
+  };
+
+  const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCsvMsg('');
+    setCsvUploading(true);
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const rows = results.data as AlumniCsvRow[];
+        let success = 0, fail = 0;
+        for (const row of rows) {
+          // 檢查必要欄位
+          if (!row.name || !row.school || !row.department || !row.grade || !row.education) {
+            fail++;
+            continue;
+          }
+          const res = await fetch('/api/admin/add-alumni', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: row.name,
+              school: row.school,
+              department: row.department,
+              grade: row.grade,
+              education: row.education,
+              experience: row.experience || '',
+            }),
+          });
+          if (res.ok) success++;
+          else fail++;
+        }
+        setCsvMsg(`批次上傳完成，成功 ${success} 筆，失敗 ${fail} 筆`);
+        setCsvUploading(false);
+      },
+      error: (err) => {
+        setCsvMsg('CSV 解析失敗: ' + err.message);
+        setCsvUploading(false);
+      }
+    });
   };
 
   if (!user) {
@@ -112,6 +167,12 @@ const AdminDashboard = () => {
                               <button type="submit" className="btn btn-primary">新增學長</button>
                             </form>
                             {submitMsg && <div className="alert alert-info mt-3">{submitMsg}</div>}
+                            <div className="mb-4">
+                              <label className="form-label">或批次上傳 CSV</label>
+                              <input type="file" accept=".csv" className="form-control" onChange={handleCsvUpload} disabled={csvUploading} />
+                              {csvUploading && <div className="text-primary mt-2">上傳中，請稍候...</div>}
+                              {csvMsg && <div className="alert alert-info mt-2">{csvMsg}</div>}
+                            </div>
                             <button 
                                 className="btn btn-danger rounded-pill text-white py-3 px-5 mt-4"
                                 onClick={async () => {
