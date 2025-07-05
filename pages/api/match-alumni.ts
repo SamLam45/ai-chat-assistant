@@ -28,9 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const education = fields.education || '';
     const experience = fields.experience || '';
     const skills = (fields.skills || '').toString();
-    const name = fields.name || '';
-    // 組合查詢語句
-    const queryText = `學生是：${name}，期望學校：${school}，期望學系：${department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
+    // 組合查詢語句（移除姓名，專注於條件比對）
+    const queryText = `期望學校：${school}，期望學系：${department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
 
     // 3. 呼叫 AI 服務產生 embedding
     const embeddingRes = await fetch(EMBEDDING_API_URL, {

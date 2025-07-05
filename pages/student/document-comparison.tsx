@@ -322,10 +322,6 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Validation
-        if (!formData.jobTitle.trim()) {
-            alert('「職位名稱」是必填欄位。');
-            return;
-        }
         if (!formData.school.trim()) {
             alert('「期望學校」是必填欄位。');
             return;
@@ -418,8 +414,8 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                     </div>
                     <div className="card-body p-4">
                         <div className="mb-3">
-                            <label htmlFor="jobTitle" className="form-label">姓名<span className="text-danger">*</span></label>
-                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文" value={formData.jobTitle} onChange={handleInputChange} />
+                            <label htmlFor="jobTitle" className="form-label">姓名</label>
+                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文（選填）" value={formData.jobTitle} onChange={handleInputChange} />
                         </div>
                     </div>
                 </div>
@@ -669,7 +665,6 @@ const DocumentComparisonPage = () => {
         matchFormData.append('education', submittedRequirements.formData.educationRequirements);
         matchFormData.append('experience', submittedRequirements.formData.experienceRequirements);
         matchFormData.append('skills', submittedRequirements.requiredSkills.join(','));
-        matchFormData.append('name', submittedRequirements.formData.jobTitle);
 
         const matchRes = await fetch('/api/match-alumni', {
           method: 'POST',
