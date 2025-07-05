@@ -664,6 +664,7 @@ const DocumentComparisonPage = () => {
         const matchFormData = new FormData();
         matchFormData.append('resume', uploadedFiles[0]);
         matchFormData.append('school', submittedRequirements.formData.school);
+        matchFormData.append('department', submittedRequirements.formData.department);
         matchFormData.append('grade', submittedRequirements.formData.grade);
         matchFormData.append('education', submittedRequirements.formData.educationRequirements);
         matchFormData.append('experience', submittedRequirements.formData.experienceRequirements);

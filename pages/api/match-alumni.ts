@@ -21,8 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   form.parse(req, async (err, fields) => {
     if (err) return res.status(500).json({ error: '檔案上傳失敗' });
 
-    // 1. 解析履歷檔案內容
-    // 2. 組合查詢文字（語意豐富版，與學長一致）
+    // 1. 取得查詢條件
     const school = fields.school || '';
     const department = fields.department || '';
     const grade = fields.grade || '';
@@ -30,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const experience = fields.experience || '';
     const skills = (fields.skills || '').toString();
     const name = fields.name || '';
-    // 組合成一段自然語言描述（與學長一致）
+    // 組合查詢語句
     const queryText = `學生是：${name}，期望學校：${school}，期望學系：${department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
 
     // 3. 呼叫 AI 服務產生 embedding
@@ -46,12 +45,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     const { embedding } = await embeddingRes.json();
 
-    // 4. 查詢 supabase alumni 向量表
-    const { data, error } = await supabase.rpc('match_alumni', {
+    // 4. 先用硬條件過濾（學校、學系），再用 embedding 排序
+    let { data, error } = await supabase.rpc('match_alumni_hard_filter', {
       query_embedding: embedding,
-      match_count: 3
+      match_count: 3,
+      school,
+      department
     });
-
+    // 若硬條件查無結果，則退回全表語意排序
+    if (!data || data.length === 0) {
+      const fallback = await supabase.rpc('match_alumni', {
+        query_embedding: embedding,
+        match_count: 3
+      });
+      data = fallback.data;
+      error = fallback.error;
+    }
     if (error) {
       console.error('Supabase match_alumni error:', error);
       return res.status(500).json({ error: error.message });
