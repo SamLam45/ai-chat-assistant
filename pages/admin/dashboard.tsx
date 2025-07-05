@@ -168,7 +168,7 @@ const AdminDashboard = () => {
                             </form>
                             {submitMsg && <div className="alert alert-info mt-3">{submitMsg}</div>}
                             <div className="mb-4">
-                              <label className="form-label">或批次上傳 CSV</label>
+                              <label className="form-label">或批次上傳 CSV , 請確認 CSV UTF-8 (逗號分隔) (.csv)</label>
                               <input type="file" accept=".csv" className="form-control" onChange={handleCsvUpload} disabled={csvUploading} />
                               {csvUploading && <div className="text-primary mt-2">上傳中，請稍候...</div>}
                               {csvMsg && <div className="alert alert-info mt-2">{csvMsg}</div>}
