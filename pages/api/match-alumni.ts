@@ -72,14 +72,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     if (error) return res.status(500).json({ error: error.message });
 
-    // fallback 分組排序
-    const matchedDepartment = smartMatch.matched_department;
-    const matchedSchool = smartMatch.matched_school;
+    // fallback 分組排序（支援多個相似學系）
+    const matchedDepartments = Array.isArray(smartMatch.matched_departments)
+      ? smartMatch.matched_departments
+      : Array.isArray(smartMatch.matchedDepartments)
+        ? smartMatch.matchedDepartments
+        : [smartMatch.matched_department || smartMatch.matchedDepartment].filter(Boolean);
+    const matchedSchool = smartMatch.matched_school || smartMatch.matchedSchool;
     const alumni = Array.isArray(data) ? data : [];
-    const exactMatches = alumni.filter(a => a.department === matchedDepartment && a.school === matchedSchool);
-    const sameDepartment = alumni.filter(a => a.department === matchedDepartment && a.school !== matchedSchool);
-    const sameSchool = alumni.filter(a => a.school === matchedSchool && a.department !== matchedDepartment);
-    const others = alumni.filter(a => a.department !== matchedDepartment && a.school !== matchedSchool);
+    // 完全匹配（學校+任一相似學系）
+    const exactMatches = alumni.filter(
+      a => matchedDepartments.includes(a.department) && a.school === matchedSchool
+    );
+    // 同學系（任一相似學系，學校不同）
+    const sameDepartment = alumni.filter(
+      a => matchedDepartments.includes(a.department) && a.school !== matchedSchool
+    );
+    // 同學校（學校相同，學系不在相似學系內）
+    const sameSchool = alumni.filter(
+      a => a.school === matchedSchool && !matchedDepartments.includes(a.department)
+    );
+    // 其他
+    const others = alumni.filter(
+      a => !matchedDepartments.includes(a.department) && a.school !== matchedSchool
+    );
     const recommended = [...exactMatches, ...sameDepartment, ...sameSchool, ...others].slice(0, 3);
 
     // 回傳結果
@@ -92,7 +108,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         matchedDepartment: Array.isArray(smartMatch.matched_departments) ? smartMatch.matched_departments[0] : smartMatch.matched_department || '',
         matchedSchool: smartMatch.matched_school,
         departmentScores: smartMatch.department_similarity_scores,
-        departmentScore: smartMatch.department_similarity_score,
+        departmentScore: smartMatch.department_similarity_score, // 向下相容
         schoolScore: smartMatch.school_similarity_score,
         reasoning: smartMatch.reasoning
       }

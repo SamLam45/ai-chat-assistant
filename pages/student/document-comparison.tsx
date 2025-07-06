@@ -814,7 +814,12 @@ const DocumentComparisonPage = () => {
                           <span className="badge bg-primary me-2">#{index + 1}</span>
                           {a.name}
                         </h5>
-                        <span className="badge bg-success">{a.school} {a.department}</span>
+                        <span className="badge bg-success">
+                          {a.school} {a.department}
+                          {Array.isArray(smartMatchInfo?.matchedDepartments) && smartMatchInfo.matchedDepartments.includes(a.department) && (
+                            <span className="ms-2 badge bg-info text-dark">AI相似學系</span>
+                          )}
+                        </span>
                       </div>
                       <div className="row">
                         <div className="col-md-6">
