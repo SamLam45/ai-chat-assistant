@@ -871,6 +871,7 @@ const DocumentComparisonPage = () => {
                     <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 350, maxWidth: 500, minHeight: 600, flex: 1, fontSize: '1.12rem' }}>
                       <div className="card-body d-flex flex-column h-100 p-5">
                         <div className="d-flex flex-column align-items-start mb-4">
+                          <span className="badge bg-primary mb-2">#{index + 1}</span>
                           <div className="mb-2" style={{ width: '100%' }}>
                             <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
                               {a.school} {a.department}
@@ -882,7 +883,6 @@ const DocumentComparisonPage = () => {
                           <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {a.name}
                           </span>
-                          <span className="badge bg-primary mt-2">#{index + 1}</span>
                         </div>
                         <div className="row mb-3">
                           <div className="col-md-6">
