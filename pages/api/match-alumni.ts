@@ -65,42 +65,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { embedding } = await embeddingRes.json();
 
     // 查詢 vector DB
-    const match_count = 3;
+    const match_count = 20; // 先多抓一點，方便 fallback 分組
     const { data, error } = await supabase.rpc('match_alumni_by_vector', {
       query_embedding: embedding,
       match_count
     });
     if (error) return res.status(500).json({ error: error.message });
 
-    // fallback 機制
-    let fallbackType = null;
-    let fallbackAlumni = [];
-    // 判斷語意查詢結果是否足夠好（如無結果或分數過高，distance > 0.7）
-    if (!data || data.length === 0 || (data[0].distance && data[0].distance > 0.7)) {
-      // 先查同學系
-      const { data: deptAlumni } = await supabase
-        .from('alumni')
-        .select('*')
-        .eq('department', smartMatch.matched_department);
-      if (deptAlumni && deptAlumni.length > 0) {
-        fallbackType = '同學系';
-        fallbackAlumni = deptAlumni;
-      } else {
-        // 再查同學校
-        const { data: schoolAlumni } = await supabase
-          .from('alumni')
-          .select('*')
-          .eq('school', smartMatch.matched_school);
-        if (schoolAlumni && schoolAlumni.length > 0) {
-          fallbackType = '同學校';
-          fallbackAlumni = schoolAlumni;
-        }
-      }
-    }
+    // fallback 分組排序
+    const matchedDepartment = smartMatch.matched_department;
+    const matchedSchool = smartMatch.matched_school;
+    const alumni = Array.isArray(data) ? data : [];
+    const exactMatches = alumni.filter(a => a.department === matchedDepartment && a.school === matchedSchool);
+    const sameDepartment = alumni.filter(a => a.department === matchedDepartment && a.school !== matchedSchool);
+    const sameSchool = alumni.filter(a => a.school === matchedSchool && a.department !== matchedDepartment);
+    const others = alumni.filter(a => a.department !== matchedDepartment && a.school !== matchedSchool);
+    const recommended = [...exactMatches, ...sameDepartment, ...sameSchool, ...others].slice(0, 3);
 
     // 回傳結果
     res.status(200).json({
-      alumni: (data && data.length > 0 && (!data[0].distance || data[0].distance <= 0.7)) ? data : fallbackAlumni,
+      alumni: recommended,
       smartMatch: {
         originalDepartment: department,
         originalSchool: school,
@@ -108,8 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         matchedSchool: smartMatch.matched_school,
         departmentScore: smartMatch.department_similarity_score,
         schoolScore: smartMatch.school_similarity_score,
-        reasoning: smartMatch.reasoning,
-        fallbackType
+        reasoning: smartMatch.reasoning
       }
     });
   });

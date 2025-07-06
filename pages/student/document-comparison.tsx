@@ -45,7 +45,6 @@ type SmartMatchInfo = {
   departmentScore?: number;
   schoolScore?: number;
   reasoning?: string;
-  fallbackType?: string;
 };
 
 // Step 1: Upload Resumes Component
@@ -757,12 +756,6 @@ const DocumentComparisonPage = () => {
         return (
           <div>
             <h4 className="mb-4 text-center">最相似的學長</h4>
-            {/* fallbackType 警告訊息 */}
-            {smartMatchInfo?.fallbackType && (
-              <div className="alert alert-warning">
-                未找到完全匹配，以下為「{smartMatchInfo.fallbackType}」的推薦學長。
-              </div>
-            )}
             {matchedAlumni && matchedAlumni.length > 0 ? (
               <>
                 {/* 智能匹配資訊卡片 */}
