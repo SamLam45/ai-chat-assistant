@@ -88,8 +88,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       smartMatch: {
         originalDepartment: department,
         originalSchool: school,
-        matchedDepartment: smartMatch.matched_department,
+        matchedDepartments: smartMatch.matched_departments,
+        matchedDepartment: Array.isArray(smartMatch.matched_departments) ? smartMatch.matched_departments[0] : smartMatch.matched_department || '',
         matchedSchool: smartMatch.matched_school,
+        departmentScores: smartMatch.department_similarity_scores,
         departmentScore: smartMatch.department_similarity_score,
         schoolScore: smartMatch.school_similarity_score,
         reasoning: smartMatch.reasoning

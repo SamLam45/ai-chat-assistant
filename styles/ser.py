@@ -290,23 +290,31 @@ async def smart_match_endpoint(req: SmartMatchRequest):
 - 可用學校：{', '.join(req.available_schools)}
 
 請分析學系和學校的相似性，並提供最適合的匹配建議。考慮以下因素：
-1. 學系名稱的語義相似性（例如：經濟系 ≈ 商學系，計算機科學系 ≈ 資工系）
+1. 學系名稱的語義相似性（例如：經濟系 ≈ 商學系，計算機科學系 ≈ 資工系 ≈ 資訊科技系）
 2. 學校的層級和聲譽相似性
 3. 學科領域的相關性
 
 請以 JSON 格式回傳結果，包含：
-- "matched_department": 最匹配的學系
+- "matched_departments": 最相似的多個學系（陣列，最多3個）
 - "matched_school": 最匹配的學校
-- "department_similarity_score": 學系相似度分數 (0-100)
+- "department_similarity_scores": 各學系相似度分數 (0-100)
 - "school_similarity_score": 學校相似度分數 (0-100)
 - "reasoning": 匹配理由
 
 只回傳 JSON，不要其他文字。
+範例：
+{{
+  "matched_departments": ["電腦科學系", "計算機科學系", "資訊科技系"],
+  "matched_school": "香港科技大學",
+  "department_similarity_scores": {{"電腦科學系": 100, "計算機科學系": 98, "資訊科技系": 95}},
+  "school_similarity_score": 100,
+  "reasoning": "這三個學系在課程內容與領域高度重疊..."
+}}
 """
         logger.error(f"[DEBUG] smart-match prompt: {prompt}")
         sampling_params = SamplingParams(
             temperature=0.1,  # 低溫度確保一致性
-            max_tokens=500,
+            max_tokens=600,
             top_k=5,
             repetition_penalty=1.02
         )
@@ -331,13 +339,13 @@ async def smart_match_endpoint(req: SmartMatchRequest):
             logger.error(f"[ERROR] AI回傳內容：{repr(result)}")
             # 如果 JSON 解析失敗，提供備用邏輯
             return {
-                "matched_department": req.available_departments[0] if req.available_departments else "",
+                "matched_departments": req.available_departments[:3] if req.available_departments else [],
                 "matched_school": req.available_schools[0] if req.available_schools else "",
-                "department_similarity_score": 50,
+                "department_similarity_scores": {d: 50 for d in req.available_departments[:3]},
                 "school_similarity_score": 50,
                 "reasoning": "AI 解析失敗，使用預設匹配"
             }
-            
+        
     except Exception as e:
         logger.error(f"[ERROR] 智能匹配失敗：{str(e)}")
         raise HTTPException(status_code=500, detail=f"智能匹配失敗：{str(e)}")

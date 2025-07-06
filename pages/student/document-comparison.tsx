@@ -45,6 +45,8 @@ type SmartMatchInfo = {
   departmentScore?: number;
   schoolScore?: number;
   reasoning?: string;
+  matchedDepartments?: string[];
+  departmentScores?: Record<string, number>;
 };
 
 // Step 1: Upload Resumes Component
@@ -781,7 +783,13 @@ const DocumentComparisonPage = () => {
                         <tr>
                           <td>智能匹配</td>
                           <td>{smartMatchInfo?.matchedSchool}</td>
-                          <td>{smartMatchInfo?.matchedDepartment}</td>
+                          <td>
+                            {Array.isArray(smartMatchInfo?.matchedDepartments)
+                              ? smartMatchInfo.matchedDepartments.map(
+                                  d => `${d}${smartMatchInfo.departmentScores?.[d] ? `（${smartMatchInfo.departmentScores[d]}分）` : ''}`
+                                ).join('、')
+                              : (smartMatchInfo?.matchedDepartment || '未找到')}
+                          </td>
                         </tr>
                       </tbody>
                     </table>
