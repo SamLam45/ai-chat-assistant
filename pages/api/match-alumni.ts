@@ -11,7 +11,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-const EMBEDDING_API_URL = 'https://api.alphadeepmind.com/embedding';
+const SER_API_URL = 'http://localhost:8000'; // 請根據實際部署調整
 const API_KEY = process.env.DEEPSEEK_API_KEY;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -29,46 +29,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const experience = fields.experience || '';
     const skills = (fields.skills || '').toString();
 
-    // 2. 組合查詢描述
-    const queryText = `期望學校：${school}，期望學系：${department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
+    // 2. 查詢所有可用學校/學系
+    const { data: alumniList, error: alumniError } = await supabase
+      .from('alumni')
+      .select('school, department');
+    if (alumniError) {
+      return res.status(500).json({ error: '查詢學長資料失敗' });
+    }
+    const availableSchools = [...new Set(alumniList.map(a => a.school))].filter(Boolean);
+    const availableDepartments = [...new Set(alumniList.map(a => a.department))].filter(Boolean);
 
-    // 3. 呼叫 AI 服務產生 embedding
-    const embeddingRes = await fetch(EMBEDDING_API_URL, {
+    // 3. 語意標準化（呼叫 /smart-match）
+    const smartMatchRes = await fetch(`${SER_API_URL}/smart-match`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: queryText, key: API_KEY }),
+      body: JSON.stringify({
+        target_department: department,
+        target_school: school,
+        available_departments: availableDepartments,
+        available_schools: availableSchools,
+        key: API_KEY
+      })
     });
-    if (!embeddingRes.ok) {
-      const errText = await embeddingRes.text();
-      console.error('Embedding API error:', errText);
-      return res.status(500).json({ error: 'embedding 服務失敗' });
-    }
+    const smartMatch = await smartMatchRes.json();
+
+    // 4. 用標準化後的條件組合查詢描述
+    const queryText = `期望學校：${smartMatch.matched_school || school}，期望學系：${smartMatch.matched_department || department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
+
+    // 5. 呼叫 /embedding 產生向量
+    const embeddingRes = await fetch(`${SER_API_URL}/embedding`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: queryText, key: API_KEY })
+    });
     const { embedding } = await embeddingRes.json();
 
-    // 4. 直接用 embedding 查詢 supabase vector DB
-    // 這裡假設你有一個 match_count 參數，預設取 3 筆
+    // 6. 用向量查詢 Supabase vector DB
     const match_count = 3;
-    // 用 supabase JS client 查詢
-    const { data, error } = await supabase.rpc('match_alumni_by_vector', {
+    const { data, error: vectorError } = await supabase.rpc('match_alumni_by_vector', {
       query_embedding: embedding,
       match_count
     });
-
-    if (error) {
-      console.error('Supabase vector match error:', error);
-      return res.status(500).json({ error: error.message });
+    if (vectorError) {
+      return res.status(500).json({ error: vectorError.message });
     }
 
-    // 5. 回傳結果，包含智能匹配資訊
+    // 7. 回傳結果，包含智能匹配資訊
     res.status(200).json({
       alumni: data,
-      smartMatch: {
-        originalDepartment: department,
-        originalSchool: school,
-        queryText,
-        embeddingPreview: embedding.slice(0, 5), // 只顯示前5維做 debug
-        reasoning: '本次推薦完全基於語意相似度，未做硬條件過濾。'
-      }
+      smartMatch
     });
   });
 }
