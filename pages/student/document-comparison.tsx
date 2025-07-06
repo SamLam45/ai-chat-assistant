@@ -696,7 +696,6 @@ const DocumentComparisonPage = () => {
         // 如果有智能匹配資訊，顯示給用戶
         if (smartMatch && (smartMatch.originalDepartment !== smartMatch.matchedDepartment || 
                           smartMatch.originalSchool !== smartMatch.matchedSchool)) {
-          alert(`智能匹配結果：\n原期望學系：${smartMatch.originalDepartment} → 匹配學系：${smartMatch.matchedDepartment}\n原期望學校：${smartMatch.originalSchool} → 匹配學校：${smartMatch.matchedSchool}\n\n匹配理由：${smartMatch.reasoning}`);
         }
 
         setResultLoading(false);
@@ -841,9 +840,9 @@ const DocumentComparisonPage = () => {
                 <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長</h5>
                 <div className="d-flex justify-content-center align-items-stretch gap-4 flex-wrap">
                   {matchedAlumni.slice(0, 3).map((a, index) => (
-                    <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 350, maxWidth: 500, minHeight: 620, flex: 1, fontSize: '1.12rem' }}>
-                      <div className="card-body d-flex flex-column h-100 p-4">
-                        <div className="d-flex justify-content-between align-items-start mb-3">
+                    <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 350, maxWidth: 500, minHeight: 600, flex: 1, fontSize: '1.12rem' }}>
+                      <div className="card-body d-flex flex-column h-100 p-5">
+                        <div className="d-flex justify-content-between align-items-start mb-4">
                           <h5 className="card-title mb-0" style={{ fontSize: '1.35rem' }}>
                             <span className="badge bg-primary me-2">#{index + 1}</span>
                             {a.name}
@@ -855,7 +854,7 @@ const DocumentComparisonPage = () => {
                             )}
                           </span>
                         </div>
-                        <div className="row mb-2">
+                        <div className="row mb-3">
                           <div className="col-md-6">
                             <p style={{ fontSize: '1.08rem' }}><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
                             <p style={{ fontSize: '1.08rem' }}><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
@@ -866,7 +865,7 @@ const DocumentComparisonPage = () => {
                           </div>
                         </div>
                         {a.resume_content && (
-                          <div className="mt-3">
+                          <div className="mt-4">
                             <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
                             <p className="text-muted small" style={{ fontSize: '1.05rem' }}>{a.resume_content.slice(0, 200)}...</p>
                           </div>
