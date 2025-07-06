@@ -479,7 +479,9 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         }
                                     }}
                                 />
-                                <button className="btn btn-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}><i className="bi bi-plus-lg"></i></button>
+                                <button className="btn btn-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}>
+                                    <i className="bi bi-plus-lg"></i>
+                                </button>
                             </div>
                             <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
                                 {requiredSkills.length > 0 ? (
@@ -515,7 +517,9 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         }
                                     }}
                                 />
-                                <button className="btn btn-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}><i className="bi bi-plus-lg"></i></button>
+                                <button className="btn btn-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}>
+                                    <i className="bi bi-plus-lg"></i>
+                                </button>
                             </div>
                            <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
                                 {preferredSkills.length > 0 ? (
@@ -843,10 +847,12 @@ const DocumentComparisonPage = () => {
                     <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 350, maxWidth: 500, minHeight: 600, flex: 1, fontSize: '1.12rem' }}>
                       <div className="card-body d-flex flex-column h-100 p-5">
                         <div className="d-flex justify-content-between align-items-start mb-4">
-                          <h5 className="card-title mb-0" style={{ fontSize: '1.35rem' }}>
+                          <div className="d-flex align-items-center mb-2">
                             <span className="badge bg-primary me-2">#{index + 1}</span>
-                            {a.name}
-                          </h5>
+                            <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'normal' }}>
+                              {a.name}
+                            </span>
+                          </div>
                           <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
                             {a.school} {a.department}
                             {Array.isArray(smartMatchInfo?.matchedDepartments) && smartMatchInfo.matchedDepartments.includes(a.department) && (
