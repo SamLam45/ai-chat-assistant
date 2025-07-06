@@ -35,19 +35,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const availableSchools = Array.from(new Set(allAlumni.map(a => a.school)));
     const availableDepartments = Array.from(new Set(allAlumni.map(a => a.department)));
 
+    const body = {
+      target_school: school,
+      target_department: department,
+      available_schools: availableSchools,
+      available_departments: availableDepartments,
+      key: API_KEY
+    };
+    console.log('smart-match body:', body);
+
     // 呼叫 /smart-match
     const smartMatchRes = await fetch(SMART_MATCH_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        target_school: school,
-        target_department: department,
-        available_schools: availableSchools,
-        available_departments: availableDepartments,
-        key: API_KEY
-      }),
+      body: JSON.stringify(body),
     });
     const smartMatch = await smartMatchRes.json();
+    console.log('smartMatch:', smartMatch);
 
     // 用 AI 標準化條件組合查詢描述
     const queryText = `期望學校：${smartMatch.matched_school}，期望學系：${smartMatch.matched_department}`;
