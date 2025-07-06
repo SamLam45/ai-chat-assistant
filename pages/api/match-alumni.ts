@@ -72,9 +72,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     if (error) return res.status(500).json({ error: error.message });
 
+    // fallback 機制
+    let fallbackType = null;
+    let fallbackAlumni = [];
+    // 判斷語意查詢結果是否足夠好（如無結果或分數過高，distance > 0.7）
+    if (!data || data.length === 0 || (data[0].distance && data[0].distance > 0.7)) {
+      // 先查同學系
+      const { data: deptAlumni } = await supabase
+        .from('alumni')
+        .select('*')
+        .eq('department', smartMatch.matched_department);
+      if (deptAlumni && deptAlumni.length > 0) {
+        fallbackType = '同學系';
+        fallbackAlumni = deptAlumni;
+      } else {
+        // 再查同學校
+        const { data: schoolAlumni } = await supabase
+          .from('alumni')
+          .select('*')
+          .eq('school', smartMatch.matched_school);
+        if (schoolAlumni && schoolAlumni.length > 0) {
+          fallbackType = '同學校';
+          fallbackAlumni = schoolAlumni;
+        }
+      }
+    }
+
     // 回傳結果
     res.status(200).json({
-      alumni: data,
+      alumni: (data && data.length > 0 && (!data[0].distance || data[0].distance <= 0.7)) ? data : fallbackAlumni,
       smartMatch: {
         originalDepartment: department,
         originalSchool: school,
@@ -82,7 +108,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         matchedSchool: smartMatch.matched_school,
         departmentScore: smartMatch.department_similarity_score,
         schoolScore: smartMatch.school_similarity_score,
-        reasoning: smartMatch.reasoning
+        reasoning: smartMatch.reasoning,
+        fallbackType
       }
     });
   });
