@@ -342,10 +342,6 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
             alert('「現時學歷」是必填欄位。');
             return;
         }
-        if (requiredSkills.length === 0) {
-            alert('請至少新增一項「必要技能」。');
-            return;
-        }
     
         const fullFormData = {
             formData,
@@ -464,12 +460,12 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                     </div>
                     <div className="card-body p-4">
                         <div className="mb-3">
-                            <label className="form-label">必要技能 <span className="text-danger">*</span></label>
+                            <label className="form-label">期望技能</label>
                             <div className="input-group">
                                 <input 
                                     type="text" 
                                     className="form-control" 
-                                    placeholder="新增一項必要技能"
+                                    placeholder="新增一項期望技能"
                                     value={requiredSkillInput}
                                     onChange={(e) => setRequiredSkillInput(e.target.value)}
                                     onKeyDown={(e) => {
@@ -479,8 +475,22 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         }
                                     }}
                                 />
-                                <button className="btn btn-primary" type="button" onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}>
-                                    <i className="bi bi-plus-lg"></i>
+                                <button className="btn btn-primary" type="button" 
+                                  style={{
+                                    minWidth: '56px',
+                                    height: '48px',
+                                    borderTopLeftRadius: 0,
+                                    borderBottomLeftRadius: 0,
+                                    fontSize: '1.5rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: '#0d6efd',
+                                    color: '#fff'
+                                  }}
+                                  onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}
+                                >
+                                  <i className="bi bi-plus-lg" style={{ color: '#fff' }}></i>
                                 </button>
                             </div>
                             <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
@@ -497,7 +507,7 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         </span>
                                     ))
                                 ) : (
-                                    <div className="form-text p-2">尚未新增必要技能</div>
+                                    <div className="form-text p-2">尚未新增期望技能</div>
                                 )}
                             </div>
                         </div>
@@ -517,8 +527,22 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                                         }
                                     }}
                                 />
-                                <button className="btn btn-primary" type="button" onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}>
-                                    <i className="bi bi-plus-lg"></i>
+                                <button className="btn btn-primary" type="button" 
+                                  style={{
+                                    minWidth: '56px',
+                                    height: '48px',
+                                    borderTopLeftRadius: 0,
+                                    borderBottomLeftRadius: 0,
+                                    fontSize: '1.5rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: '#0d6efd',
+                                    color: '#fff'
+                                  }}
+                                  onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}
+                                >
+                                  <i className="bi bi-plus-lg" style={{ color: '#fff' }}></i>
                                 </button>
                             </div>
                            <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
