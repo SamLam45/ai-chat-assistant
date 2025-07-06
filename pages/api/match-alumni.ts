@@ -11,7 +11,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-const SER_API_URL = 'http://localhost:8000'; // 請根據實際部署調整
+const SMART_MATCH_API_URL = 'https://api.alphadeepmind.com/smart-match';
+const EMBEDDING_API_URL = 'https://api.alphadeepmind.com/embedding';
 const API_KEY = process.env.DEEPSEEK_API_KEY;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -29,55 +30,62 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const experience = fields.experience || '';
     const skills = (fields.skills || '').toString();
 
-    // 2. 查詢所有可用學校/學系
-    const { data: alumniList, error: alumniError } = await supabase
+    // 2. 查詢資料庫取得所有可用學校/學系
+    const { data: allAlumni, error: alumniError } = await supabase
       .from('alumni')
       .select('school, department');
-    if (alumniError) {
-      return res.status(500).json({ error: '查詢學長資料失敗' });
-    }
-    const availableSchools = [...new Set(alumniList.map(a => a.school))].filter(Boolean);
-    const availableDepartments = [...new Set(alumniList.map(a => a.department))].filter(Boolean);
+    if (alumniError) return res.status(500).json({ error: '查詢學長資料失敗' });
 
-    // 3. 語意標準化（呼叫 /smart-match）
-    const smartMatchRes = await fetch(`${SER_API_URL}/smart-match`, {
+    const availableSchools = Array.from(new Set(allAlumni.map(a => a.school)));
+    const availableDepartments = Array.from(new Set(allAlumni.map(a => a.department)));
+
+    // 3. 呼叫 /smart-match 取得標準化條件
+    const smartMatchRes = await fetch(SMART_MATCH_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        target_department: department,
         target_school: school,
-        available_departments: availableDepartments,
+        target_department: department,
         available_schools: availableSchools,
+        available_departments: availableDepartments,
         key: API_KEY
-      })
+      }),
     });
     const smartMatch = await smartMatchRes.json();
 
-    // 4. 用標準化後的條件組合查詢描述
-    const queryText = `期望學校：${smartMatch.matched_school || school}，期望學系：${smartMatch.matched_department || department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
+    // 4. 用標準化條件組合查詢描述
+    const queryText = `期望學校：${smartMatch.matched_school}，期望學系：${smartMatch.matched_department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
 
-    // 5. 呼叫 /embedding 產生向量
-    const embeddingRes = await fetch(`${SER_API_URL}/embedding`, {
+    // 5. 呼叫 embedding 產生向量
+    const embeddingRes = await fetch(EMBEDDING_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: queryText, key: API_KEY })
+      body: JSON.stringify({ text: queryText, key: API_KEY }),
     });
     const { embedding } = await embeddingRes.json();
 
-    // 6. 用向量查詢 Supabase vector DB
+    // 6. 用 embedding 查詢 vector DB
     const match_count = 3;
-    const { data, error: vectorError } = await supabase.rpc('match_alumni_by_vector', {
+    const { data, error } = await supabase.rpc('match_alumni_by_vector', {
       query_embedding: embedding,
       match_count
     });
-    if (vectorError) {
-      return res.status(500).json({ error: vectorError.message });
-    }
+    if (error) return res.status(500).json({ error: error.message });
 
-    // 7. 回傳結果，包含智能匹配資訊
+    // 7. 回傳結果
     res.status(200).json({
       alumni: data,
-      smartMatch
+      smartMatch: {
+        originalDepartment: department,
+        originalSchool: school,
+        matchedDepartment: smartMatch.matched_department,
+        matchedSchool: smartMatch.matched_school,
+        departmentScore: smartMatch.department_similarity_score,
+        schoolScore: smartMatch.school_similarity_score,
+        queryText,
+        embeddingPreview: embedding.slice(0, 5),
+        reasoning: smartMatch.reasoning
+      }
     });
   });
 }

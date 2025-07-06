@@ -764,41 +764,35 @@ const DocumentComparisonPage = () => {
                     <h5 className="mb-0"><i className="bi bi-lightbulb-fill me-2"></i>AI 智能匹配結果</h5>
                   </div>
                   <div className="card-body">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <h6><i className="bi bi-mortarboard me-2 text-primary"></i>學系匹配</h6>
-                                                 <p className="mb-2">
-                           <span className="text-muted">原期望：</span>
-                           <span className="fw-bold">{smartMatchInfo?.originalDepartment || submittedRequirements?.formData.department || '未指定'}</span>
-                         </p>
-                         <p className="mb-2">
-                           <span className="text-muted">智能匹配：</span>
-                           <span className="fw-bold text-success">{smartMatchInfo?.matchedDepartment || matchedAlumni[0]?.department || '未找到'}</span>
-                         </p>
-                      </div>
-                      <div className="col-md-6">
-                        <h6><i className="bi bi-building me-2 text-primary"></i>學校匹配</h6>
-                                                 <p className="mb-2">
-                           <span className="text-muted">原期望：</span>
-                           <span className="fw-bold">{smartMatchInfo?.originalSchool || submittedRequirements?.formData.school || '未指定'}</span>
-                         </p>
-                         <p className="mb-2">
-                           <span className="text-muted">智能匹配：</span>
-                           <span className="fw-bold text-success">{smartMatchInfo?.matchedSchool || matchedAlumni[0]?.school || '未找到'}</span>
-                         </p>
-                      </div>
+                    <table className="table table-bordered mb-3">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>學校</th>
+                          <th>學系</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>原始條件</td>
+                          <td>{smartMatchInfo?.originalSchool}</td>
+                          <td>{smartMatchInfo?.originalDepartment}</td>
+                        </tr>
+                        <tr>
+                          <td>智能匹配</td>
+                          <td>{smartMatchInfo?.matchedSchool}</td>
+                          <td>{smartMatchInfo?.matchedDepartment}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div>
+                      <strong>AI 匹配理由：</strong>
+                      <span className="text-muted">{smartMatchInfo?.reasoning}</span>
+                      <ul className="mt-2">
+                        <li>學校相似度：{smartMatchInfo?.schoolScore ?? '-'} 分</li>
+                        <li>學系相似度：{smartMatchInfo?.departmentScore ?? '-'} 分</li>
+                      </ul>
                     </div>
-                                         <div className="mt-3">
-                       <h6><i className="bi bi-info-circle me-2 text-primary"></i>匹配說明</h6>
-                       {smartMatchInfo?.reasoning ? (
-                         <p className="text-muted small">{smartMatchInfo.reasoning}</p>
-                       ) : (
-                         <p className="text-muted small">
-                           AI 系統已根據您的期望要求，智能匹配最相似的學系和學校。
-                           系統會優先考慮學系相似性，其次是學校層級，確保為您找到最適合的學長參考。
-                         </p>
-                       )}
-                     </div>
                   </div>
                 </div>
 
