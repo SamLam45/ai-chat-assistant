@@ -598,6 +598,8 @@ const DocumentComparisonPage = () => {
   const [submittedRequirements, setSubmittedRequirements] = useState<RequirementData | null>(null);
   const [matchedAlumni, setMatchedAlumni] = useState<AlumniType[]>([]);
   const [smartMatchInfo, setSmartMatchInfo] = useState<SmartMatchInfo | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [resultLoading, setResultLoading] = useState(false);
   
   const [requirementsState, setRequirementsState] = useState<RequirementData>({
     formData: {
@@ -627,8 +629,11 @@ const DocumentComparisonPage = () => {
   };
 
   const finalSubmit = async () => {
+    setShowConfirmModal(false);
+    setResultLoading(true);
     if (!submittedRequirements || uploadedFiles.length === 0) {
         alert("資料不完整，無法遞交。");
+        setResultLoading(false);
         return;
     }
 
@@ -640,6 +645,7 @@ const DocumentComparisonPage = () => {
     if (!session) {
         setSubmissionError("驗證失敗，請重新登入後再試。");
         setIsSubmitting(false);
+        setResultLoading(false);
         return;
     }
 
@@ -694,6 +700,7 @@ const DocumentComparisonPage = () => {
         }
 
         setCurrentStep(4); // 跳到查看結果
+        setResultLoading(false);
         alert('已成功遞交！');
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -703,6 +710,7 @@ const DocumentComparisonPage = () => {
         setSubmissionError('未知錯誤');
         alert('發生未知錯誤');
       }
+      setResultLoading(false);
     } finally {
         setIsSubmitting(false);
     }
@@ -746,19 +754,46 @@ const DocumentComparisonPage = () => {
       case 2:
         return <RequirementsStep initialData={requirementsState} onFormSubmit={handleRequirementSubmit} />;
       case 3:
-        return <SavedRequirementsStep 
-                    requirements={submittedRequirements} 
-                    files={uploadedFiles} 
-                    onEdit={() => setCurrentStep(2)} 
-                    onSubmit={finalSubmit}
-                    isSubmitting={isSubmitting}
-                    submissionError={submissionError} 
-                />;
+        return <>
+          <SavedRequirementsStep 
+            requirements={submittedRequirements} 
+            files={uploadedFiles} 
+            onEdit={() => setCurrentStep(2)} 
+            onSubmit={() => setShowConfirmModal(true)}
+            isSubmitting={isSubmitting}
+            submissionError={submissionError} 
+          />
+          {/* 確認遞交 Modal */}
+          {showConfirmModal && (
+            <div className="modal fade show d-block" tabIndex={-1} style={{background: 'rgba(0,0,0,0.3)'}}>
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">確認遞交</h5>
+                    <button type="button" className="btn-close" onClick={() => setShowConfirmModal(false)}></button>
+                  </div>
+                  <div className="modal-body">
+                    <p>您確定要遞交這份要求並進行 AI 智能分析嗎？</p>
+                  </div>
+                  <div className="modal-footer">
+                    <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>取消</button>
+                    <button className="btn btn-primary" onClick={finalSubmit}>確認遞交</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </>;
       case 4:
         return (
           <div>
             <h4 className="mb-4 text-center">最相似的學長</h4>
-            {matchedAlumni && matchedAlumni.length > 0 ? (
+            {resultLoading ? (
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary mb-3" role="status"></div>
+                <div className="fw-bold">AI 正在分析中，請等候...</div>
+              </div>
+            ) : matchedAlumni && matchedAlumni.length > 0 ? (
               <>
                 {/* 智能匹配資訊卡片 */}
                 <div className="card mb-4 border-primary">
@@ -804,42 +839,44 @@ const DocumentComparisonPage = () => {
                   </div>
                 </div>
 
-                {/* 學長列表 */}
+                {/* 推薦學長卡片區塊：三欄分佈+動畫 */}
                 <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長</h5>
-                {matchedAlumni.slice(0, 3).map((a, index) => (
-                  <div key={a.id} className="card mb-3 shadow-sm">
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <h5 className="card-title mb-0">
-                          <span className="badge bg-primary me-2">#{index + 1}</span>
-                          {a.name}
-                        </h5>
-                        <span className="badge bg-success">
-                          {a.school} {a.department}
-                          {Array.isArray(smartMatchInfo?.matchedDepartments) && smartMatchInfo.matchedDepartments.includes(a.department) && (
-                            <span className="ms-2 badge bg-info text-dark">AI相似學系</span>
-                          )}
-                        </span>
+                <div className="d-flex justify-content-center align-items-stretch gap-4 flex-wrap">
+                  {matchedAlumni.slice(0, 3).map((a, index) => (
+                    <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 300, maxWidth: 350, flex: 1 }}>
+                      <div className="card-body d-flex flex-column h-100">
+                        <div className="d-flex justify-content-between align-items-start mb-2">
+                          <h5 className="card-title mb-0">
+                            <span className="badge bg-primary me-2">#{index + 1}</span>
+                            {a.name}
+                          </h5>
+                          <span className="badge bg-success">
+                            {a.school} {a.department}
+                            {Array.isArray(smartMatchInfo?.matchedDepartments) && smartMatchInfo.matchedDepartments.includes(a.department) && (
+                              <span className="ms-2 badge bg-info text-dark">AI相似學系</span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <p><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
+                            <p><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
+                          </div>
+                          <div className="col-md-6">
+                            <p><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
+                            <p><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
+                          </div>
+                        </div>
+                        {a.resume_content && (
+                          <div className="mt-3">
+                            <h6><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
+                            <p className="text-muted small">{a.resume_content.slice(0, 200)}...</p>
+                          </div>
+                        )}
                       </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <p><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
-                          <p><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
-                        </div>
-                        <div className="col-md-6">
-                          <p><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
-                          <p><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
-                        </div>
-                      </div>
-                      {a.resume_content && (
-                        <div className="mt-3">
-                          <h6><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
-                          <p className="text-muted small">{a.resume_content.slice(0, 200)}...</p>
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </>
             ) : (
               <div className="alert alert-info">
