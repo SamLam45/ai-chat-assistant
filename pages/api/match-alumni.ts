@@ -22,9 +22,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   form.parse(req, async (err, fields) => {
     if (err) return res.status(500).json({ error: '檔案上傳失敗' });
 
-    // 只取期望學校、期望學系
-    const school = fields.school || '';
-    const department = fields.department || '';
+    // 修正: 確保 school/department 一定是 string
+    const school = Array.isArray(fields.school) ? fields.school[0] : fields.school || '';
+    const department = Array.isArray(fields.department) ? fields.department[0] : fields.department || '';
 
     // 查詢所有可用學校/學系
     const { data: allAlumni, error: alumniError } = await supabase
