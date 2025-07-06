@@ -22,15 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   form.parse(req, async (err, fields) => {
     if (err) return res.status(500).json({ error: '檔案上傳失敗' });
 
-    // 1. 取得查詢條件
+    // 只取期望學校、期望學系
     const school = fields.school || '';
     const department = fields.department || '';
-    const grade = fields.grade || '';
-    const education = fields.education || '';
-    const experience = fields.experience || '';
-    const skills = (fields.skills || '').toString();
 
-    // 2. 查詢資料庫取得所有可用學校/學系
+    // 查詢所有可用學校/學系
     const { data: allAlumni, error: alumniError } = await supabase
       .from('alumni')
       .select('school, department');
@@ -39,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const availableSchools = Array.from(new Set(allAlumni.map(a => a.school)));
     const availableDepartments = Array.from(new Set(allAlumni.map(a => a.department)));
 
-    // 3. 呼叫 /smart-match 取得標準化條件
+    // 呼叫 /smart-match
     const smartMatchRes = await fetch(SMART_MATCH_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -53,10 +49,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     const smartMatch = await smartMatchRes.json();
 
-    // 4. 用標準化條件組合查詢描述
-    const queryText = `期望學校：${smartMatch.matched_school}，期望學系：${smartMatch.matched_department}，年級：${grade}，現時學歷：${education}，經驗：${experience}，技能：${skills}`;
+    // 用 AI 標準化條件組合查詢描述
+    const queryText = `期望學校：${smartMatch.matched_school}，期望學系：${smartMatch.matched_department}`;
 
-    // 5. 呼叫 embedding 產生向量
+    // 產生 embedding
     const embeddingRes = await fetch(EMBEDDING_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -64,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     const { embedding } = await embeddingRes.json();
 
-    // 6. 用 embedding 查詢 vector DB
+    // 查詢 vector DB
     const match_count = 3;
     const { data, error } = await supabase.rpc('match_alumni_by_vector', {
       query_embedding: embedding,
@@ -72,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     if (error) return res.status(500).json({ error: error.message });
 
-    // 7. 回傳結果
+    // 回傳結果
     res.status(200).json({
       alumni: data,
       smartMatch: {
@@ -82,8 +78,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         matchedSchool: smartMatch.matched_school,
         departmentScore: smartMatch.department_similarity_score,
         schoolScore: smartMatch.school_similarity_score,
-        queryText,
-        embeddingPreview: embedding.slice(0, 5),
         reasoning: smartMatch.reasoning
       }
     });
