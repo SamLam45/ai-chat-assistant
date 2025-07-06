@@ -699,16 +699,10 @@ const DocumentComparisonPage = () => {
           alert(`智能匹配結果：\n原期望學系：${smartMatch.originalDepartment} → 匹配學系：${smartMatch.matchedDepartment}\n原期望學校：${smartMatch.originalSchool} → 匹配學校：${smartMatch.matchedSchool}\n\n匹配理由：${smartMatch.reasoning}`);
         }
 
-        setCurrentStep(4); // 跳到查看結果
         setResultLoading(false);
-        alert('已成功遞交！');
     } catch (error: unknown) {
       if (error instanceof Error) {
         setSubmissionError(error.message);
-        alert(`發生錯誤： ${error.message}`);
-      } else {
-        setSubmissionError('未知錯誤');
-        alert('發生未知錯誤');
       }
       setResultLoading(false);
     } finally {
@@ -777,7 +771,11 @@ const DocumentComparisonPage = () => {
                   </div>
                   <div className="modal-footer">
                     <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>取消</button>
-                    <button className="btn btn-primary" onClick={finalSubmit}>確認遞交</button>
+                    <button className="btn btn-primary" onClick={() => {
+                      setCurrentStep(4);
+                      setResultLoading(true);
+                      finalSubmit();
+                    }}>確認遞交</button>
                   </div>
                 </div>
               </div>
@@ -843,34 +841,34 @@ const DocumentComparisonPage = () => {
                 <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長</h5>
                 <div className="d-flex justify-content-center align-items-stretch gap-4 flex-wrap">
                   {matchedAlumni.slice(0, 3).map((a, index) => (
-                    <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 300, maxWidth: 350, flex: 1 }}>
-                      <div className="card-body d-flex flex-column h-100">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
-                          <h5 className="card-title mb-0">
+                    <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 350, maxWidth: 500, minHeight: 620, flex: 1, fontSize: '1.12rem' }}>
+                      <div className="card-body d-flex flex-column h-100 p-4">
+                        <div className="d-flex justify-content-between align-items-start mb-3">
+                          <h5 className="card-title mb-0" style={{ fontSize: '1.35rem' }}>
                             <span className="badge bg-primary me-2">#{index + 1}</span>
                             {a.name}
                           </h5>
-                          <span className="badge bg-success">
+                          <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
                             {a.school} {a.department}
                             {Array.isArray(smartMatchInfo?.matchedDepartments) && smartMatchInfo.matchedDepartments.includes(a.department) && (
                               <span className="ms-2 badge bg-info text-dark">AI相似學系</span>
                             )}
                           </span>
                         </div>
-                        <div className="row">
+                        <div className="row mb-2">
                           <div className="col-md-6">
-                            <p><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
-                            <p><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
+                            <p style={{ fontSize: '1.08rem' }}><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
+                            <p style={{ fontSize: '1.08rem' }}><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
                           </div>
                           <div className="col-md-6">
-                            <p><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
-                            <p><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
+                            <p style={{ fontSize: '1.08rem' }}><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
+                            <p style={{ fontSize: '1.08rem' }}><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
                           </div>
                         </div>
                         {a.resume_content && (
                           <div className="mt-3">
-                            <h6><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
-                            <p className="text-muted small">{a.resume_content.slice(0, 200)}...</p>
+                            <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
+                            <p className="text-muted small" style={{ fontSize: '1.05rem' }}>{a.resume_content.slice(0, 200)}...</p>
                           </div>
                         )}
                       </div>
