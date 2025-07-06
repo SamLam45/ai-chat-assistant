@@ -870,20 +870,18 @@ const DocumentComparisonPage = () => {
                   {matchedAlumni.slice(0, 3).map((a, index) => (
                     <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 350, maxWidth: 500, minHeight: 600, flex: 1, fontSize: '1.12rem' }}>
                       <div className="card-body d-flex flex-column h-100 p-5">
-                        <div className="d-flex justify-content-between align-items-start mb-4">
-                          <div className="d-flex align-items-center mb-2">
-                            <span className="badge bg-primary me-2">#{index + 1}</span>
-                            <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'normal' }}>
-                              {a.name}
-                            </span>
-                          </div>
-                          <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
-                            {a.school} {a.department}
-                            {Array.isArray(smartMatchInfo?.matchedDepartments) && smartMatchInfo.matchedDepartments.includes(a.department) && (
-                              <span className="ms-2 badge bg-info text-dark">AI相似學系</span>
-                            )}
+                        <div className="d-flex flex-column align-items-start mb-4">
+                          <span className="badge bg-primary mb-2">#{index + 1}</span>
+                          <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {a.name}
                           </span>
                         </div>
+                        <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
+                          {a.school} {a.department}
+                          {Array.isArray(smartMatchInfo?.matchedDepartments) && smartMatchInfo.matchedDepartments.includes(a.department) && (
+                            <span className="ms-2 badge bg-info text-dark">AI相似學系</span>
+                          )}
+                        </span>
                         <div className="row mb-3">
                           <div className="col-md-6">
                             <p style={{ fontSize: '1.08rem' }}><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
