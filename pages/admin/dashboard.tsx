@@ -107,7 +107,7 @@ const AdminDashboard = () => {
             fail++;
             continue;
           }
-          const interests = row.interests ? row.interests.split(';').map(s => s.trim()).filter(Boolean) : [];
+          const interests = row.interests ? row.interests.split(',').map(s => s.trim()).filter(Boolean) : [];
           const res = await fetch('/api/admin/add-alumni', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
