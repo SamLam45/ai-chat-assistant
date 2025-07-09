@@ -47,7 +47,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const queryText = `興趣／學術選擇：${interestsText}${otherLanguage ? '，其他語言：' + otherLanguage : ''}${specialWish ? '，特殊需求：' + specialWish : ''}`;
 
     // Gemini 產生 embedding
-    let embedding: number[] = [];
     try {
       const response = await ai.models.embedContent({
         model: 'gemini-embedding-exp-03-07',
@@ -60,89 +59,103 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         embeddings: response.embeddings,
         embeddingLength: Array.isArray(response.embeddings) && response.embeddings[0]?.values ? response.embeddings[0].values.length : undefined
       });
-      if (Array.isArray(response.embeddings) && response.embeddings.length > 0 && Array.isArray(response.embeddings[0].values)) {
-        embedding = response.embeddings[0].values;
-      } else {
-        throw new Error('embedding 格式錯誤');
-      }
     } catch (error: unknown) {
       console.error('Gemini embedding 產生失敗', error);
       return res.status(500).json({ error: 'Gemini embedding 產生失敗' });
     }
 
-    // 1. 先用 Gemini embedding 搜索特殊需求
-    let specialWishAlumni: Alumni[] = [];
+    // 1. AI 智能匹配
+    let aiMatched: Alumni[] = [];
+    let smartMatch = { school: '', education: '', grade: '', department: '' };
     if (specialWish) {
-      // 產生特殊需求 embedding
-      let wishEmbedding: number[] = [];
       try {
-        const wishRes = await ai.models.embedContent({
-          model: 'gemini-embedding-exp-03-07',
-          contents: specialWish,
-          config: { taskType: "SEMANTIC_SIMILARITY" }
+        const SMART_MATCH_PROMPT = `你是一個履歷智能推薦系統的助手。\n請根據用戶輸入的「特殊需求／願望」欄位，判斷是否包含明確的學校、學歷、年級、科系等條件。\n如果有，請將這些條件以結構化 JSON 格式回傳，欄位包含：school（學校）、education（學歷）、grade（年級）、department（科系），若無則為空字串。\n如果沒有明確條件，請回傳全空字串的 JSON。\n\n範例1：\n用戶輸入：「我想要清華大學學長」\n回傳：{"school": "清華大學", "education": "", "grade": "", "department": ""}\n\n範例2：\n用戶輸入：「我想要碩士學位學長」\n回傳：{"school": "", "education": "碩士", "grade": "", "department": ""}\n\n範例3：\n用戶輸入：「我想要資工系的碩士學長」\n回傳：{"school": "", "education": "碩士", "grade": "", "department": "資工系"}\n\n範例4：\n用戶輸入：「希望學長有實習經驗」\n回傳：{"school": "", "education": "", "grade": "", "department": ""}\n\n請根據下方用戶輸入，回傳結構化 JSON：\n「{specialWish}」`;
+        const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
+        const prompt = SMART_MATCH_PROMPT.replace('{specialWish}', specialWish);
+        const response = await ai.models.generateContent({
+          model: 'gemini-1.5-flash',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
         });
-        if (Array.isArray(wishRes.embeddings) && wishRes.embeddings.length > 0 && Array.isArray(wishRes.embeddings[0].values)) {
-          wishEmbedding = wishRes.embeddings[0].values;
+        const text = response.text || '';
+        const match = text.match(/\{[\s\S]*\}/);
+        if (match) {
+          smartMatch = JSON.parse(match[0]);
         }
-      } catch {
-        // fallback: 不做特殊需求語意搜尋
-      }
-      // 用 wishEmbedding 查詢 alumni
-      if (wishEmbedding.length > 0) {
-        const { data: wishAlumni, error: wishError } = await supabase.rpc('match_alumni_by_vector', {
-          query_embedding: wishEmbedding,
-          match_count: 20
-        });
-        if (!wishError && Array.isArray(wishAlumni)) {
-          specialWishAlumni = wishAlumni as Alumni[];
-        }
+      } catch { /* 解析失敗則忽略 */ }
+    }
+    if (smartMatch && (smartMatch.school || smartMatch.education || smartMatch.grade || smartMatch.department)) {
+      let query = supabase.from('alumni').select('*');
+      if (smartMatch.school) query = query.ilike('school', `%${smartMatch.school}%`);
+      if (smartMatch.education) query = query.ilike('education', `%${smartMatch.education}%`);
+      if (smartMatch.grade) query = query.ilike('grade', `%${smartMatch.grade}%`);
+      if (smartMatch.department) query = query.ilike('department', `%${smartMatch.department}%`);
+      const { data: alumni } = await query;
+      if (Array.isArray(alumni)) {
+        aiMatched = alumni as Alumni[];
       }
     }
 
-    let recommended: Alumni[] = [];
-    if (specialWish && specialWishAlumni.length > 0 && interests.length > 0) {
-      // 只在 specialWishAlumni 裡做 interests 交集排序
-      const sorted = specialWishAlumni
-        .map(a => ({
-          ...a,
-          _matchCount: Array.isArray(a.interests)
-            ? a.interests.filter((i: string) => interests.includes(i)).length
-            : 0
-        }))
-        .sort((a, b) => b._matchCount - a._matchCount);
-      recommended = sorted;
-    } else if (interests.length > 0) {
-      // 沒有特殊需求 fallback 原本的 interests overlaps
-      const { data: overlapAlumni, error: overlapError } = await supabase
-        .from('alumni')
-        .select('*')
-        .overlaps('interests', interests);
-      if (!overlapError && Array.isArray(overlapAlumni)) {
-        const sorted = overlapAlumni
-          .map(a => ({
+    // 2. 查詢所有學長（for interests 排序備用）
+    let allAlumni: Alumni[] = [];
+    const { data: allAlumniData } = await supabase.from('alumni').select('*');
+    if (Array.isArray(allAlumniData)) {
+      allAlumni = allAlumniData as Alumni[];
+    }
+
+    // 3. interests 交集排序 function
+    function sortByInterests(alumniList: Alumni[], interests: string[], excludeIds: string[] = []) {
+      return alumniList
+        .filter(a => !excludeIds.includes(a.id))
+        .map(a => {
+          let arr: string[] = [];
+          if (Array.isArray(a.interests)) {
+            arr = a.interests;
+          } else if (typeof a.interests === 'string' && (a.interests as string).length > 0) {
+            try {
+              arr = JSON.parse(a.interests as string);
+              if (!Array.isArray(arr)) {
+                arr = (a.interests as string).split(',').map((s: string) => s.trim());
+              }
+            } catch {
+              arr = (a.interests as string).split(',').map((s: string) => s.trim());
+            }
+          }
+          return {
             ...a,
-            _matchCount: Array.isArray(a.interests)
-              ? a.interests.filter((i: string) => interests.includes(i)).length
-              : 0
-          }))
-          .sort((a, b) => b._matchCount - a._matchCount);
-        recommended = sorted;
-      } else {
-        recommended = [];
-      }
-    } else {
-      // 沒有 interests 查詢時，顯示全部
-      const { data: allAlumni } = await supabase.from('alumni').select('*');
-      recommended = Array.isArray(allAlumni) ? allAlumni as Alumni[] : [];
+            interests: arr,
+            _matchCount: arr.filter((i: string) => interests.includes(i)).length
+          };
+        })
+        .sort((a, b) => b._matchCount - a._matchCount);
     }
 
-    // 只取前 3 筆
-    recommended = recommended.slice(0, 3);
+    // 4. 組合推薦名單
+    let recommended: Alumni[] = [];
+    let aiMatchReasons: string[] = [];
+    if (aiMatched.length > 1) {
+      // 多於 1 位，直接交集排序取前 3
+      recommended = sortByInterests(aiMatched, interests).slice(0, 3);
+      aiMatchReasons = recommended.map(a => `${a.name}學長 與您的興趣有 ${a._matchCount} 項相同和是您的「${specialWish}」`);
+    } else if (aiMatched.length === 1) {
+      // 只有 1 位，先顯示這 1 位，再補 interests 排序
+      const first = sortByInterests(aiMatched, interests)[0];
+      recommended = [first];
+      aiMatchReasons = [`${first.name}學長 與您的興趣有 ${first._matchCount} 項相同和是您的「${specialWish}」`];
+      // 查詢 interests 交集排序（排除已出現的 id）
+      const more = sortByInterests(allAlumni, interests, [first.id]).slice(0, 2);
+      recommended = recommended.concat(more);
+      aiMatchReasons = aiMatchReasons.concat(more.map(a => `${a.name}學長 與您的興趣有 ${a._matchCount} 項相同`));
+    } else {
+      // 沒有 AI 匹配，直接 interests 排序
+      recommended = sortByInterests(allAlumni, interests).slice(0, 3);
+      aiMatchReasons = recommended.map(a => `${a.name}學長 與您的興趣有 ${a._matchCount} 項相同`);
+    }
 
     res.status(200).json({
       alumni: recommended,
-      queryText,
-      embeddingLength: embedding.length
+      aiMatchReasons,
+      smartMatch,
+      queryText
     });
   });
 }

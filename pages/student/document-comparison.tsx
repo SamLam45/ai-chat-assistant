@@ -492,6 +492,8 @@ const DocumentComparisonPage = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [submittedRequirements, setSubmittedRequirements] = useState<RequirementData | null>(null);
   const [matchedAlumni, setMatchedAlumni] = useState<AlumniType[]>([]);
+  // 新增 AI 匹配理由 state
+  const [aiMatchReasons, setAiMatchReasons] = useState<string[]>([]);
   // 移除 smartMatchInfo 狀態
   // const [smartMatchInfo, setSmartMatchInfo] = useState<SmartMatchInfo | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -657,12 +659,15 @@ const DocumentComparisonPage = () => {
           method: 'POST',
           body: matchFormData,
         });
-        const { alumni, smartMatch } = await matchRes.json();
+        const { alumni, smartMatch, aiMatchReasons } = await matchRes.json();
         setMatchedAlumni(alumni);
+        setAiMatchReasons(aiMatchReasons || []);
         // 如果有智能匹配資訊，顯示給用戶
         if (smartMatch && (smartMatch.originalDepartment !== smartMatch.matchedDepartment || 
                           smartMatch.originalSchool !== smartMatch.matchedSchool)) {
         }
+        // 將 AI 匹配理由儲存起來
+        setMatchedAlumni(prev => prev.map(a => ({ ...a, aiMatchReasons: aiMatchReasons })));
 
         setResultLoading(false);
     } catch (error: unknown) {
@@ -767,6 +772,8 @@ const DocumentComparisonPage = () => {
           ...alumniWithMatchCount.filter(a => a._matchCount === 0)
         ];
         const topAlumni = alumniWithMatchCount.slice(0, 3);
+        // 新增：取得 AI 匹配理由
+        // const aiMatchReasons = Array.isArray(matchedAlumni.aiMatchReasons) ? matchedAlumni.aiMatchReasons : [];
         return (
           <div>
             <h4 className="mb-4 text-center">最相似的學長</h4>
@@ -787,6 +794,17 @@ const DocumentComparisonPage = () => {
                       <strong>您的特殊需求／願望：</strong>
                       <span className="ms-2 text-danger">{userSpecialWish ? userSpecialWish : '（未填寫）'}</span>
                     </div>
+                    {/* AI 匹配理由顯示區塊 */}
+                    {aiMatchReasons && aiMatchReasons.length > 0 && (
+                      <div className="alert alert-info">
+                        <strong>AI 匹配理由：</strong>
+                        <ul className="mb-0 ps-3">
+                          {aiMatchReasons.map((reason: string, idx: number) => (
+                            <li key={idx}>{reason}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                     <table className="table table-bordered mb-3">
                       <thead>
                         <tr>
