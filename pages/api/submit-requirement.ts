@@ -138,7 +138,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 interests: formData.interests,
                 other_language: formData.otherLanguage,
                 special_wish: formData.specialWish,
-                phone: formData.phone,
             })
             .select()
             .single();
