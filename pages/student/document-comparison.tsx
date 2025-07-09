@@ -232,6 +232,14 @@ const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, s
     submissionError: string | null,
     aiSummaryLoading?: boolean
 }) => {
+    if (aiSummaryLoading) {
+        return (
+            <div className="alert alert-info mb-4 text-center">
+                <span className="spinner-border spinner-border-sm me-2"></span>
+                AI 正在整理摘要...
+            </div>
+        );
+    }
     if (!requirements) {
         return (
             <div className="text-center">
