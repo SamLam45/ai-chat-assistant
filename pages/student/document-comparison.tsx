@@ -123,12 +123,12 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
         ...prev,
         formData: {
           ...prev.formData,
-          jobTitle: geminiExtracted.name || '',
-          email: geminiExtracted.email || '',
-          school: geminiExtracted.school || '',
-          department: geminiExtracted.department || '',
-          grade: geminiExtracted.grade || '',
-          educationRequirements: geminiExtracted.education || '',
+          jobTitle: geminiExtracted.name ?? prev.formData.jobTitle,
+          email: geminiExtracted.email ?? prev.formData.email,
+          school: geminiExtracted.school ?? prev.formData.school,
+          department: geminiExtracted.department ?? prev.formData.department,
+          grade: geminiExtracted.grade ?? prev.formData.grade,
+          educationRequirements: geminiExtracted.education ?? prev.formData.educationRequirements,
         }
       }));
       setCurrentStep(2);
