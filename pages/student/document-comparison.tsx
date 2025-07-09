@@ -15,6 +15,8 @@ interface RequirementData {
       experienceRequirements: string;
       educationRequirements: string;
       additionalNotes: string;
+      interests?: string[];
+      otherLanguage?: string;
     };
     requiredSkills: string[];
     preferredSkills: string[];
@@ -303,6 +305,36 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
     // Debug log
     console.log('RequirementsStep formData:', formData);
 
+    const INTEREST_OPTIONS: string[] = [
+      'Learning English',
+      'Cantonese',
+      'Other languages',
+      'Female',
+      'Male',
+      'Chinese Tutor',
+      'HK Local Tutor',
+      'Foreign Tutor',
+      'Art',
+      'Science',
+      'Sport',
+    ];
+
+    // 多選邏輯
+    const handleInterestChange = (option: string) => {
+      let interests = formData.interests || [];
+      if (interests.includes(option)) {
+        interests = interests.filter(i => i !== option);
+      } else {
+        if (interests.length < 10) {
+          interests = [...interests, option];
+        }
+      }
+      setFormData({ ...formData, interests });
+    };
+    const handleOtherLanguageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData({ ...formData, otherLanguage: e.target.value });
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
@@ -349,6 +381,40 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                         <div className="mb-3">
                             <label htmlFor="educationRequirements" className="form-label">學歷</label>
                             <input type="text" className="form-control" id="educationRequirements" placeholder="例如：大學學位" value={formData.educationRequirements || ''} onChange={handleInputChange} />
+                        </div>
+                        <div className="mb-4">
+                          <label className="form-label fw-bold">興趣／學術選擇（最多 10 項）</label>
+                          <div className="d-flex flex-wrap gap-2">
+                            {INTEREST_OPTIONS.map((option: string) => (
+                              <label key={option} className={`btn btn-outline-primary mb-2 ${formData.interests?.includes(option) ? 'active' : ''}`}
+                                style={{ minWidth: 120 }}>
+                                <input
+                                  type="checkbox"
+                                  className="btn-check"
+                                  autoComplete="off"
+                                  checked={!!formData.interests?.includes(option)}
+                                  onChange={() => handleInterestChange(option)}
+                                  disabled={
+                                    !formData.interests?.includes(option) && (formData.interests?.length || 0) >= 10
+                                  }
+                                />
+                                {option}
+                              </label>
+                            ))}
+                          </div>
+                          {/* 顯示其他語言輸入欄位 */}
+                          {formData.interests?.includes('Other languages') && (
+                            <div className="mt-2">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="請輸入其他語言..."
+                                value={formData.otherLanguage || ''}
+                                onChange={handleOtherLanguageChange}
+                              />
+                            </div>
+                          )}
+                          <div className="form-text">可多選，最多 10 項</div>
                         </div>
                     </div>
                 </div>
