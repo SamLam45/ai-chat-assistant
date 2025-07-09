@@ -272,6 +272,23 @@ const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, s
                     <div className="form-text mt-2">此資料來自AI自動分析，您可於上一步修改。</div>
                 </div>
             </div>
+            {/* 興趣／學術選擇顯示區塊 */}
+            {formData.interests && formData.interests.length > 0 && (
+              <div className="card mb-4 shadow-sm">
+                <div className="card-body p-4">
+                  <h6 className="mb-3"><i className="bi bi-star me-2 text-primary"></i>興趣／學術選擇</h6>
+                  <ul className="list-group">
+                    {formData.interests.map((interest, idx) => (
+                      <li className="list-group-item" key={idx}>
+                        {interest === 'Other languages' && formData.otherLanguage
+                          ? `其他語言：${formData.otherLanguage}`
+                          : interest}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
 
             {submissionError && (
                 <div className="alert alert-danger mt-3">

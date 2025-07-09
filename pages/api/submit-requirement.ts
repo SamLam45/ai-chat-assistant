@@ -135,6 +135,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 preferred_skills: preferredSkills,
                 weights: weights,
                 uploaded_cv_paths: uploadedCvPaths,
+                interests: formData.interests,
+                other_language: formData.otherLanguage,
             })
             .select()
             .single();
