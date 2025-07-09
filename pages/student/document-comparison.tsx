@@ -18,6 +18,7 @@ interface RequirementData {
       interests?: string[];
       otherLanguage?: string;
       specialWish?: string;
+      phone?: string; // Added phone field
     };
     requiredSkills: string[];
     preferredSkills: string[];
@@ -389,6 +390,10 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                         <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.2s' }}>
                             <label htmlFor="email" className="form-label">電郵地址</label>
                             <input type="email" className="form-control" id="email" placeholder="例如：david@email.com" value={formData.email || ''} onChange={handleInputChange} />
+                        </div>
+                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.25s' }}>
+                          <label htmlFor="phone" className="form-label">電話號碼</label>
+                          <input type="tel" className="form-control" id="phone" placeholder="例如：0912345678" value={formData.phone || ''} onChange={handleInputChange} />
                         </div>
                         <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.3s' }}>
                             <label htmlFor="school" className="form-label">學校</label>

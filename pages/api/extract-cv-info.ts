@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const base64 = buffer.toString('base64');
       const mimeType = file.mimetype || 'application/pdf';
       const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
-      const prompt = `你是一個履歷結構化抽取專家。請你只根據這份履歷內容，抽取以下資訊並以純 JSON 格式回傳（不要有任何多餘說明）：\n{\n  "name": "",\n  "email": "",\n  "school": "",\n  "department": "",\n  "grade": "",\n  "education": ""\n}\n規則：\n- 若找不到某欄位請留空字串。\n- email 請務必抽取出正確的電子郵件格式。\n- grade 請優先抽取「Form X」或「Year X」或「Grade X」等資訊。\n- 請只回傳 JSON，不要有任何多餘文字。`;
+      const prompt = `你是一個履歷結構化抽取專家。請你只根據這份履歷內容，抽取以下資訊並以純 JSON 格式回傳（不要有任何多餘說明）：\n{\n  "name": "",\n  "email": "",\n  "phone": "",\n  "school": "",\n  "department": "",\n  "grade": "",\n  "education": ""\n}\n規則：\n- 若找不到某欄位請留空字串。\n- email 請務必抽取出正確的電子郵件格式。\n- phone 請抽取台灣或香港常見格式。\n- grade 請優先抽取「Form X」或「Year X」或「Grade X」等資訊。\n- 請只回傳 JSON，不要有任何多餘文字。`;
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: [
