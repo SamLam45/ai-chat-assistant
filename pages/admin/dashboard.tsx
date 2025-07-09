@@ -174,7 +174,7 @@ const AdminDashboard = () => {
                                 <input name="department" className="form-control" value={form.department} onChange={handleChange} required />
                               </div>
                               <div className="mb-3">
-                                <label className="form-label">畢業年級</label>
+                                <label className="form-label">年級</label>
                                 <input name="grade" className="form-control" value={form.grade} onChange={handleChange} required />
                               </div>
                               <div className="mb-3">

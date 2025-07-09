@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { IncomingForm } from 'formidable';
+import { GoogleGenAI } from "@google/genai";
 
 export const config = {
   api: { bodyParser: false }
@@ -11,9 +12,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-const SMART_MATCH_API_URL = 'https://api.alphadeepmind.com/smart-match';
-const EMBEDDING_API_URL = 'https://api.alphadeepmind.com/embedding';
-const API_KEY = process.env.DEEPSEEK_API_KEY;
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -22,96 +21,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   form.parse(req, async (err, fields) => {
     if (err) return res.status(500).json({ error: '檔案上傳失敗' });
 
-    // 修正: 確保 school/department 一定是 string
-    const school = Array.isArray(fields.school) ? fields.school[0] : fields.school || '';
-    const department = Array.isArray(fields.department) ? fields.department[0] : fields.department || '';
+    // 取得用戶查詢條件
+    const interests = Array.isArray(fields.interests) ? fields.interests : (fields.interests ? [fields.interests] : []);
+    const otherLanguage = Array.isArray(fields.otherLanguage) ? fields.otherLanguage[0] : fields.otherLanguage || '';
+    const specialWish = Array.isArray(fields.specialWish) ? fields.specialWish[0] : fields.specialWish || '';
 
-    // 查詢所有可用學校/學系
-    const { data: allAlumni, error: alumniError } = await supabase
-      .from('alumni')
-      .select('school, department');
-    if (alumniError) return res.status(500).json({ error: '查詢學長資料失敗' });
+    // 組合語意查詢描述
+    const interestsText = (interests || []).join('、');
+    const queryText = `興趣／學術選擇：${interestsText}${otherLanguage ? '，其他語言：' + otherLanguage : ''}${specialWish ? '，特殊需求：' + specialWish : ''}`;
 
-    const availableSchools = Array.from(new Set(allAlumni.map(a => a.school)));
-    const availableDepartments = Array.from(new Set(allAlumni.map(a => a.department)));
-
-    const body = {
-      target_school: school,
-      target_department: department,
-      available_schools: availableSchools,
-      available_departments: availableDepartments,
-      key: API_KEY
-    };
-    console.log('smart-match body:', body);
-
-    // 呼叫 /smart-match
-    const smartMatchRes = await fetch(SMART_MATCH_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    const smartMatch = await smartMatchRes.json();
-    console.log('smartMatch:', smartMatch);
-
-    // 用 AI 標準化條件組合查詢描述
-    const queryText = `期望學校：${smartMatch.matched_school}，期望學系：${smartMatch.matched_department}`;
-
-    // 產生 embedding
-    const embeddingRes = await fetch(EMBEDDING_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: queryText, key: API_KEY }),
-    });
-    const { embedding } = await embeddingRes.json();
+    // Gemini 產生 embedding
+    let embedding: number[] = [];
+    try {
+      const response = await ai.models.embedContent({
+        model: 'gemini-embedding-exp-03-07',
+        contents: queryText,
+        config: { taskType: "SEMANTIC_SIMILARITY" }
+      });
+      // log Gemini 回傳內容與維度
+      console.log('[Gemini embedding 回傳]', {
+        queryText,
+        embeddings: response.embeddings,
+        embeddingLength: Array.isArray(response.embeddings) && response.embeddings[0]?.values ? response.embeddings[0].values.length : undefined
+      });
+      if (Array.isArray(response.embeddings) && response.embeddings.length > 0 && Array.isArray(response.embeddings[0].values)) {
+        embedding = response.embeddings[0].values;
+      } else {
+        throw new Error('embedding 格式錯誤');
+      }
+    } catch (e) {
+      console.error('Gemini embedding 產生失敗', e);
+      return res.status(500).json({ error: 'Gemini embedding 產生失敗' });
+    }
 
     // 查詢 vector DB
-    const match_count = 20; // 先多抓一點，方便 fallback 分組
+    const match_count = 20;
     const { data, error } = await supabase.rpc('match_alumni_by_vector', {
       query_embedding: embedding,
       match_count
     });
     if (error) return res.status(500).json({ error: error.message });
 
-    // fallback 分組排序（支援多個相似學系）
-    const matchedDepartments = Array.isArray(smartMatch.matched_departments)
-      ? smartMatch.matched_departments
-      : Array.isArray(smartMatch.matchedDepartments)
-        ? smartMatch.matchedDepartments
-        : [smartMatch.matched_department || smartMatch.matchedDepartment].filter(Boolean);
-    const matchedSchool = smartMatch.matched_school || smartMatch.matchedSchool;
+    // 推薦排序（可依需求調整）
     const alumni = Array.isArray(data) ? data : [];
-    // 完全匹配（學校+任一相似學系）
-    const exactMatches = alumni.filter(
-      a => matchedDepartments.includes(a.department) && a.school === matchedSchool
-    );
-    // 同學系（任一相似學系，學校不同）
-    const sameDepartment = alumni.filter(
-      a => matchedDepartments.includes(a.department) && a.school !== matchedSchool
-    );
-    // 同學校（學校相同，學系不在相似學系內）
-    const sameSchool = alumni.filter(
-      a => a.school === matchedSchool && !matchedDepartments.includes(a.department)
-    );
-    // 其他
-    const others = alumni.filter(
-      a => !matchedDepartments.includes(a.department) && a.school !== matchedSchool
-    );
-    const recommended = [...exactMatches, ...sameDepartment, ...sameSchool, ...others].slice(0, 3);
+    const recommended = alumni.slice(0, 3);
 
-    // 回傳結果
     res.status(200).json({
       alumni: recommended,
-      smartMatch: {
-        originalDepartment: department,
-        originalSchool: school,
-        matchedDepartments: smartMatch.matched_departments,
-        matchedDepartment: Array.isArray(smartMatch.matched_departments) ? smartMatch.matched_departments[0] : smartMatch.matched_department || '',
-        matchedSchool: smartMatch.matched_school,
-        departmentScores: smartMatch.department_similarity_scores,
-        departmentScore: smartMatch.department_similarity_score, // 向下相容
-        schoolScore: smartMatch.school_similarity_score,
-        reasoning: smartMatch.reasoning
-      }
+      queryText,
+      embeddingLength: embedding.length
     });
   });
 }
