@@ -71,17 +71,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('[DEBUG] 用戶特殊需求／願望:', specialWish);
     if (specialWish) {
       try {
-        const SMART_MATCH_PROMPT = `你是一個履歷智能推薦系統的助手。\n請根據用戶輸入的「特殊需求／願望」欄位，判斷是否包含明確的學校、學歷、年級、科系等條件。\n如果有，請將這些條件以結構化 JSON 格式回傳，欄位包含：school（學校）、education（學歷）、grade（年級）、department（科系），若無則為空字串。\n如果沒有明確條件，請回傳全空字串的 JSON。\n\n範例1：\n用戶輸入：「我想要清華大學學長」\n回傳：{"school": "清華大學", "education": "", "grade": "", "department": ""}\n\n範例2：\n用戶輸入：「我想要碩士學位學長」\n回傳：{"school": "", "education": "碩士", "grade": "", "department": ""}\n\n範例3：\n用戶輸入：「我想要資工系的碩士學長」\n回傳：{"school": "", "education": "碩士", "grade": "", "department": "資工系"}\n\n範例4：\n用戶輸入：「希望學長有實習經驗」\n回傳：{"school": "", "education": "", "grade": "", "department": ""}\n\n請根據下方用戶輸入，回傳結構化 JSON：\n「{specialWish}」`;
+        const SMART_MATCH_PROMPT = `你是一個履歷智能推薦系統的助手。\n請根據用戶輸入的「特殊需求／願望」欄位，判斷是否包含明確的學校、學歷、年級、科系等條件。\n如果有，請將這些條件以結構化 JSON 格式回傳，欄位包含：school（學校）、education（學歷）、grade（年級）、department（科系），若無則為空字串。\n如果沒有明確條件，請回傳全空字串的 JSON。\n\n範例1：\n用戶輸入：「我想要清華大學學長」\n回傳：{\"school\": \"清華大學\", \"education\": \"\", \"grade\": \"\", \"department\": \"\"}\n\n範例2：\n用戶輸入：「我想要碩士學位學長」\n回傳：{\"school\": \"\", \"education\": \"碩士\", \"grade\": \"\", \"department\": \"\"}\n\n範例3：\n用戶輸入：「我想要資工系的碩士學長」\n回傳：{\"school\": \"\", \"education\": \"碩士\", \"grade\": \"\", \"department\": \"資工系\"}\n\n範例4：\n用戶輸入：「希望學長有實習經驗」\n回傳：{\"school\": \"\", \"education\": \"\", \"grade\": \"\", \"department\": \"\"}\n\n請根據下方用戶輸入，回傳結構化 JSON：\n「{specialWish}」`;
         const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
         const prompt = SMART_MATCH_PROMPT.replace('{specialWish}', specialWish);
         const response = await ai.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-2.5-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
         });
         const text = response.text || '';
+        // 新增 Gemini 回傳原始 text log
+        console.log('[DEBUG] Gemini 回傳原始 text:', text);
         const match = text.match(/\{[\s\S]*\}/);
         if (match) {
           smartMatch = JSON.parse(match[0]);
+          // 新增 smartMatch 解析結果 log
+          console.log('[DEBUG] smartMatch 解析結果:', smartMatch);
         }
       } catch { /* 解析失敗則忽略 */ }
     }
