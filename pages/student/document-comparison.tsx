@@ -755,23 +755,10 @@ const DocumentComparisonPage = () => {
           )}
         </>;
       case 4:
-        // 計算交集數量
-        const userInterests = submittedRequirements?.formData.interests || [];
+        // 直接依照後端順序顯示前三位，並明確型別
+        type TopAlumniType = AlumniType & { _matchCount?: number; interests?: string[] };
         const userSpecialWish = submittedRequirements?.formData.specialWish || '';
-        // 先標記有無交集
-        let alumniWithMatchCount = matchedAlumni.map((a: AlumniType & { interests?: string[] }) => ({
-          ...a,
-          interests: a.interests,
-          _matchCount: Array.isArray(a.interests)
-            ? a.interests.filter((i: string) => userInterests.includes(i)).length
-            : 0
-        }));
-        // 有交集的排前，無交集的排後，且各自內部依交集數量多至少排序
-        alumniWithMatchCount = [
-          ...alumniWithMatchCount.filter(a => a._matchCount > 0).sort((a, b) => b._matchCount - a._matchCount),
-          ...alumniWithMatchCount.filter(a => a._matchCount === 0)
-        ];
-        const topAlumni = alumniWithMatchCount.slice(0, 3);
+        const topAlumni: TopAlumniType[] = matchedAlumni.slice(0, 3);
         // 新增：取得 AI 匹配理由
         // const aiMatchReasons = Array.isArray(matchedAlumni.aiMatchReasons) ? matchedAlumni.aiMatchReasons : [];
         return (
@@ -818,7 +805,7 @@ const DocumentComparisonPage = () => {
                           <td>興趣／學術選擇</td>
                           <td>
                             <ul className="mb-0 ps-3">
-                              {userInterests.map((interest, idx) => (
+                              {Array.isArray(submittedRequirements?.formData?.interests) && submittedRequirements.formData.interests.map((interest, idx) => (
                                 <li key={idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
                               ))}
                             </ul>
@@ -835,10 +822,12 @@ const DocumentComparisonPage = () => {
                         {topAlumni.map(a => (
                           <li key={a.id}>
                             <span className="fw-bold">{a.name}</span> 學長
-                            {a._matchCount > 0
-                              ? <span> 與您的興趣有 <span className="text-primary fw-bold">{a._matchCount}</span> 項相同</span>
-                              : <span className="text-warning"> 僅語意相近（無興趣交集）</span>
-                            }
+                            {typeof a._matchCount === 'number' && (
+                              <span> 與您的興趣有 <span className="text-primary fw-bold">{a._matchCount}</span> 項相同</span>
+                            )}
+                            {typeof a._matchCount === 'number' && a._matchCount === 0 && (
+                              <span className="text-warning"> 僅語意相近（無興趣交集）</span>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -849,7 +838,7 @@ const DocumentComparisonPage = () => {
                 {/* 推薦學長卡片區塊：三欄固定分佈 */}
                 <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
                 <div className="row justify-content-center g-4">
-                  {topAlumni.map((a, index) => (
+                  {topAlumni.map((a: TopAlumniType, index: number) => (
                     <div key={a.id} className="col-12 col-md-4 d-flex">
                       <div
                         className="card mb-3 shadow-sm animate__animated animate__fadeInUp flex-fill"
@@ -872,6 +861,10 @@ const DocumentComparisonPage = () => {
                             <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {a.name}
                             </span>
+                            {/* 顯示交集數量（如有） */}
+                            {typeof a._matchCount === 'number' && (
+                              <span className="badge bg-info ms-2">交集數：{a._matchCount}</span>
+                            )}
                           </div>
                           <div className="row mb-3">
                             <div className="col-md-6">
