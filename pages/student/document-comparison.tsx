@@ -103,7 +103,11 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
   };
 
   const handleNext = async () => {
-    if (files.length === 0) return;
+    if (files.length === 0) {
+      // 沒有檔案，直接進入下一步
+      setCurrentStep(2);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -112,7 +116,6 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
       const res = await fetch('/api/extract-cv-info', { method: 'POST', body: formData });
       if (!res.ok) throw new Error('AI 分析失敗，請稍後再試');
       const { geminiExtracted } = await res.json();
-      console.log('Gemini Extracted:', geminiExtracted);
       let parsed = geminiExtracted;
       if ('raw' in geminiExtracted && typeof geminiExtracted.raw === 'string') {
         const match = geminiExtracted.raw.match(/```json\n([\s\S]*)```/);
@@ -131,23 +134,18 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
             ...prev.formData,
             jobTitle: (parsed.name ?? prev.formData.jobTitle) || '',
             email: (parsed.email ?? prev.formData.email) || '',
-            phone: (parsed.phone ?? prev.formData.phone) || '', // ← 新增這行
+            phone: (parsed.phone ?? prev.formData.phone) || '',
             school: (parsed.school ?? prev.formData.school) || '',
             department: (parsed.department ?? prev.formData.department) || '',
             grade: (parsed.grade ?? prev.formData.grade) || '',
             educationRequirements: (parsed.education ?? prev.formData.educationRequirements) || '',
           }
         };
-        console.log('setRequirementsState 更新:', updated);
         return updated;
       });
       setCurrentStep(2);
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e.message || 'AI 分析失敗');
-      } else {
-        setError('AI 分析失敗');
-      }
+      setError(e instanceof Error ? e.message : 'AI 分析失敗');
     } finally {
       setLoading(false);
     }
@@ -207,14 +205,14 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
       ) : (
         <div className="alert alert-secondary text-center mt-4" role="alert">
           <i className="bi bi-info-circle me-2"></i>
-          尚未上傳履歷。請至少上傳一份履歷以進行評估。
+          履歷可選填，若未上傳也可直接進行下一步。
         </div>
       )}
       <div className="d-flex justify-content-end mt-4">
         <button 
           className="btn btn-primary btn-lg px-5" 
           onClick={handleNext} 
-          disabled={files.length === 0 || loading}
+          disabled={loading}
         >
           {loading ? (<><span className="spinner-border spinner-border-sm me-2"></span>AI 分析中...</>) : (<>下一步 <i className="bi bi-arrow-right"></i></>)}
         </button>
@@ -556,10 +554,10 @@ const DocumentComparisonPage = () => {
   const finalSubmit = async () => {
     setShowConfirmModal(false);
     setResultLoading(true);
-    if (!submittedRequirements || uploadedFiles.length === 0) {
-        alert("資料不完整，無法遞交。");
-        setResultLoading(false);
-        return;
+    if (!submittedRequirements) {
+      alert("資料不完整，無法遞交。");
+      setResultLoading(false);
+      return;
     }
 
     setIsSubmitting(true);
@@ -644,7 +642,9 @@ const DocumentComparisonPage = () => {
 
         // 遞交成功後自動比對學長
         const matchFormData = new FormData();
-        matchFormData.append('resume', uploadedFiles[0]);
+        if (uploadedFiles.length > 0) {
+          matchFormData.append('resume', uploadedFiles[0]);
+        }
         matchFormData.append('school', submittedRequirements.formData.school);
         matchFormData.append('department', submittedRequirements.formData.department);
         matchFormData.append('grade', submittedRequirements.formData.grade);
