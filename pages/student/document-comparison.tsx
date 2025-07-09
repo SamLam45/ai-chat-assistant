@@ -26,6 +26,7 @@ interface RequirementData {
       experience: number;
       education: number;
     };
+    aiSummary?: string;
   }
 
 type AlumniType = {
@@ -256,6 +257,11 @@ const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, s
 
     return (
         <div>
+            {requirements.aiSummary && (
+              <div className="alert alert-info mb-4">
+                <strong>AI 摘要：</strong>{requirements.aiSummary}
+              </div>
+            )}
             <h4 className="mb-4 text-center">✅ 確認您的個人資料</h4>
             <p className="text-center text-muted mb-4">請確認以下資訊，若有誤請返回上一步修改。</p>
 
@@ -504,9 +510,26 @@ const DocumentComparisonPage = () => {
   });
 
 
-  const handleRequirementSubmit = (fullFormData: RequirementData) => {
-    setRequirementsState(fullFormData); // Save the latest data
-    setSubmittedRequirements(fullFormData);
+  const handleRequirementSubmit = async (fullFormData: RequirementData) => {
+    // 呼叫 AI summary
+    const res = await fetch('/api/ai-summary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        interests: fullFormData.formData.interests,
+        otherLanguage: fullFormData.formData.otherLanguage,
+        specialWish: fullFormData.formData.specialWish,
+      }),
+    });
+    const { summary } = await res.json();
+    setRequirementsState({
+      ...fullFormData,
+      aiSummary: summary,
+    });
+    setSubmittedRequirements({
+      ...fullFormData,
+      aiSummary: summary,
+    });
     setCurrentStep(3);
   };
 
