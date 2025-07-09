@@ -813,53 +813,52 @@ const DocumentComparisonPage = () => {
                   </div>
                 </div>
 
-                {/* 推薦學長卡片區塊：三欄分佈+動畫 */}
+                {/* 推薦學長卡片區塊：三欄固定分佈 */}
                 <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
-                <div className="d-flex justify-content-center align-items-stretch gap-4 flex-wrap">
+                <div className="row justify-content-center g-4">
                   {topAlumni.map((a, index) => (
-                    <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 350, maxWidth: 500, minHeight: 600, flex: 1, fontSize: '1.12rem' }}>
-                      <div className="card-body d-flex flex-column h-100 p-5">
-                        <div className="d-flex flex-column align-items-start mb-4">
-                          <span className="badge bg-primary mb-2">#{index + 1}</span>
-                          <div className="mb-2" style={{ width: '100%' }}>
-                            <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
-                              {a.school} {a.department}
+                    <div key={a.id} className="col-12 col-md-4 d-flex">
+                      <div className="card mb-3 shadow-sm animate__animated animate__fadeInUp flex-fill" style={{ minHeight: 600, fontSize: '1.12rem' }}>
+                        <div className="card-body d-flex flex-column h-100 p-5">
+                          <div className="d-flex flex-column align-items-start mb-4">
+                            <span className="badge bg-primary mb-2">#{index + 1}</span>
+                            <div className="mb-2" style={{ width: '100%' }}>
+                              <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
+                                {a.school} {a.department}
+                              </span>
+                            </div>
+                            <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {a.name}
                             </span>
                           </div>
-                          <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {a.name}
-                          </span>
+                          <div className="row mb-3">
+                            <div className="col-md-6">
+                              <p style={{ fontSize: '1.08rem' }}><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
+                              <p style={{ fontSize: '1.08rem' }}><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
+                            </div>
+                            <div className="col-md-6">
+                              <p style={{ fontSize: '1.08rem' }}><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
+                              <p style={{ fontSize: '1.08rem' }}><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
+                            </div>
+                          </div>
+                          {/* 興趣／學術選擇點列式顯示 */}
+                          {Array.isArray(a.interests) && a.interests.length > 0 && (
+                            <div className="mt-4">
+                              <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-list-check me-2 text-primary"></i>興趣／學術選擇</h6>
+                              <ul className="list-unstyled mb-0 ps-2">
+                                {a.interests?.map((interest: string, _idx: number) => (
+                                  <li key={_idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {a.resume_content && (
+                            <div className="mt-4">
+                              <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
+                              <pre className="text-muted small" style={{ fontSize: '1.05rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0 }}>{a.resume_content}</pre>
+                            </div>
+                          )}
                         </div>
-                        <div className="row mb-3">
-                          <div className="col-md-6">
-                            <p style={{ fontSize: '1.08rem' }}><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
-                            <p style={{ fontSize: '1.08rem' }}><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
-                          </div>
-                          <div className="col-md-6">
-                            <p style={{ fontSize: '1.08rem' }}><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
-                            <p style={{ fontSize: '1.08rem' }}><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
-                          </div>
-                        </div>
-                        {/* 興趣／學術選擇點列式顯示 */}
-                        {Array.isArray(a.interests) && a.interests.length > 0 && (
-                          <div className="mt-4">
-                            <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-list-check me-2 text-primary"></i>興趣／學術選擇</h6>
-                            <ul className="list-unstyled mb-0 ps-2">
-                              {a.interests?.map((interest: string, _idx: number) => (
-                                <li key={_idx}>
-                                  <i className="bi bi-check2-circle text-success me-1"></i>
-                                  {interest}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        {a.resume_content && (
-                          <div className="mt-4">
-                            <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
-                            <pre className="text-muted small" style={{ fontSize: '1.05rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0 }}>{a.resume_content}</pre>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}

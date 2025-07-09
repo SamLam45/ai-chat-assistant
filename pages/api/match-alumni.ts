@@ -70,17 +70,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Gemini embedding 產生失敗' });
     }
 
-    // 查詢 vector DB（可保留語意查詢備用，但主邏輯改為 overlaps）
+    // 1. 先用 Gemini embedding 搜索特殊需求
+    let specialWishAlumni: Alumni[] = [];
+    if (specialWish) {
+      // 產生特殊需求 embedding
+      let wishEmbedding: number[] = [];
+      try {
+        const wishRes = await ai.models.embedContent({
+          model: 'gemini-embedding-exp-03-07',
+          contents: specialWish,
+          config: { taskType: "SEMANTIC_SIMILARITY" }
+        });
+        if (Array.isArray(wishRes.embeddings) && wishRes.embeddings.length > 0 && Array.isArray(wishRes.embeddings[0].values)) {
+          wishEmbedding = wishRes.embeddings[0].values;
+        }
+      } catch {
+        // fallback: 不做特殊需求語意搜尋
+      }
+      // 用 wishEmbedding 查詢 alumni
+      if (wishEmbedding.length > 0) {
+        const { data: wishAlumni, error: wishError } = await supabase.rpc('match_alumni_by_vector', {
+          query_embedding: wishEmbedding,
+          match_count: 20
+        });
+        if (!wishError && Array.isArray(wishAlumni)) {
+          specialWishAlumni = wishAlumni as Alumni[];
+        }
+      }
+    }
+
     let recommended: Alumni[] = [];
-    if (interests.length > 0) {
-      // 查詢所有有交集的學長
+    if (specialWish && specialWishAlumni.length > 0 && interests.length > 0) {
+      // 只在 specialWishAlumni 裡做 interests 交集排序
+      const sorted = specialWishAlumni
+        .map(a => ({
+          ...a,
+          _matchCount: Array.isArray(a.interests)
+            ? a.interests.filter((i: string) => interests.includes(i)).length
+            : 0
+        }))
+        .sort((a, b) => b._matchCount - a._matchCount);
+      recommended = sorted;
+    } else if (interests.length > 0) {
+      // 沒有特殊需求 fallback 原本的 interests overlaps
       const { data: overlapAlumni, error: overlapError } = await supabase
         .from('alumni')
         .select('*')
         .overlaps('interests', interests);
-
       if (!overlapError && Array.isArray(overlapAlumni)) {
-        // 依交集數量排序
         const sorted = overlapAlumni
           .map(a => ({
             ...a,
@@ -89,8 +126,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               : 0
           }))
           .sort((a, b) => b._matchCount - a._matchCount);
-
-        recommended = sorted as Alumni[];
+        recommended = sorted;
       } else {
         recommended = [];
       }
@@ -104,7 +140,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     recommended = recommended.slice(0, 3);
 
     res.status(200).json({
-      alumni: recommended.slice(0, 3),
+      alumni: recommended,
       queryText,
       embeddingLength: embedding.length
     });
