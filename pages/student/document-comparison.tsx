@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Head from 'next/head';
 import Layout from '../../components/Layout'; // Assuming a Layout component exists
 import { useRouter } from 'next/router';
@@ -59,8 +59,14 @@ const allowedTypes = [
 ];
 const maxFileSize = 5 * 1024 * 1024; // 5MB
 
-const UploadStep = ({ files, onFilesChange, onNext }: { files: File[], onFilesChange: (files: File[]) => void, onNext: () => void }) => {
+const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep }: {
+  files: File[],
+  onFilesChange: (files: File[]) => void,
+  setRequirementsState: Dispatch<SetStateAction<RequirementData>>,
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+}) => {
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleFiles = (selectedFiles: FileList | null) => {
     if (!selectedFiles) return;
@@ -101,6 +107,40 @@ const UploadStep = ({ files, onFilesChange, onNext }: { files: File[], onFilesCh
 
   const removeFile = (name: string) => {
     onFilesChange(files.filter(f => f.name !== name));
+  };
+
+  const handleNext = async () => {
+    if (files.length === 0) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const formData = new FormData();
+      files.forEach(file => formData.append('resumes', file));
+      const res = await fetch('/api/extract-cv-info', { method: 'POST', body: formData });
+      if (!res.ok) throw new Error('AI 分析失敗，請稍後再試');
+      const { geminiExtracted } = await res.json();
+      setRequirementsState((prev: RequirementData) => ({
+        ...prev,
+        formData: {
+          ...prev.formData,
+          jobTitle: geminiExtracted.name || '',
+          email: geminiExtracted.email || '',
+          school: geminiExtracted.school || '',
+          department: geminiExtracted.department || '',
+          grade: geminiExtracted.grade || '',
+          educationRequirements: geminiExtracted.education || '',
+        }
+      }));
+      setCurrentStep(2);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message || 'AI 分析失敗');
+      } else {
+        setError('AI 分析失敗');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -166,10 +206,10 @@ const UploadStep = ({ files, onFilesChange, onNext }: { files: File[], onFilesCh
       <div className="d-flex justify-content-end mt-4">
         <button 
           className="btn btn-primary btn-lg px-5" 
-          onClick={onNext} 
-          disabled={files.length === 0}
+          onClick={handleNext} 
+          disabled={files.length === 0 || loading}
         >
-          下一步 <i className="bi bi-arrow-right"></i>
+          {loading ? (<><span className="spinner-border spinner-border-sm me-2"></span>AI 分析中...</>) : (<>下一步 <i className="bi bi-arrow-right"></i></>)}
         </button>
       </div>
     </div>
@@ -399,7 +439,7 @@ const DocumentComparisonPage = () => {
         // === Gemini AI 自動填入欄位 ===
         if (result.geminiExtracted && typeof result.geminiExtracted === 'object') {
           const g = result.geminiExtracted;
-          setRequirementsState(prev => ({
+          setRequirementsState((prev: RequirementData) => ({
             ...prev,
             formData: {
               ...prev.formData,
@@ -485,7 +525,7 @@ const DocumentComparisonPage = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <UploadStep files={uploadedFiles} onFilesChange={setUploadedFiles} onNext={() => setCurrentStep(2)} />;
+        return <UploadStep files={uploadedFiles} onFilesChange={setUploadedFiles} setRequirementsState={setRequirementsState} setCurrentStep={setCurrentStep} />;
       case 2:
         return <RequirementsStep initialData={requirementsState} onFormSubmit={handleRequirementSubmit} />;
       case 3:
