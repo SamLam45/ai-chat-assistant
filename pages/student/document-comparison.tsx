@@ -513,6 +513,7 @@ const DocumentComparisonPage = () => {
 
   const handleRequirementSubmit = async (fullFormData: RequirementData) => {
     setAiSummaryLoading(true);
+    setCurrentStep(3); // 立即跳到 Step 3，顯示 loading
     // 呼叫 AI summary
     const res = await fetch('/api/ai-summary', {
       method: 'POST',
@@ -532,7 +533,6 @@ const DocumentComparisonPage = () => {
       ...fullFormData,
       aiSummary: summary,
     });
-    setCurrentStep(3);
     setAiSummaryLoading(false);
   };
 
@@ -849,7 +849,7 @@ const DocumentComparisonPage = () => {
                         {a.resume_content && (
                           <div className="mt-4">
                             <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
-                            <p className="text-muted small" style={{ fontSize: '1.05rem' }}>{a.resume_content.slice(0, 200)}...</p>
+                            <pre className="text-muted small" style={{ fontSize: '1.05rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0 }}>{a.resume_content}</pre>
                           </div>
                         )}
                       </div>
