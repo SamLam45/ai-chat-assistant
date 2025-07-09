@@ -959,7 +959,7 @@ const DocumentComparisonPage = () => {
         })}</div>
         {/* 主要內容卡片置中，最大寬度900px */}
         <div className="d-flex justify-content-center">
-          <div style={{ maxWidth: 900, width: '100%' }}>
+          <div style={{ maxWidth: 1400, width: '100%' }}>
             <div className="card shadow-sm p-4">
               {/* 根據 currentStep 顯示不同內容 */}
               {renderStepContent()}
