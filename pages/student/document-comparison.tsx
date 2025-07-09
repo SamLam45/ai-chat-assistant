@@ -855,7 +855,8 @@ const DocumentComparisonPage = () => {
                             fontSize: '1.12rem',
                             margin: '0 auto',
                             cursor: 'pointer',
-                            boxShadow: isSelected ? '0 0 0 4px #0d6efd33' : undefined
+                            boxShadow: isSelected ? '0 0 0 4px #0d6efd33' : undefined,
+                            position: 'relative'
                           }}
                           onClick={() => {
                             if (isSelected) {
@@ -865,6 +866,34 @@ const DocumentComparisonPage = () => {
                             }
                           }}
                         >
+                          {/* 右上角可點擊方塊（checkbox 樣式） */}
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: 16,
+                              right: 16,
+                              width: 32,
+                              height: 32,
+                              border: '2px solid #0d6efd',
+                              borderRadius: 6,
+                              background: isSelected ? '#0d6efd' : '#fff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              zIndex: 2,
+                              transition: 'background 0.2s',
+                            }}
+                            onClick={e => {
+                              e.stopPropagation();
+                              if (isSelected) {
+                                setSelectedTutors(selectedTutors.filter(id => id !== a.id));
+                              } else if (selectedTutors.length < 3) {
+                                setSelectedTutors([...selectedTutors, a.id]);
+                              }
+                            }}
+                          >
+                            {isSelected && <i className="bi bi-check-lg text-white fs-4"></i>}
+                          </div>
                           <div className="card-body d-flex flex-column h-100 p-4">
                             <div className="d-flex flex-column align-items-start mb-4">
                               <span className="badge bg-primary mb-2">#{index + 1}</span>
@@ -878,7 +907,7 @@ const DocumentComparisonPage = () => {
                               </span>
                               {/* 顯示交集數量（如有） */}
                               {typeof a._matchCount === 'number' && (
-                                <span className="badge bg-info ms-2">交集數：{a._matchCount}</span>
+                                <span className="badge bg-info ms-2">興趣相同數：{a._matchCount}</span>
                               )}
                             </div>
                             <div className="row mb-3">
@@ -943,6 +972,10 @@ const DocumentComparisonPage = () => {
         const selectedAlumni = topAlumniStep5.filter(a => selectedTutors.includes(a.id));
         // 所有已選學長都選了日期和時間才可預約
         const canBook = selectedAlumni.length > 0 && selectedAlumni.every(a => tutorSchedules[a.id]?.date && tutorSchedules[a.id]?.time);
+        const handleBooking = () => {
+          // 這裡可串接 API，暫時直接進入成功頁
+          setCurrentStep(6);
+        };
         return (
           <div className="mt-5">
             <h4 className="mb-4 text-center">預約 20 分鐘體驗課</h4>
@@ -973,9 +1006,19 @@ const DocumentComparisonPage = () => {
                 </div>
               </div>
             ))}
-            <button className="btn btn-success btn-lg" disabled={!canBook}>
+            <button className="btn btn-success btn-lg" disabled={!canBook} onClick={handleBooking}>
               確認預約
             </button>
+          </div>
+        );
+      case 6:
+        return (
+          <div className="d-flex flex-column align-items-center justify-content-center py-5">
+            <div className="alert alert-success text-center" style={{ maxWidth: 600 }}>
+              <h3 className="mb-4">🎉 恭喜你，已經成功預約！</h3>
+              <p>我們會與導師溝通，如有特別的時間更改安排我們會電郵通知你。<br />
+              如導師確認，我們會發送電郵進行 20 分鐘體驗課，敬請留意電郵。</p>
+            </div>
           </div>
         );
       default:
