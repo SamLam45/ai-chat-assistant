@@ -42,3 +42,20 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Create alumni table
+CREATE TABLE IF NOT EXISTS alumni (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,                -- 學長姓名
+    school TEXT NOT NULL,              -- 畢業學校
+    department TEXT NOT NULL,          -- 科系
+    grade TEXT NOT NULL,               -- 畢業年級
+    education TEXT NOT NULL,           -- 學歷
+    experience TEXT,                   -- 經驗
+    skills TEXT[],                     -- 技能（可選，陣列）
+    resume_content TEXT,               -- 履歷文字內容（可選）
+    embedding VECTOR(384),             -- 向量（根據 embedding 維度調整）
+    interests TEXT[],                  -- 興趣／學術選擇（可選，陣列）
+    created_by UUID REFERENCES profiles(id), -- 建立者
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);

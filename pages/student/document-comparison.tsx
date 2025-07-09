@@ -481,7 +481,7 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
 
 const DocumentComparisonPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const steps = ['上傳履歷', '期望工作要求', '已存要求', '查看結果'];
+  const steps = ['上傳履歷', '你想學什麼語言、科目？', '已存要求', '查看結果'];
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isStudent, setIsStudent] = useState(false);

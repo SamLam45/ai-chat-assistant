@@ -12,7 +12,13 @@ type AlumniCsvRow = {
   grade: string;
   education: string;
   experience?: string;
+  interests?: string;
 };
+
+const INTEREST_OPTIONS = [
+  'Learning English', 'Cantonese', 'Other languages', 'Female', 'Male',
+  'Chinese Tutor', 'HK Local Tutor', 'Foreign Tutor', 'Art', 'Science', 'Sport'
+];
 
 const AdminDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -24,6 +30,7 @@ const AdminDashboard = () => {
     grade: '',
     education: '',
     experience: '',
+    interests: [] as string[],
   });
   const [submitMsg, setSubmitMsg] = useState('');
   const [csvMsg, setCsvMsg] = useState('');
@@ -54,6 +61,18 @@ const AdminDashboard = () => {
   }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleInterestChange = (option: string) => {
+    let interests = form.interests || [];
+    if (interests.includes(option)) {
+      interests = interests.filter(i => i !== option);
+    } else {
+      if (interests.length < 10) {
+        interests = [...interests, option];
+      }
+    }
+    setForm({ ...form, interests });
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitMsg('');
@@ -64,7 +83,7 @@ const AdminDashboard = () => {
     });
     if (res.ok) {
       setSubmitMsg('新增成功！');
-      setForm({ name: '', school: '', department: '', grade: '', education: '', experience: '' });
+      setForm({ name: '', school: '', department: '', grade: '', education: '', experience: '', interests: [] });
     } else {
       setSubmitMsg('新增失敗，請檢查資料或稍後再試。');
     }
@@ -88,6 +107,7 @@ const AdminDashboard = () => {
             fail++;
             continue;
           }
+          const interests = row.interests ? row.interests.split(';').map(s => s.trim()).filter(Boolean) : [];
           const res = await fetch('/api/admin/add-alumni', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -98,6 +118,7 @@ const AdminDashboard = () => {
               grade: row.grade,
               education: row.education,
               experience: row.experience || '',
+              interests,
             }),
           });
           if (res.ok) success++;
@@ -163,6 +184,27 @@ const AdminDashboard = () => {
                               <div className="mb-3">
                                 <label className="form-label">經驗</label>
                                 <textarea name="experience" className="form-control" value={form.experience} onChange={handleChange} />
+                              </div>
+                              <div className="mb-3">
+                                <label className="form-label">興趣／學術選擇（最多 10 項）</label>
+                                <div className="d-flex flex-wrap gap-2">
+                                  {INTEREST_OPTIONS.map(option => (
+                                    <label key={option} className={`btn btn-outline-primary mb-2 ${form.interests.includes(option) ? 'active' : ''}`}
+                                      style={{ minWidth: 120 }}>
+                                      <input
+                                        type="checkbox"
+                                        className="btn-check"
+                                        autoComplete="off"
+                                        checked={form.interests.includes(option)}
+                                        onChange={() => handleInterestChange(option)}
+                                        disabled={!form.interests.includes(option) && form.interests.length >= 10}
+                                      />
+                                      {form.interests.includes(option) && <i className="bi bi-check-lg me-1"></i>}
+                                      {option}
+                                    </label>
+                                  ))}
+                                </div>
+                                <div className="form-text">可多選，最多 10 項</div>
                               </div>
                               <button type="submit" className="btn btn-primary">新增學長</button>
                             </form>
