@@ -315,7 +315,7 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                     <div className="card-body p-4">
                         <div className="mb-3">
                             <label htmlFor="jobTitle" className="form-label">姓名（中英文）</label>
-                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文 / David Chen" value={formData.jobTitle} onChange={handleInputChange} />
+                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文 / David Chen" value={formData.jobTitle || ''} onChange={handleInputChange} />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="email" className="form-label">電郵地址</label>
@@ -323,19 +323,19 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
                         </div>
                         <div className="mb-3">
                             <label htmlFor="school" className="form-label">學校</label>
-                            <input type="text" className="form-control" id="school" placeholder="例如：國立台灣大學" value={formData.school} onChange={handleInputChange} />
+                            <input type="text" className="form-control" id="school" placeholder="例如：國立台灣大學" value={formData.school || ''} onChange={handleInputChange} />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="department" className="form-label">學系</label>
-                            <input type="text" className="form-control" id="department" placeholder="例如：資訊工程學系" value={formData.department} onChange={handleInputChange} />
+                            <input type="text" className="form-control" id="department" placeholder="例如：資訊工程學系" value={formData.department || ''} onChange={handleInputChange} />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="grade" className="form-label">年級</label>
-                            <input type="text" className="form-control" id="grade" placeholder="例如：三年級" value={formData.grade} onChange={handleInputChange} />
+                            <input type="text" className="form-control" id="grade" placeholder="例如：三年級" value={formData.grade || ''} onChange={handleInputChange} />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="educationRequirements" className="form-label">學歷</label>
-                            <input type="text" className="form-control" id="educationRequirements" placeholder="例如：大學學位" value={formData.educationRequirements} onChange={handleInputChange} />
+                            <input type="text" className="form-control" id="educationRequirements" placeholder="例如：大學學位" value={formData.educationRequirements || ''} onChange={handleInputChange} />
                         </div>
                     </div>
                 </div>
