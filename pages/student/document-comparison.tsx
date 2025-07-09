@@ -290,6 +290,9 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
         setFormData(initialData.formData);
     }, [initialData]);
 
+    // Debug log
+    console.log('RequirementsStep formData:', formData);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setFormData(prev => ({ ...prev, [id]: value }));
