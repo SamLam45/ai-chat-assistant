@@ -167,7 +167,7 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
     <div>
       <h4 className="mb-4">上傳履歷</h4>
       <div
-        className="d-flex flex-column align-items-center justify-content-center p-5 text-center"
+        className="upload-dropzone d-flex flex-column align-items-center justify-content-center p-5 text-center"
         style={{
           border: '2px dashed var(--bs-primary)',
           borderRadius: '15px',
@@ -200,22 +200,19 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
         </div>
       )}
       {files.length > 0 ? (
-        <div className="mt-4">
-          <h6 className="mb-3">已上傳檔案:</h6>
-          <div className="list-group">
-            {files.map(file => (
-              <div key={file.name} className="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <i className="bi bi-file-earmark-text me-2"></i>
-                  <span className="fw-bold">{file.name}</span>
-                  <span className="text-muted ms-2 small">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                </div>
-                <button className="btn btn-sm btn-outline-danger" onClick={() => removeFile(file.name)}>
-                  <i className="bi bi-trash3-fill"></i>
-                </button>
+        <div className="upload-file-list list-group">
+          {files.map(file => (
+            <div key={file.name} className="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <i className="bi bi-file-earmark-text me-2"></i>
+                <span className="fw-bold">{file.name}</span>
+                <span className="text-muted ms-2 small">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
               </div>
-            ))}
-          </div>
+              <button className="btn btn-sm btn-outline-danger" onClick={() => removeFile(file.name)}>
+                <i className="bi bi-trash3-fill"></i>
+              </button>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="alert alert-secondary text-center mt-4" role="alert">
@@ -237,12 +234,13 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
 };
 
 // Step 3: Saved Requirements Component
-const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, submissionError }: { 
+const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, submissionError, aiSummaryLoading }: { 
     requirements: RequirementData | null, 
     onEdit: () => void, 
     onSubmit: () => void,
     isSubmitting: boolean,
-    submissionError: string | null
+    submissionError: string | null,
+    aiSummaryLoading?: boolean
 }) => {
     if (!requirements) {
         return (
@@ -257,7 +255,12 @@ const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, s
 
     return (
         <div>
-            {requirements.aiSummary && (
+            {aiSummaryLoading ? (
+              <div className="alert alert-info mb-4 text-center">
+                <span className="spinner-border spinner-border-sm me-2"></span>
+                AI 正在整理摘要...
+              </div>
+            ) : requirements?.aiSummary && (
               <div className="alert alert-info mb-4">
                 <strong>AI 摘要：</strong>{requirements.aiSummary}
               </div>
@@ -490,6 +493,7 @@ const DocumentComparisonPage = () => {
   const [smartMatchInfo, setSmartMatchInfo] = useState<SmartMatchInfo | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [resultLoading, setResultLoading] = useState(false);
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   
   const [requirementsState, setRequirementsState] = useState<RequirementData>({
     formData: {
@@ -513,6 +517,7 @@ const DocumentComparisonPage = () => {
 
 
   const handleRequirementSubmit = async (fullFormData: RequirementData) => {
+    setAiSummaryLoading(true);
     // 呼叫 AI summary
     const res = await fetch('/api/ai-summary', {
       method: 'POST',
@@ -533,6 +538,7 @@ const DocumentComparisonPage = () => {
       aiSummary: summary,
     });
     setCurrentStep(3);
+    setAiSummaryLoading(false);
   };
 
   const finalSubmit = async () => {
@@ -703,7 +709,8 @@ const DocumentComparisonPage = () => {
             onEdit={() => setCurrentStep(2)} 
             onSubmit={() => setShowConfirmModal(true)}
             isSubmitting={isSubmitting}
-            submissionError={submissionError} 
+            submissionError={submissionError}
+            aiSummaryLoading={aiSummaryLoading}
           />
           {/* 確認遞交 Modal */}
           {showConfirmModal && (
@@ -867,51 +874,42 @@ const DocumentComparisonPage = () => {
     <Layout title="AI 履歷評估系統">
       <Head>
         <title>AI 履歷評估系統</title>
-         {/* You might need to add Bootstrap CSS if not globally available */}
-         {/* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" /> */}
-         {<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />}
+        {<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />}
       </Head>
 
-      <div className="container-fluid bg-light py-5">
-        <div className="container text-center">
-            <h1 className="display-5">AI 履歷評估系統</h1>
-            <p className="lead">
-                根據不同的工作要求對多份履歷進行比較，客製化評估標準，並生成詳細的 AI 分析報告。
-            </p>
+      {/* 頂部 Logo/系統名稱 */}
+      <div className="container py-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="fw-bold fs-4 text-primary">AI 履歷評估系統</div>
+          {/* <UserMenu /> 可加用戶資訊/登出 */}
         </div>
-      </div>
-
-      <div className="container py-5">
-        {/* Stepper/Wizard Navigation */}
-        <div className="row justify-content-center g-0 mb-5">
-          <div className="col-10">
-            <div className="d-flex justify-content-between align-items-center">
-              {steps.map((title, index) => {
-                const stepNumber = index + 1;
-                const isActive = currentStep === stepNumber;
-                const isCompleted = currentStep > stepNumber;
-                return (
-                  <React.Fragment key={index}>
-                    <div className="d-flex flex-column align-items-center text-center" style={{ cursor: 'pointer' }} onClick={() => setCurrentStep(stepNumber)}>
-                      <div 
-                        className={`rounded-circle d-flex justify-content-center align-items-center ${isCompleted ? 'bg-primary text-white' : isActive ? 'bg-white border border-primary text-primary' : 'bg-light'}`}
-                        style={{ width: '50px', height: '50px', transition: 'all 0.3s ease' }}
-                      >
-                        {isCompleted ? <i className="bi bi-check-lg fs-4"></i> : <span className="fs-5 fw-bold">{stepNumber}</span>}
-                      </div>
-                      <p className={`fw-bold mt-2 mb-0 ${isActive || isCompleted ? 'text-primary' : 'text-muted'}`}>{title}</p>
-                    </div>
-                    {index < steps.length - 1 && <div className="flex-grow-1 mx-3" style={{ height: '2px', backgroundColor: isCompleted ? 'var(--bs-primary)' : '#e0e0e0', transition: 'background-color 0.3s ease' }}></div>}
-                  </React.Fragment>
-                );
-              })}
+        {/* Stepper 置中、寬版 */}
+        <div className="stepper mb-5">{steps.map((title, index) => {
+          const stepNumber = index + 1;
+          const isActive = currentStep === stepNumber;
+          const isCompleted = currentStep > stepNumber;
+          return (
+            <React.Fragment key={index}>
+              <div className={`step ${isActive ? 'active' : isCompleted ? 'completed' : ''}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => setCurrentStep(stepNumber)}>
+                <div className="circle">
+                  {isCompleted ? <i className="bi bi-check-lg fs-4"></i> : <span className="fs-5 fw-bold">{stepNumber}</span>}
+                </div>
+                <p className={`fw-bold mt-2 mb-0 label`}>{title}</p>
+              </div>
+              {index < steps.length - 1 && <div className="flex-grow-1 mx-3" style={{ height: '2px', backgroundColor: isCompleted ? 'var(--primary)' : '#e0e0e0', transition: 'background-color 0.3s' }}></div>}
+            </React.Fragment>
+          );
+        })}</div>
+        {/* 主要內容卡片置中，最大寬度900px */}
+        <div className="d-flex justify-content-center">
+          <div style={{ maxWidth: 900, width: '100%' }}>
+            <div className="card shadow-sm p-4">
+              {/* 根據 currentStep 顯示不同內容 */}
+              {renderStepContent()}
             </div>
           </div>
-        </div>
-        
-        {/* Step Content */}
-        <div className="p-4 bg-white rounded shadow-sm">
-            {renderStepContent()}
         </div>
       </div>
     </Layout>
