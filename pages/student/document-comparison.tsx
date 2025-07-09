@@ -123,12 +123,12 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
         ...prev,
         formData: {
           ...prev.formData,
-          jobTitle: geminiExtracted.name ?? prev.formData.jobTitle,
-          email: geminiExtracted.email ?? prev.formData.email,
-          school: geminiExtracted.school ?? prev.formData.school,
-          department: geminiExtracted.department ?? prev.formData.department,
-          grade: geminiExtracted.grade ?? prev.formData.grade,
-          educationRequirements: geminiExtracted.education ?? prev.formData.educationRequirements,
+          jobTitle: (geminiExtracted.name ?? prev.formData.jobTitle) || '',
+          email: (geminiExtracted.email ?? prev.formData.email) || '',
+          school: (geminiExtracted.school ?? prev.formData.school) || '',
+          department: (geminiExtracted.department ?? prev.formData.department) || '',
+          grade: (geminiExtracted.grade ?? prev.formData.grade) || '',
+          educationRequirements: (geminiExtracted.education ?? prev.formData.educationRequirements) || '',
         }
       }));
       setCurrentStep(2);
@@ -447,11 +447,11 @@ const DocumentComparisonPage = () => {
             ...prev,
             formData: {
               ...prev.formData,
-              jobTitle: g.name || prev.formData.jobTitle,
-              school: g.school || prev.formData.school,
-              department: g.department || prev.formData.department,
-              grade: g.grade || prev.formData.grade,
-              educationRequirements: g.education || prev.formData.educationRequirements,
+              jobTitle: (g.name || prev.formData.jobTitle) || '',
+              school: (g.school || prev.formData.school) || '',
+              department: (g.department || prev.formData.department) || '',
+              grade: (g.grade || prev.formData.grade) || '',
+              educationRequirements: (g.education || prev.formData.educationRequirements) || '',
             }
           }));
           setCurrentStep(2); // 跳回 Step 2 讓用戶確認/編輯
