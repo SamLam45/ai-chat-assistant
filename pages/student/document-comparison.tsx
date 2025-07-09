@@ -480,6 +480,272 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
     );
 };
 
+// Step 4: Result Component
+const Step4Result = ({
+  submittedRequirements,
+  matchedAlumni,
+  aiMatchReasons,
+  selectedTutors,
+  setSelectedTutors,
+  showScheduleModal,
+  setShowScheduleModal,
+  trialDate,
+  setTrialDate,
+  trialTime,
+  setTrialTime,
+  resultLoading,
+}: {
+  submittedRequirements: RequirementData | null;
+  matchedAlumni: AlumniType[];
+  aiMatchReasons: string[];
+  selectedTutors: AlumniType[];
+  setSelectedTutors: Dispatch<SetStateAction<AlumniType[]>>;
+  showScheduleModal: boolean;
+  setShowScheduleModal: Dispatch<SetStateAction<boolean>>;
+  trialDate: string;
+  setTrialDate: Dispatch<SetStateAction<string>>;
+  trialTime: string;
+  setTrialTime: Dispatch<SetStateAction<string>>;
+  resultLoading: boolean;
+}) => {
+  // 直接依照後端順序顯示前三位，並明確型別
+  type TopAlumniType = AlumniType & { _matchCount?: number; interests?: string[] };
+  const userSpecialWish = submittedRequirements?.formData.specialWish || '';
+  const topAlumni: TopAlumniType[] = matchedAlumni.slice(0, 3);
+  // 多選學長處理
+  const handleSelectTutor = (tutor: TopAlumniType) => {
+    setSelectedTutors(prev =>
+      prev.some(t => t.id === tutor.id)
+        ? prev.filter(t => t.id !== tutor.id)
+        : prev.length < 3
+          ? [...prev, tutor]
+          : prev
+    );
+  };
+  // 預約送出
+  const handleSubmitTrial = () => {
+    // 這裡可改為呼叫 API
+    console.log('預約學長：', selectedTutors.map(t => t.name), '日期：', trialDate, '時間：', trialTime);
+    setShowScheduleModal(false);
+    setSelectedTutors([]);
+    setTrialDate('');
+    setTrialTime('');
+    // 可加提示訊息
+  };
+  // 新增：取得 AI 匹配理由
+  // const aiMatchReasons = Array.isArray(matchedAlumni.aiMatchReasons) ? matchedAlumni.aiMatchReasons : [];
+  return (
+    <div>
+      <h4 className="mb-4 text-center">最相似的學長</h4>
+      {resultLoading ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary mb-3" role="status"></div>
+          <div className="fw-bold">AI 正在分析中，請等候...</div>
+        </div>
+      ) : topAlumni && topAlumni.length > 0 ? (
+        <>
+          {/* 智能匹配資訊卡片 */}
+          <div className="card mb-4 border-primary">
+            <div className="card-header bg-primary text-white">
+              <h5 className="mb-0"><i className="bi bi-lightbulb-fill me-2"></i>AI 智能匹配結果</h5>
+            </div>
+            <div className="card-body">
+              <div className="mb-2">
+                <strong>您的特殊需求／願望：</strong>
+                <span className="ms-2 text-danger">{userSpecialWish ? userSpecialWish : '（未填寫）'}</span>
+              </div>
+              {/* AI 匹配理由顯示區塊 */}
+              {aiMatchReasons && aiMatchReasons.length > 0 && (
+                <div className="alert alert-info">
+                  <strong>AI 匹配理由：</strong>
+                  <ul className="mb-0 ps-3">
+                    {aiMatchReasons.map((reason: string, idx: number) => (
+                      <li key={idx}>{reason}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <table className="table table-bordered mb-3">
+                <thead>
+                  <tr>
+                    <th>興趣／學術選擇</th>
+                    <th>原始條件</th>
+                    <th>智能匹配</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>興趣／學術選擇</td>
+                    <td>
+                      <ul className="mb-0 ps-3">
+                        {Array.isArray(submittedRequirements?.formData?.interests) && submittedRequirements.formData.interests.map((interest, idx) => (
+                          <li key={idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td>
+                      <span className="fw-bold text-primary">{topAlumni[0]?._matchCount}</span> 項相同
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div>
+                <strong>AI 匹配理由：</strong>
+                <ul className="mb-2">
+                  {topAlumni.map(a => (
+                    <li key={a.id}>
+                      <span className="fw-bold">{a.name}</span> 學長
+                      {typeof a._matchCount === 'number' && (
+                        <span> 與您的興趣有 <span className="text-primary fw-bold">{a._matchCount}</span> 項相同</span>
+                      )}
+                      {typeof a._matchCount === 'number' && a._matchCount === 0 && (
+                        <span className="text-warning"> 僅語意相近（無興趣交集）</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* 推薦學長卡片區塊：三欄固定分佈 */}
+          <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
+          <div className="row justify-content-center g-4">
+            {topAlumni.map((a: TopAlumniType, index: number) => (
+              <div key={a.id} className="col-12 col-md-4 d-flex">
+                <div
+                  className={`card mb-3 shadow-sm animate__animated animate__fadeInUp flex-fill ${selectedTutors.some(t => t.id === a.id) ? 'border-primary border-3' : ''}`}
+                  style={{
+                    minWidth: 340,
+                    maxWidth: 440,
+                    width: '100%',
+                    fontSize: '1.12rem',
+                    margin: '0 auto',
+                    boxShadow: selectedTutors.some(t => t.id === a.id) ? '0 0 0 0.2rem #0d6efd33' : undefined
+                  }}
+                >
+                  <div className="card-body d-flex flex-column h-100 p-4">
+                    <div className="d-flex flex-column align-items-start mb-4">
+                      <span className="badge bg-primary mb-2">#{index + 1}</span>
+                      <div className="mb-2" style={{ width: '100%' }}>
+                        <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
+                          {a.school} {a.department}
+                        </span>
+                      </div>
+                      <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {a.name}
+                      </span>
+                      {/* 多選勾選框 */}
+                      <div className="form-check mt-2">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`select-tutor-${a.id}`}
+                          checked={selectedTutors.some(t => t.id === a.id)}
+                          onChange={() => handleSelectTutor(a)}
+                          disabled={!selectedTutors.some(t => t.id === a.id) && selectedTutors.length >= 3}
+                        />
+                        <label className="form-check-label" htmlFor={`select-tutor-${a.id}`}>選擇</label>
+                      </div>
+                    </div>
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <p style={{ fontSize: '1.08rem' }}><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
+                        <p style={{ fontSize: '1.08rem' }}><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
+                      </div>
+                      <div className="col-md-6">
+                        <p style={{ fontSize: '1.08rem' }}><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
+                        <p style={{ fontSize: '1.08rem' }}><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
+                      </div>
+                    </div>
+                    {/* 興趣／學術選擇點列式顯示 */}
+                    {Array.isArray(a.interests) && a.interests.length > 0 && (
+                      <div className="mt-4">
+                        <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-list-check me-2 text-primary"></i>興趣／學術選擇</h6>
+                        <ul className="list-unstyled mb-0 ps-2">
+                          {a.interests?.map((interest: string, _idx: number) => (
+                            <li key={_idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {a.resume_content && (
+                      <div className="mt-4">
+                        <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
+                        <pre className="text-muted small" style={{ fontSize: '1.05rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0 }}>{a.resume_content}</pre>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* 右下角浮動預約按鈕 */}
+          {selectedTutors.length > 0 && (
+            <button
+              className="btn btn-primary shadow-lg"
+              style={{
+                position: 'fixed',
+                right: 32,
+                bottom: 32,
+                zIndex: 9999,
+                borderRadius: '50px',
+                padding: '16px 32px',
+                fontSize: '1.2rem',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15)'
+              }}
+              onClick={() => setShowScheduleModal(true)}
+            >
+              <i className="bi bi-calendar-plus me-2"></i>預約試教
+            </button>
+          )}
+          {/* 彈窗：選擇日期與時間 */}
+          {showScheduleModal && (
+            <div className="modal fade show d-block" tabIndex={-1} style={{ background: 'rgba(0,0,0,0.3)' }}>
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">預約 20 分鐘試教</h5>
+                    <button type="button" className="btn-close" onClick={() => setShowScheduleModal(false)}></button>
+                  </div>
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label className="form-label">已選學長：</label>
+                      <ul>
+                        {selectedTutors.map(t => (
+                          <li key={t.id}>{t.name}（{t.school} {t.department}）</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">選擇日期：</label>
+                      <input type="date" className="form-control" value={trialDate} onChange={e => setTrialDate(e.target.value)} />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">選擇時間：</label>
+                      <input type="time" className="form-control" value={trialTime} onChange={e => setTrialTime(e.target.value)} />
+                      <div className="form-text">每次試教 20 分鐘</div>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button className="btn btn-secondary" onClick={() => setShowScheduleModal(false)}>取消</button>
+                    <button className="btn btn-primary" onClick={handleSubmitTrial} disabled={!trialDate || !trialTime || selectedTutors.length === 0}>確認預約</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="alert alert-info">
+          <i className="bi bi-info-circle me-2"></i>
+          查無相似學長，建議您調整期望條件或聯繫管理員添加更多學長資料。
+        </div>
+      )}
+    </div>
+  );
+};
+
 
 const DocumentComparisonPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -494,6 +760,12 @@ const DocumentComparisonPage = () => {
   const [matchedAlumni, setMatchedAlumni] = useState<AlumniType[]>([]);
   // 新增 AI 匹配理由 state
   const [aiMatchReasons, setAiMatchReasons] = useState<string[]>([]);
+  // 新增：多選學長狀態與預約彈窗狀態
+  type TopAlumniType = AlumniType & { _matchCount?: number; interests?: string[] };
+  const [selectedTutors, setSelectedTutors] = useState<TopAlumniType[]>([]);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [trialDate, setTrialDate] = useState('');
+  const [trialTime, setTrialTime] = useState('');
   // 移除 smartMatchInfo 狀態
   // const [smartMatchInfo, setSmartMatchInfo] = useState<SmartMatchInfo | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -755,157 +1027,21 @@ const DocumentComparisonPage = () => {
           )}
         </>;
       case 4:
-        // 直接依照後端順序顯示前三位，並明確型別
-        type TopAlumniType = AlumniType & { _matchCount?: number; interests?: string[] };
-        const userSpecialWish = submittedRequirements?.formData.specialWish || '';
-        const topAlumni: TopAlumniType[] = matchedAlumni.slice(0, 3);
-        // 新增：取得 AI 匹配理由
-        // const aiMatchReasons = Array.isArray(matchedAlumni.aiMatchReasons) ? matchedAlumni.aiMatchReasons : [];
         return (
-          <div>
-            <h4 className="mb-4 text-center">最相似的學長</h4>
-            {resultLoading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary mb-3" role="status"></div>
-                <div className="fw-bold">AI 正在分析中，請等候...</div>
-              </div>
-            ) : topAlumni && topAlumni.length > 0 ? (
-              <>
-                {/* 智能匹配資訊卡片 */}
-                <div className="card mb-4 border-primary">
-                  <div className="card-header bg-primary text-white">
-                    <h5 className="mb-0"><i className="bi bi-lightbulb-fill me-2"></i>AI 智能匹配結果</h5>
-                  </div>
-                  <div className="card-body">
-                    <div className="mb-2">
-                      <strong>您的特殊需求／願望：</strong>
-                      <span className="ms-2 text-danger">{userSpecialWish ? userSpecialWish : '（未填寫）'}</span>
-                    </div>
-                    {/* AI 匹配理由顯示區塊 */}
-                    {aiMatchReasons && aiMatchReasons.length > 0 && (
-                      <div className="alert alert-info">
-                        <strong>AI 匹配理由：</strong>
-                        <ul className="mb-0 ps-3">
-                          {aiMatchReasons.map((reason: string, idx: number) => (
-                            <li key={idx}>{reason}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    <table className="table table-bordered mb-3">
-                      <thead>
-                        <tr>
-                          <th>興趣／學術選擇</th>
-                          <th>原始條件</th>
-                          <th>智能匹配</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>興趣／學術選擇</td>
-                          <td>
-                            <ul className="mb-0 ps-3">
-                              {Array.isArray(submittedRequirements?.formData?.interests) && submittedRequirements.formData.interests.map((interest, idx) => (
-                                <li key={idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
-                              ))}
-                            </ul>
-                          </td>
-                          <td>
-                            <span className="fw-bold text-primary">{topAlumni[0]?._matchCount}</span> 項相同
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div>
-                      <strong>AI 匹配理由：</strong>
-                      <ul className="mb-2">
-                        {topAlumni.map(a => (
-                          <li key={a.id}>
-                            <span className="fw-bold">{a.name}</span> 學長
-                            {typeof a._matchCount === 'number' && (
-                              <span> 與您的興趣有 <span className="text-primary fw-bold">{a._matchCount}</span> 項相同</span>
-                            )}
-                            {typeof a._matchCount === 'number' && a._matchCount === 0 && (
-                              <span className="text-warning"> 僅語意相近（無興趣交集）</span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 推薦學長卡片區塊：三欄固定分佈 */}
-                <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
-                <div className="row justify-content-center g-4">
-                  {topAlumni.map((a: TopAlumniType, index: number) => (
-                    <div key={a.id} className="col-12 col-md-4 d-flex">
-                      <div
-                        className="card mb-3 shadow-sm animate__animated animate__fadeInUp flex-fill"
-                        style={{
-                          minWidth: 340,
-                          maxWidth: 440,
-                          width: '100%',
-                          fontSize: '1.12rem',
-                          margin: '0 auto'
-                        }}
-                      >
-                        <div className="card-body d-flex flex-column h-100 p-4">
-                          <div className="d-flex flex-column align-items-start mb-4">
-                            <span className="badge bg-primary mb-2">#{index + 1}</span>
-                            <div className="mb-2" style={{ width: '100%' }}>
-                              <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
-                                {a.school} {a.department}
-                              </span>
-                            </div>
-                            <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              {a.name}
-                            </span>
-                            {/* 顯示交集數量（如有） */}
-                            {typeof a._matchCount === 'number' && (
-                              <span className="badge bg-info ms-2">交集數：{a._matchCount}</span>
-                            )}
-                          </div>
-                          <div className="row mb-3">
-                            <div className="col-md-6">
-                              <p style={{ fontSize: '1.08rem' }}><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
-                              <p style={{ fontSize: '1.08rem' }}><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
-                            </div>
-                            <div className="col-md-6">
-                              <p style={{ fontSize: '1.08rem' }}><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
-                              <p style={{ fontSize: '1.08rem' }}><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
-                            </div>
-                          </div>
-                          {/* 興趣／學術選擇點列式顯示 */}
-                          {Array.isArray(a.interests) && a.interests.length > 0 && (
-                            <div className="mt-4">
-                              <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-list-check me-2 text-primary"></i>興趣／學術選擇</h6>
-                              <ul className="list-unstyled mb-0 ps-2">
-                                {a.interests?.map((interest: string, _idx: number) => (
-                                  <li key={_idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          {a.resume_content && (
-                            <div className="mt-4">
-                              <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
-                              <pre className="text-muted small" style={{ fontSize: '1.05rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0 }}>{a.resume_content}</pre>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="alert alert-info">
-                <i className="bi bi-info-circle me-2"></i>
-                查無相似學長，建議您調整期望條件或聯繫管理員添加更多學長資料。
-              </div>
-            )}
-          </div>
+          <Step4Result
+            submittedRequirements={submittedRequirements}
+            matchedAlumni={matchedAlumni}
+            aiMatchReasons={aiMatchReasons}
+            selectedTutors={selectedTutors}
+            setSelectedTutors={setSelectedTutors}
+            showScheduleModal={showScheduleModal}
+            setShowScheduleModal={setShowScheduleModal}
+            trialDate={trialDate}
+            setTrialDate={setTrialDate}
+            trialTime={trialTime}
+            setTrialTime={setTrialTime}
+            resultLoading={resultLoading}
+          />
         );
       default:
         return <div>Step not found</div>;
