@@ -286,6 +286,10 @@ const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, s
 const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: RequirementData, onFormSubmit: (data: RequirementData) => void }) => {
     const [formData, setFormData] = useState(initialData.formData);
 
+    useEffect(() => {
+        setFormData(initialData.formData);
+    }, [initialData]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setFormData(prev => ({ ...prev, [id]: value }));
