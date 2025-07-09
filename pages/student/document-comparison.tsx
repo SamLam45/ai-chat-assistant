@@ -131,6 +131,7 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
             ...prev.formData,
             jobTitle: (parsed.name ?? prev.formData.jobTitle) || '',
             email: (parsed.email ?? prev.formData.email) || '',
+            phone: (parsed.phone ?? prev.formData.phone) || '', // ← 新增這行
             school: (parsed.school ?? prev.formData.school) || '',
             department: (parsed.department ?? prev.formData.department) || '',
             grade: (parsed.grade ?? prev.formData.grade) || '',
