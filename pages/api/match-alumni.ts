@@ -70,47 +70,43 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Gemini embedding 產生失敗' });
     }
 
-    // 查詢 vector DB
-    const match_count = 20;
-    let alumni: Alumni[] = [];
+    // 查詢 vector DB（可保留語意查詢備用，但主邏輯改為 overlaps）
     let recommended: Alumni[] = [];
-    let vectorError = null;
-    try {
-      const { data, error } = await supabase.rpc('match_alumni_by_vector', {
-        query_embedding: embedding,
-        match_count
-      });
-      if (error) throw error;
-      alumni = Array.isArray(data) ? data as Alumni[] : [];
-      // 只要 interests 有交集就顯示
-      if (interests.length > 0) {
-        recommended = alumni.filter(a => Array.isArray(a.interests) && a.interests.some((i: string) => interests.includes(i)));
-      } else {
-        recommended = alumni;
-      }
-    } catch (error: unknown) {
-      vectorError = error;
-    }
-
-    // fallback: 若 embedding 查無結果或無交集，則用 SQL 查找 interests overlap
-    if (recommended.length === 0 && interests.length > 0) {
+    if (interests.length > 0) {
+      // 查詢所有有交集的學長
       const { data: overlapAlumni, error: overlapError } = await supabase
         .from('alumni')
         .select('*')
         .overlaps('interests', interests);
+
       if (!overlapError && Array.isArray(overlapAlumni)) {
-        recommended = overlapAlumni as Alumni[]; // Cast to Alumni[]
+        // 依交集數量排序
+        const sorted = overlapAlumni
+          .map(a => ({
+            ...a,
+            _matchCount: Array.isArray(a.interests)
+              ? a.interests.filter((i: string) => interests.includes(i)).length
+              : 0
+          }))
+          .sort((a, b) => b._matchCount - a._matchCount);
+
+        recommended = sorted as Alumni[];
+      } else {
+        recommended = [];
       }
+    } else {
+      // 沒有 interests 查詢時，顯示全部
+      const { data: allAlumni } = await supabase.from('alumni').select('*');
+      recommended = Array.isArray(allAlumni) ? allAlumni as Alumni[] : [];
     }
 
     // 只取前 3 筆
     recommended = recommended.slice(0, 3);
 
     res.status(200).json({
-      alumni: recommended,
+      alumni: recommended.slice(0, 3),
       queryText,
-      embeddingLength: embedding.length,
-      vectorError: vectorError ? String(vectorError) : undefined
+      embeddingLength: embedding.length
     });
   });
 }
