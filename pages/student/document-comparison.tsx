@@ -120,17 +120,28 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
       if (!res.ok) throw new Error('AI 分析失敗，請稍後再試');
       const { geminiExtracted } = await res.json();
       console.log('Gemini Extracted:', geminiExtracted);
+      let parsed = geminiExtracted;
+      if ('raw' in geminiExtracted && typeof geminiExtracted.raw === 'string') {
+        const match = geminiExtracted.raw.match(/```json\n([\s\S]*)```/);
+        if (match && match[1]) {
+          try {
+            parsed = JSON.parse(match[1]);
+          } catch {
+            parsed = {};
+          }
+        }
+      }
       setRequirementsState((prev: RequirementData) => {
         const updated = {
           ...prev,
           formData: {
             ...prev.formData,
-            jobTitle: (geminiExtracted.name ?? prev.formData.jobTitle) || '',
-            email: (geminiExtracted.email ?? prev.formData.email) || '',
-            school: (geminiExtracted.school ?? prev.formData.school) || '',
-            department: (geminiExtracted.department ?? prev.formData.department) || '',
-            grade: (geminiExtracted.grade ?? prev.formData.grade) || '',
-            educationRequirements: (geminiExtracted.education ?? prev.formData.educationRequirements) || '',
+            jobTitle: (parsed.name ?? prev.formData.jobTitle) || '',
+            email: (parsed.email ?? prev.formData.email) || '',
+            school: (parsed.school ?? prev.formData.school) || '',
+            department: (parsed.department ?? prev.formData.department) || '',
+            grade: (parsed.grade ?? prev.formData.grade) || '',
+            educationRequirements: (parsed.education ?? prev.formData.educationRequirements) || '',
           }
         };
         console.log('setRequirementsState 更新:', updated);
