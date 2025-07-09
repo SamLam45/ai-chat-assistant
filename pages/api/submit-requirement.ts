@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import formidable from 'formidable';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import { GoogleGenAI } from "@google/genai";
 
 // Disable Next.js body parsing to allow formidable to handle the stream
 export const config = {
@@ -16,6 +17,15 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
+type GeminiExtracted = {
+  name?: string;
+  email?: string;
+  school?: string;
+  department?: string;
+  grade?: string;
+  education?: string;
+  [key: string]: unknown;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -44,6 +54,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // 3. Handle file uploads to Supabase Storage
         const uploadedCvPaths: { path: string, originalName: string }[] = [];
         const resumeFiles = files.resumes;
+
+        // Gemini AI 分析履歷內容
+        let geminiExtracted: GeminiExtracted | { raw?: string; error?: string } | null = null;
+        if (resumeFiles && resumeFiles.length > 0) {
+            // 只分析第一份履歷
+            const file = resumeFiles[0];
+            const fileContent = fs.readFileSync(file.filepath);
+            // 直接轉 base64
+            const base64 = fileContent.toString('base64');
+            const mimeType = file.mimetype || 'application/pdf';
+            try {
+                const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
+                const prompt = `請從這份履歷檔案中抽取以下資訊，並以JSON格式回傳：\n{\n  "name": "",\n  "email": "",\n  "school": "",\n  "department": "",\n  "grade": "",\n  "education": ""\n}\n如果找不到某欄位請留空字串。`;
+                const response = await ai.models.generateContent({
+                  model: 'gemini-1.5-flash',
+                  contents: [
+                    {
+                      role: 'user',
+                      parts: [
+                        {
+                          inlineData: {
+                            data: base64,
+                            mimeType,
+                          },
+                        },
+                        { text: prompt },
+                      ],
+                    },
+                  ],
+                });
+                const text = response.text || '';
+                try {
+                  geminiExtracted = JSON.parse(text);
+                } catch {
+                  geminiExtracted = { raw: text };
+                }
+            } catch (e) {
+                geminiExtracted = { error: (e as Error).message };
+            }
+        }
 
         if (resumeFiles && resumeFiles.length > 0) {
             for (const file of resumeFiles) {
@@ -96,7 +146,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         res.status(200).json({ 
             message: 'Requirement submitted successfully.',
-            requirementId: requirementRecord.id
+            requirementId: requirementRecord.id,
+            geminiExtracted
         });
 
     } catch (error: unknown) {

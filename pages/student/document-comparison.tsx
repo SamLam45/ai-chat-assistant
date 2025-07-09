@@ -8,6 +8,7 @@ interface RequirementData {
     formData: {
       jobTitle: string;
       jobDescription: string;
+      email?: string;
       school: string;
       department: string;
       grade: string;
@@ -176,9 +177,8 @@ const UploadStep = ({ files, onFilesChange, onNext }: { files: File[], onFilesCh
 };
 
 // Step 3: Saved Requirements Component
-const SavedRequirementsStep = ({ requirements, files, onEdit, onSubmit, isSubmitting, submissionError }: { 
+const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, submissionError }: { 
     requirements: RequirementData | null, 
-    files: File[], 
     onEdit: () => void, 
     onSubmit: () => void,
     isSubmitting: boolean,
@@ -193,97 +193,25 @@ const SavedRequirementsStep = ({ requirements, files, onEdit, onSubmit, isSubmit
         );
     }
 
-    const { formData, requiredSkills, preferredSkills, weights } = requirements;
+    const { formData } = requirements;
 
     return (
         <div>
-            <h4 className="mb-4 text-center">✅ 確認您的期望要求</h4>
-            <p className="text-center text-muted mb-4">請仔細核對以下資料，確認無誤後即可遞交。</p>
-            <div className="row g-4">
-                {/* Left Column */}
-                <div className="col-lg-7">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body p-4">
-                            <h5 className="card-title mb-1">{formData.jobTitle}</h5>
-                            <p className="text-muted">{formData.jobDescription || '未提供職位描述'}</p>
-                            <hr />
-                            
-                            <h6 className="mb-3"><i className="bi bi-file-earmark-text-fill text-primary me-2"></i>已上傳履歷</h6>
-                            {files.length > 0 ? (
-                                <ul className="list-group list-group-flush mb-3">
-                                    {files.map(file => (
-                                        <li key={file.name} className="list-group-item">{file.name}</li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-muted">尚未上傳履歷</p>
-                            )}
-                            
-                            <h6 className="mb-3"><i className="bi bi-mortarboard-fill text-primary me-2"></i>學術背景</h6>
-                            <div className="row">
-                                <div className="col-sm-6 mb-3">
-                                    <label className="form-label text-muted small">期望學校</label>
-                                    <p className="fw-bold">{formData.school}</p>
-                                </div>
-                                <div className="col-sm-6 mb-3">
-                                    <label className="form-label text-muted small">期望學系</label>
-                                    <p className="fw-bold">{formData.department || '未提供'}</p>
-                                </div>
-                                <div className="col-sm-6 mb-3">
-                                    <label className="form-label text-muted small">年級</label>
-                                    <p className="fw-bold">{formData.grade || '未提供'}</p>
-                                </div>
-                                <div className="col-sm-6 mb-3">
-                                    <label className="form-label text-muted small">現時學歷</label>
-                                    <p className="fw-bold">{formData.educationRequirements}</p>
-                                </div>
-                            </div>
+            <h4 className="mb-4 text-center">✅ 確認您的個人資料</h4>
+            <p className="text-center text-muted mb-4">請確認以下資訊，若有誤請返回上一步修改。</p>
 
-                             <h6 className="mb-3 mt-2"><i className="bi bi-person-workspace text-primary me-2"></i>經驗與備註</h6>
-                             <label className="form-label text-muted small">經驗</label>
-                             <p className="fw-bold">{formData.experienceRequirements || '未提供'}</p>
-                             <label className="form-label text-muted small">其他備註</label>
-                             <p className="fw-bold">{formData.additionalNotes || '未提供'}</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Column */}
-                <div className="col-lg-5">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body p-4">
-                            <h6 className="mb-3"><i className="bi bi-star-fill text-primary me-2"></i>技能要求</h6>
-                            <label className="form-label text-muted small">必要技能</label>
-                            <div className="mb-3">
-                                {requiredSkills.map((skill: string) => <span key={skill} className="badge bg-primary me-1 mb-1 p-2">{skill}</span>)}
-                            </div>
-
-                            <label className="form-label text-muted small">偏好技能</label>
-                            <div>
-                                {preferredSkills.length > 0 ? preferredSkills.map((skill: string) => <span key={skill} className="badge bg-secondary me-1 mb-1 p-2">{skill}</span>) : <p className="text-muted">未提供</p>}
-                            </div>
-                            <hr/>
-                             <h6 className="mb-3"><i className="bi bi-sliders text-primary me-2"></i>評分權重</h6>
-                             <div className="mb-3">
-                                <label className="form-label">技能權重</label>
-                                <div className="progress">
-                                    <div className="progress-bar" role="progressbar" style={{width: `${weights.skills}%`}} aria-valuenow={weights.skills} aria-valuemin={0} aria-valuemax={100}>{weights.skills}%</div>
-                                </div>
-                             </div>
-                             <div className="mb-3">
-                                <label className="form-label">經驗權重</label>
-                                <div className="progress">
-                                    <div className="progress-bar" role="progressbar" style={{width: `${weights.experience}%`}} aria-valuenow={weights.experience} aria-valuemin={0} aria-valuemax={100}>{weights.experience}%</div>
-                                </div>
-                             </div>
-                             <div>
-                                <label className="form-label">學歷權重</label>
-                                <div className="progress">
-                                    <div className="progress-bar" role="progressbar" style={{width: `${weights.education}%`}} aria-valuenow={weights.education} aria-valuemin={0} aria-valuemax={100}>{weights.education}%</div>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
+            <div className="card mb-4 shadow-sm">
+                <div className="card-body p-4">
+                    <h6 className="mb-3"><i className="bi bi-person-badge me-2 text-primary"></i>個人資訊</h6>
+                    <ul className="list-group">
+                        <li className="list-group-item"><strong>姓名：</strong>{formData.jobTitle || '未填寫'}</li>
+                        <li className="list-group-item"><strong>電郵地址：</strong>{formData.email || '未填寫'}</li>
+                        <li className="list-group-item"><strong>學校：</strong>{formData.school || '未填寫'}</li>
+                        <li className="list-group-item"><strong>學系：</strong>{formData.department || '未填寫'}</li>
+                        <li className="list-group-item"><strong>年級：</strong>{formData.grade || '未填寫'}</li>
+                        <li className="list-group-item"><strong>學歷：</strong>{formData.educationRequirements || '未填寫'}</li>
+                    </ul>
+                    <div className="form-text mt-2">此資料來自AI自動分析，您可於上一步修改。</div>
                 </div>
             </div>
 
@@ -316,101 +244,21 @@ const SavedRequirementsStep = ({ requirements, files, onEdit, onSubmit, isSubmit
 
 // Step 2: Job Requirements Component
 const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: RequirementData, onFormSubmit: (data: RequirementData) => void }) => {
-    const [skillsWeight, setSkillsWeight] = useState(initialData.weights.skills);
-    const [experienceWeight, setExperienceWeight] = useState(initialData.weights.experience);
-    const [educationWeight, setEducationWeight] = useState(initialData.weights.education);
-    const [requiredSkills, setRequiredSkills] = useState(initialData.requiredSkills);
-    const [preferredSkills, setPreferredSkills] = useState(initialData.preferredSkills);
-    const [requiredSkillInput, setRequiredSkillInput] = useState('');
-    const [preferredSkillInput, setPreferredSkillInput] = useState('');
-
     const [formData, setFormData] = useState(initialData.formData);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setFormData(prev => ({ ...prev, [id]: value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Validation
-        if (!formData.school.trim()) {
-            alert('「期望學校」是必填欄位。');
-            return;
-        }
-        if (!formData.educationRequirements.trim()) {
-            alert('「現時學歷」是必填欄位。');
-            return;
-        }
-    
-        const fullFormData = {
+        onFormSubmit({
             formData,
-            requiredSkills,
-            preferredSkills,
-            weights: {
-                skills: skillsWeight,
-                experience: experienceWeight,
-                education: educationWeight
-            }
-        };
-        onFormSubmit(fullFormData);
-    };
-
-    const handleWeightChange = (
-        changedKey: 'skills' | 'experience' | 'education',
-        newValue: number
-      ) => {
-        newValue = Math.max(0, Math.min(100, parseInt(newValue.toString(), 10)));
-    
-        const currentWeights = {
-            skills: skillsWeight,
-            experience: experienceWeight,
-            education: educationWeight,
-        };
-    
-        if (currentWeights[changedKey] === newValue) return;
-    
-        const otherKeys = (['skills', 'experience', 'education'] as const).filter(
-          k => k !== changedKey
-        );
-        const oldSumOfOthers = otherKeys.reduce((sum, key) => sum + currentWeights[key], 0);
-        const newSumOfOthers = 100 - newValue;
-    
-        const newWeights = { ...currentWeights, [changedKey]: newValue };
-    
-        if (oldSumOfOthers > 0) {
-            const ratio = newWeights[otherKeys[0]] / oldSumOfOthers;
-            newWeights[otherKeys[0]] = Math.round(newSumOfOthers * ratio);
-            newWeights[otherKeys[1]] = newSumOfOthers - newWeights[otherKeys[0]];
-        } else {
-            newWeights[otherKeys[0]] = Math.floor(newSumOfOthers / 2);
-            newWeights[otherKeys[1]] = Math.ceil(newSumOfOthers / 2);
-        }
-    
-        setSkillsWeight(newWeights.skills);
-        setExperienceWeight(newWeights.experience);
-        setEducationWeight(newWeights.education);
-      };
-
-    const handleAddSkill = (
-        skill: string,
-        skills: string[],
-        setSkills: React.Dispatch<React.SetStateAction<string[]>>,
-        setInput: React.Dispatch<React.SetStateAction<string>>
-    ) => {
-        const trimmedSkill = skill.trim();
-        if (trimmedSkill && !skills.includes(trimmedSkill)) {
-            setSkills([...skills, trimmedSkill]);
-            setInput('');
-        }
-    };
-
-    const handleRemoveSkill = (
-        skillToRemove: string,
-        skills: string[],
-        setSkills: React.Dispatch<React.SetStateAction<string[]>>
-    ) => {
-        setSkills(skills.filter(skill => skill !== skillToRemove));
+            requiredSkills: [],
+            preferredSkills: [],
+            weights: { skills: 0, experience: 0, education: 0 }
+        });
     };
 
     return (
@@ -418,194 +266,39 @@ const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: Requirem
             <form onSubmit={handleSubmit}>
                 <div className="card shadow-sm mb-4">
                     <div className="card-header bg-light">
-                        <h5 className="mb-0"><i className="bi bi-journal-text me-2 text-primary"></i>基本資訊</h5>
+                        <h5 className="mb-0"><i className="bi bi-journal-text me-2 text-primary"></i>AI自動填欄（可手動修改）</h5>
                     </div>
                     <div className="card-body p-4">
                         <div className="mb-3">
-                            <label htmlFor="jobTitle" className="form-label">姓名</label>
-                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文（選填）" value={formData.jobTitle} onChange={handleInputChange} />
+                            <label htmlFor="jobTitle" className="form-label">姓名（中英文）</label>
+                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文 / David Chen" value={formData.jobTitle} onChange={handleInputChange} />
                         </div>
-                    </div>
-                </div>
-
-                <div className="card shadow-sm mb-4">
-                    <div className="card-header bg-light">
-                         <h5 className="mb-0"><i className="bi bi-mortarboard me-2 text-primary"></i>學術要求</h5>
-                    </div>
-                    <div className="card-body p-4">
-                        <div className="row">
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="school" className="form-label">期望學校 (School) <span className="text-danger">*</span></label>
-                                <input type="text" className="form-control" id="school" placeholder="e.g. National Taiwan University" value={formData.school} onChange={handleInputChange} />
-                            </div>
-                             <div className="col-md-6 mb-3">
-                                <label htmlFor="department" className="form-label">期望學系 (Department)</label>
-                                <input type="text" className="form-control" id="department" placeholder="e.g. Computer Science" value={formData.department} onChange={handleInputChange} />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="grade" className="form-label">晉升年級(Grade)</label>
-                                <input type="text" className="form-control" id="grade" placeholder="e.g. 3th year" value={formData.grade} onChange={handleInputChange} />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="educationRequirements" className="form-label">現時學歷<span className="text-danger">*</span></label>
-                                <input type="text" className="form-control" id="educationRequirements" placeholder="例如：中學學位" value={formData.educationRequirements} onChange={handleInputChange} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="card shadow-sm mb-4">
-                     <div className="card-header bg-light">
-                        <h5 className="mb-0"><i className="bi bi-star me-2 text-primary"></i>技能要求</h5>
-                    </div>
-                    <div className="card-body p-4">
                         <div className="mb-3">
-                            <label className="form-label">期望技能</label>
-                            <div className="input-group">
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="新增一項期望技能"
-                                    value={requiredSkillInput}
-                                    onChange={(e) => setRequiredSkillInput(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput);
-                                        }
-                                    }}
-                                />
-                                <button className="btn btn-primary" type="button" 
-                                  style={{
-                                    minWidth: '56px',
-                                    height: '48px',
-                                    borderTopLeftRadius: 0,
-                                    borderBottomLeftRadius: 0,
-                                    fontSize: '1.5rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: '#0d6efd',
-                                    color: '#fff'
-                                  }}
-                                  onClick={() => handleAddSkill(requiredSkillInput, requiredSkills, setRequiredSkills, setRequiredSkillInput)}
-                                >
-                                  <i className="bi bi-plus-lg" style={{ color: '#fff' }}></i>
-                                </button>
-                            </div>
-                            <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
-                                {requiredSkills.length > 0 ? (
-                                    requiredSkills.map((skill: string) => (
-                                        <span key={skill} className="badge fs-6 fw-normal bg-primary me-2 mb-2 p-2 d-flex align-items-center">
-                                            {skill}
-                                            <button 
-                                                type="button" 
-                                                className="btn-close btn-close-white ms-2" 
-                                                style={{fontSize: '0.65em'}} 
-                                                onClick={() => handleRemoveSkill(skill, requiredSkills, setRequiredSkills)}>
-                                            </button>
-                                        </span>
-                                    ))
-                                ) : (
-                                    <div className="form-text p-2">尚未新增期望技能</div>
-                                )}
-                            </div>
+                            <label htmlFor="email" className="form-label">電郵地址</label>
+                            <input type="email" className="form-control" id="email" placeholder="例如：david@email.com" value={formData.email || ''} onChange={handleInputChange} />
                         </div>
-                        <div>
-                            <label className="form-label">偏好技能</label>
-                            <div className="input-group">
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="新增一項偏好技能"
-                                    value={preferredSkillInput}
-                                    onChange={(e) => setPreferredSkillInput(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput);
-                                        }
-                                    }}
-                                />
-                                <button className="btn btn-primary" type="button" 
-                                  style={{
-                                    minWidth: '56px',
-                                    height: '48px',
-                                    borderTopLeftRadius: 0,
-                                    borderBottomLeftRadius: 0,
-                                    fontSize: '1.5rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: '#0d6efd',
-                                    color: '#fff'
-                                  }}
-                                  onClick={() => handleAddSkill(preferredSkillInput, preferredSkills, setPreferredSkills, setPreferredSkillInput)}
-                                >
-                                  <i className="bi bi-plus-lg" style={{ color: '#fff' }}></i>
-                                </button>
-                            </div>
-                           <div className="mt-2 d-flex flex-wrap" style={{minHeight: '40px'}}>
-                                {preferredSkills.length > 0 ? (
-                                    preferredSkills.map((skill: string) => (
-                                        <span key={skill} className="badge fs-6 fw-normal bg-secondary me-2 mb-2 p-2 d-flex align-items-center">
-                                            {skill}
-                                            <button 
-                                                type="button" 
-                                                className="btn-close btn-close-white ms-2" 
-                                                style={{fontSize: '0.65em'}} 
-                                                onClick={() => handleRemoveSkill(skill, preferredSkills, setPreferredSkills)}>
-                                            </button>
-                                        </span>
-                                    ))
-                                ) : (
-                                    <div className="form-text p-2">尚未新增偏好技能</div>
-                                )}
-                            </div>
+                        <div className="mb-3">
+                            <label htmlFor="school" className="form-label">學校</label>
+                            <input type="text" className="form-control" id="school" placeholder="例如：國立台灣大學" value={formData.school} onChange={handleInputChange} />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="department" className="form-label">學系</label>
+                            <input type="text" className="form-control" id="department" placeholder="例如：資訊工程學系" value={formData.department} onChange={handleInputChange} />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="grade" className="form-label">年級</label>
+                            <input type="text" className="form-control" id="grade" placeholder="例如：三年級" value={formData.grade} onChange={handleInputChange} />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="educationRequirements" className="form-label">學歷</label>
+                            <input type="text" className="form-control" id="educationRequirements" placeholder="例如：大學學位" value={formData.educationRequirements} onChange={handleInputChange} />
                         </div>
                     </div>
                 </div>
-
-                <div className="card shadow-sm mb-4">
-                     <div className="card-header bg-light">
-                        <h5 className="mb-0"><i className="bi bi-gem me-2 text-primary"></i>其他要求與權重</h5>
-                    </div>
-                    <div className="card-body p-4">
-                        <div className="row">
-                            <div className="col-lg-6">
-                                <div className="mb-3">
-                                    <label htmlFor="experienceRequirements" className="form-label">經驗</label>
-                                    <input type="text" className="form-control" id="experienceRequirements" placeholder="例如：比賽" value={formData.experienceRequirements} onChange={handleInputChange} />
-                                </div>
-                                <div>
-                                    <label htmlFor="additionalNotes" className="form-label">其他備註</label>
-                                    <textarea className="form-control" id="additionalNotes" rows={5} placeholder="任何關於此職位的額外要求或說明" value={formData.additionalNotes} onChange={handleInputChange}></textarea>
-                                </div>
-                            </div>
-                            <div className="col-lg-6">
-                                <h6 className="mb-3">評分標準權重</h6>
-                                <p className="text-muted small">調整各個評分項目的重要性，總權重將維持 100%。</p>
-                                <div className="mb-3">
-                                    <label htmlFor="skillsWeight" className="form-label">技能權重: {skillsWeight}%</label>
-                                    <input type="range" className="form-range" id="skillsWeight" min="0" max="100" value={skillsWeight} onChange={(e) => handleWeightChange('skills', parseInt(e.target.value))} />
-                                </div>
-                                <div className="mb-3">
-                                    <label htmlFor="experienceWeight" className="form-label">經驗權重: {experienceWeight}%</label>
-                                    <input type="range" className="form-range" id="experienceWeight" min="0" max="100" value={experienceWeight} onChange={(e) => handleWeightChange('experience', parseInt(e.target.value))} />
-                                </div>
-                                <div>
-                                    <label htmlFor="educationWeight" className="form-label">學歷權重: {educationWeight}%</label>
-                                    <input type="range" className="form-range" id="educationWeight" min="0" max="100" value={educationWeight} onChange={(e) => handleWeightChange('education', parseInt(e.target.value))} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div className="d-flex justify-content-end mt-4">
                     <button type="submit" className="btn btn-primary btn-lg px-5">
                         <i className="bi bi-arrow-right-circle-fill me-2"></i>
-                        建立並預覽要求
+                        建立並預覽
                     </button>
                 </div>
             </form>
@@ -703,6 +396,27 @@ const DocumentComparisonPage = () => {
             throw new Error(result.error || '遞交失敗，請稍後再試。');
         }
 
+        // === Gemini AI 自動填入欄位 ===
+        if (result.geminiExtracted && typeof result.geminiExtracted === 'object') {
+          const g = result.geminiExtracted;
+          setRequirementsState(prev => ({
+            ...prev,
+            formData: {
+              ...prev.formData,
+              jobTitle: g.name || prev.formData.jobTitle,
+              school: g.school || prev.formData.school,
+              department: g.department || prev.formData.department,
+              grade: g.grade || prev.formData.grade,
+              educationRequirements: g.education || prev.formData.educationRequirements,
+            }
+          }));
+          setCurrentStep(2); // 跳回 Step 2 讓用戶確認/編輯
+          setResultLoading(false);
+          setIsSubmitting(false);
+          return;
+        }
+        // === End Gemini AI 自動填入欄位 ===
+
         // 遞交成功後自動比對學長
         const matchFormData = new FormData();
         matchFormData.append('resume', uploadedFiles[0]);
@@ -778,7 +492,6 @@ const DocumentComparisonPage = () => {
         return <>
           <SavedRequirementsStep 
             requirements={submittedRequirements} 
-            files={uploadedFiles} 
             onEdit={() => setCurrentStep(2)} 
             onSubmit={() => setShowConfirmModal(true)}
             isSubmitting={isSubmitting}
