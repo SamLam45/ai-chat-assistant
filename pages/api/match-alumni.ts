@@ -14,6 +14,22 @@ const supabase = createClient(
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 
+// 定義 Alumni 型別（可根據實際欄位擴充）
+type Alumni = {
+  id: string;
+  name: string;
+  school: string;
+  department: string;
+  grade: string;
+  education: string;
+  experience?: string;
+  skills?: string[];
+  resume_content?: string;
+  embedding?: number[];
+  interests?: string[];
+  [key: string]: unknown; // ← 這樣 linter 就不會警告
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -49,27 +65,52 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else {
         throw new Error('embedding 格式錯誤');
       }
-    } catch (e) {
-      console.error('Gemini embedding 產生失敗', e);
+    } catch (error: unknown) {
+      console.error('Gemini embedding 產生失敗', error);
       return res.status(500).json({ error: 'Gemini embedding 產生失敗' });
     }
 
     // 查詢 vector DB
     const match_count = 20;
-    const { data, error } = await supabase.rpc('match_alumni_by_vector', {
-      query_embedding: embedding,
-      match_count
-    });
-    if (error) return res.status(500).json({ error: error.message });
+    let alumni: Alumni[] = [];
+    let recommended: Alumni[] = [];
+    let vectorError = null;
+    try {
+      const { data, error } = await supabase.rpc('match_alumni_by_vector', {
+        query_embedding: embedding,
+        match_count
+      });
+      if (error) throw error;
+      alumni = Array.isArray(data) ? data as Alumni[] : [];
+      // 只要 interests 有交集就顯示
+      if (interests.length > 0) {
+        recommended = alumni.filter(a => Array.isArray(a.interests) && a.interests.some((i: string) => interests.includes(i)));
+      } else {
+        recommended = alumni;
+      }
+    } catch (error: unknown) {
+      vectorError = error;
+    }
 
-    // 推薦排序（可依需求調整）
-    const alumni = Array.isArray(data) ? data : [];
-    const recommended = alumni.slice(0, 3);
+    // fallback: 若 embedding 查無結果或無交集，則用 SQL 查找 interests overlap
+    if (recommended.length === 0 && interests.length > 0) {
+      const { data: overlapAlumni, error: overlapError } = await supabase
+        .from('alumni')
+        .select('*')
+        .overlaps('interests', interests);
+      if (!overlapError && Array.isArray(overlapAlumni)) {
+        recommended = overlapAlumni as Alumni[]; // Cast to Alumni[]
+      }
+    }
+
+    // 只取前 3 筆
+    recommended = recommended.slice(0, 3);
 
     res.status(200).json({
       alumni: recommended,
       queryText,
-      embeddingLength: embedding.length
+      embeddingLength: embedding.length,
+      vectorError: vectorError ? String(vectorError) : undefined
     });
   });
 }

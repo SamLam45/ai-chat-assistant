@@ -609,24 +609,25 @@ const DocumentComparisonPage = () => {
         // === End ===
 
         // === Gemini AI 自動填入欄位 ===
-        if (result.geminiExtracted && typeof result.geminiExtracted === 'object') {
-          const g = result.geminiExtracted;
-          setRequirementsState((prev: RequirementData) => ({
-            ...prev,
-            formData: {
-              ...prev.formData,
-              jobTitle: (g.name || prev.formData.jobTitle) || '',
-              school: (g.school || prev.formData.school) || '',
-              department: (g.department || prev.formData.department) || '',
-              grade: (g.grade || prev.formData.grade) || '',
-              educationRequirements: (g.education || prev.formData.educationRequirements) || '',
-            }
-          }));
-          setCurrentStep(2); // 跳回 Step 2 讓用戶確認/編輯
-          setResultLoading(false);
-          setIsSubmitting(false);
-          return;
-        }
+        // 這段原本會強制跳回 Step 2，現已移除，讓流程能順利進到 Step 4
+        // if (result.geminiExtracted && typeof result.geminiExtracted === 'object') {
+        //   const g = result.geminiExtracted;
+        //   setRequirementsState((prev: RequirementData) => ({
+        //     ...prev,
+        //     formData: {
+        //       ...prev.formData,
+        //       jobTitle: (g.name || prev.formData.jobTitle) || '',
+        //       school: (g.school || prev.formData.school) || '',
+        //       department: (g.department || prev.formData.department) || '',
+        //       grade: (g.grade || prev.formData.grade) || '',
+        //       educationRequirements: (g.education || prev.formData.educationRequirements) || '',
+        //     }
+        //   }));
+        //   setCurrentStep(2); // 跳回 Step 2 讓用戶確認/編輯
+        //   setResultLoading(false);
+        //   setIsSubmitting(false);
+        //   return;
+        // }
         // === End Gemini AI 自動填入欄位 ===
 
         // 遞交成功後自動比對學長
