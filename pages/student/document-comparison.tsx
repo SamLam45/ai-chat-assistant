@@ -42,18 +42,6 @@ type AlumniType = {
   distance?: number;
 };
 
-type SmartMatchInfo = {
-  originalDepartment: string;
-  originalSchool: string;
-  matchedDepartment: string;
-  matchedSchool: string;
-  departmentScore?: number;
-  schoolScore?: number;
-  reasoning?: string;
-  matchedDepartments?: string[];
-  departmentScores?: Record<string, number>;
-};
-
 // Step 1: Upload Resumes Component
 const allowedTypes = [
   'application/pdf',
@@ -490,7 +478,8 @@ const DocumentComparisonPage = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [submittedRequirements, setSubmittedRequirements] = useState<RequirementData | null>(null);
   const [matchedAlumni, setMatchedAlumni] = useState<AlumniType[]>([]);
-  const [smartMatchInfo, setSmartMatchInfo] = useState<SmartMatchInfo | null>(null);
+  // 移除 smartMatchInfo 狀態
+  // const [smartMatchInfo, setSmartMatchInfo] = useState<SmartMatchInfo | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [resultLoading, setResultLoading] = useState(false);
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
@@ -656,8 +645,6 @@ const DocumentComparisonPage = () => {
         });
         const { alumni, smartMatch } = await matchRes.json();
         setMatchedAlumni(alumni);
-        setSmartMatchInfo(smartMatch);
-        
         // 如果有智能匹配資訊，顯示給用戶
         if (smartMatch && (smartMatch.originalDepartment !== smartMatch.matchedDepartment || 
                           smartMatch.originalSchool !== smartMatch.matchedSchool)) {
@@ -749,6 +736,16 @@ const DocumentComparisonPage = () => {
           )}
         </>;
       case 4:
+        // 計算交集數量
+        const userInterests = submittedRequirements?.formData.interests || [];
+        const alumniWithMatchCount = matchedAlumni.map((a: AlumniType & { interests?: string[] }) => ({
+          ...a,
+          interests: a.interests,
+          _matchCount: Array.isArray(a.interests)
+            ? a.interests.filter((i: string) => userInterests.includes(i)).length
+            : 0
+        })).sort((a, b) => b._matchCount - a._matchCount);
+        const topAlumni = alumniWithMatchCount.slice(0, 3);
         return (
           <div>
             <h4 className="mb-4 text-center">最相似的學長</h4>
@@ -757,7 +754,7 @@ const DocumentComparisonPage = () => {
                 <div className="spinner-border text-primary mb-3" role="status"></div>
                 <div className="fw-bold">AI 正在分析中，請等候...</div>
               </div>
-            ) : matchedAlumni && matchedAlumni.length > 0 ? (
+            ) : topAlumni && topAlumni.length > 0 ? (
               <>
                 {/* 智能匹配資訊卡片 */}
                 <div className="card mb-4 border-primary">
@@ -768,45 +765,44 @@ const DocumentComparisonPage = () => {
                     <table className="table table-bordered mb-3">
                       <thead>
                         <tr>
-                          <th></th>
-                          <th>學校</th>
-                          <th>學系</th>
+                          <th>興趣／學術選擇</th>
+                          <th>原始條件</th>
+                          <th>智能匹配</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td>原始條件</td>
-                          <td>{smartMatchInfo?.originalSchool}</td>
-                          <td>{smartMatchInfo?.originalDepartment}</td>
-                        </tr>
-                        <tr>
-                          <td>智能匹配</td>
-                          <td>{smartMatchInfo?.matchedSchool}</td>
+                          <td>興趣／學術選擇</td>
                           <td>
-                            {Array.isArray(smartMatchInfo?.matchedDepartments)
-                              ? smartMatchInfo.matchedDepartments.map(
-                                  d => `${d}${smartMatchInfo.departmentScores?.[d] ? `（${smartMatchInfo.departmentScores[d]}分）` : ''}`
-                                ).join('、')
-                              : (smartMatchInfo?.matchedDepartment || '未找到')}
+                            <ul className="mb-0 ps-3">
+                              {userInterests.map((interest, idx) => (
+                                <li key={idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
+                              ))}
+                            </ul>
+                          </td>
+                          <td>
+                            <span className="fw-bold text-primary">{topAlumni[0]?._matchCount}</span> 項相同
                           </td>
                         </tr>
                       </tbody>
                     </table>
                     <div>
                       <strong>AI 匹配理由：</strong>
-                      <span className="text-muted">{smartMatchInfo?.reasoning}</span>
-                      <ul className="mt-2">
-                        <li>學校相似度：{smartMatchInfo?.schoolScore ?? '-'} 分</li>
-                        <li>學系相似度：{smartMatchInfo?.departmentScore ?? '-'} 分</li>
+                      <ul className="mb-2">
+                        {topAlumni.map(a => (
+                          <li key={a.id}>
+                            <span className="fw-bold">{a.name}</span> 學長與你的興趣非常之接近，有 <span className="text-primary fw-bold">{a._matchCount}</span> 個是一樣的
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </div>
                 </div>
 
                 {/* 推薦學長卡片區塊：三欄分佈+動畫 */}
-                <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長</h5>
+                <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
                 <div className="d-flex justify-content-center align-items-stretch gap-4 flex-wrap">
-                  {matchedAlumni.slice(0, 3).map((a, index) => (
+                  {topAlumni.map((a, index) => (
                     <div key={a.id} className="card mb-3 shadow-sm animate__animated animate__fadeInUp" style={{ minWidth: 350, maxWidth: 500, minHeight: 600, flex: 1, fontSize: '1.12rem' }}>
                       <div className="card-body d-flex flex-column h-100 p-5">
                         <div className="d-flex flex-column align-items-start mb-4">
@@ -814,9 +810,6 @@ const DocumentComparisonPage = () => {
                           <div className="mb-2" style={{ width: '100%' }}>
                             <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
                               {a.school} {a.department}
-                              {Array.isArray(smartMatchInfo?.matchedDepartments) && smartMatchInfo.matchedDepartments.includes(a.department) && (
-                                <span className="ms-2 badge bg-info text-dark">AI相似學系</span>
-                              )}
                             </span>
                           </div>
                           <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -833,6 +826,20 @@ const DocumentComparisonPage = () => {
                             <p style={{ fontSize: '1.08rem' }}><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
                           </div>
                         </div>
+                        {/* 興趣／學術選擇點列式顯示 */}
+                        {Array.isArray(a.interests) && a.interests.length > 0 && (
+                          <div className="mt-4">
+                            <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-list-check me-2 text-primary"></i>興趣／學術選擇</h6>
+                            <ul className="list-unstyled mb-0 ps-2">
+                              {a.interests?.map((interest: string, _idx: number) => (
+                                <li key={_idx}>
+                                  <i className="bi bi-check2-circle text-success me-1"></i>
+                                  {interest}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                         {a.resume_content && (
                           <div className="mt-4">
                             <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
