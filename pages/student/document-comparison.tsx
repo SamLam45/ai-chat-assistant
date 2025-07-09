@@ -752,13 +752,20 @@ const DocumentComparisonPage = () => {
       case 4:
         // 計算交集數量
         const userInterests = submittedRequirements?.formData.interests || [];
-        const alumniWithMatchCount = matchedAlumni.map((a: AlumniType & { interests?: string[] }) => ({
+        const userSpecialWish = submittedRequirements?.formData.specialWish || '';
+        // 先標記有無交集
+        let alumniWithMatchCount = matchedAlumni.map((a: AlumniType & { interests?: string[] }) => ({
           ...a,
           interests: a.interests,
           _matchCount: Array.isArray(a.interests)
             ? a.interests.filter((i: string) => userInterests.includes(i)).length
             : 0
-        })).sort((a, b) => b._matchCount - a._matchCount);
+        }));
+        // 有交集的排前，無交集的排後，且各自內部依交集數量多至少排序
+        alumniWithMatchCount = [
+          ...alumniWithMatchCount.filter(a => a._matchCount > 0).sort((a, b) => b._matchCount - a._matchCount),
+          ...alumniWithMatchCount.filter(a => a._matchCount === 0)
+        ];
         const topAlumni = alumniWithMatchCount.slice(0, 3);
         return (
           <div>
@@ -776,6 +783,10 @@ const DocumentComparisonPage = () => {
                     <h5 className="mb-0"><i className="bi bi-lightbulb-fill me-2"></i>AI 智能匹配結果</h5>
                   </div>
                   <div className="card-body">
+                    <div className="mb-2">
+                      <strong>您的特殊需求／願望：</strong>
+                      <span className="ms-2 text-danger">{userSpecialWish ? userSpecialWish : '（未填寫）'}</span>
+                    </div>
                     <table className="table table-bordered mb-3">
                       <thead>
                         <tr>
@@ -805,7 +816,11 @@ const DocumentComparisonPage = () => {
                       <ul className="mb-2">
                         {topAlumni.map(a => (
                           <li key={a.id}>
-                            <span className="fw-bold">{a.name}</span> 學長與你的興趣非常之接近，有 <span className="text-primary fw-bold">{a._matchCount}</span> 個是一樣的
+                            <span className="fw-bold">{a.name}</span> 學長
+                            {a._matchCount > 0
+                              ? <span> 與您的興趣有 <span className="text-primary fw-bold">{a._matchCount}</span> 項相同</span>
+                              : <span className="text-warning"> 僅語意相近（無興趣交集）</span>
+                            }
                           </li>
                         ))}
                       </ul>
@@ -818,8 +833,17 @@ const DocumentComparisonPage = () => {
                 <div className="row justify-content-center g-4">
                   {topAlumni.map((a, index) => (
                     <div key={a.id} className="col-12 col-md-4 d-flex">
-                      <div className="card mb-3 shadow-sm animate__animated animate__fadeInUp flex-fill" style={{ minHeight: 600, fontSize: '1.12rem' }}>
-                        <div className="card-body d-flex flex-column h-100 p-5">
+                      <div
+                        className="card mb-3 shadow-sm animate__animated animate__fadeInUp flex-fill"
+                        style={{
+                          minWidth: 340,
+                          maxWidth: 440,
+                          width: '100%',
+                          fontSize: '1.12rem',
+                          margin: '0 auto'
+                        }}
+                      >
+                        <div className="card-body d-flex flex-column h-100 p-4">
                           <div className="d-flex flex-column align-items-start mb-4">
                             <span className="badge bg-primary mb-2">#{index + 1}</span>
                             <div className="mb-2" style={{ width: '100%' }}>
