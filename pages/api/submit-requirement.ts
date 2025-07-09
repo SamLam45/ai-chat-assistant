@@ -137,6 +137,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 uploaded_cv_paths: uploadedCvPaths,
                 interests: formData.interests,
                 other_language: formData.otherLanguage,
+                special_wish: formData.specialWish,
             })
             .select()
             .single();

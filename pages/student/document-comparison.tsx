@@ -17,6 +17,7 @@ interface RequirementData {
       additionalNotes: string;
       interests?: string[];
       otherLanguage?: string;
+      specialWish?: string;
     };
     requiredSkills: string[];
     preferredSkills: string[];
@@ -289,6 +290,15 @@ const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, s
                 </div>
               </div>
             )}
+            {/* 特殊需求／願望顯示區塊 */}
+            {formData.specialWish && (
+              <div className="card mb-4 shadow-sm">
+                <div className="card-body p-4">
+                  <h6 className="mb-3"><i className="bi bi-heart me-2 text-danger"></i>特殊需求／願望</h6>
+                  <div className="list-group-item">{formData.specialWish}</div>
+                </div>
+              </div>
+            )}
 
             {submissionError && (
                 <div className="alert alert-danger mt-3">
@@ -432,6 +442,17 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                             </div>
                           )}
                           <div className="form-text">可多選，最多 10 項</div>
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="specialWish" className="form-label">特殊需求／願望（可選填）</label>
+                          <textarea
+                            className="form-control"
+                            id="specialWish"
+                            placeholder="請輸入您對補習班的特殊需求或願望..."
+                            value={formData.specialWish || ''}
+                            onChange={e => setFormData({ ...formData, specialWish: e.target.value })}
+                            rows={3}
+                          />
                         </div>
                     </div>
                 </div>
