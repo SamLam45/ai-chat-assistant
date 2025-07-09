@@ -67,6 +67,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 1. AI 智能匹配
     let aiMatched: Alumni[] = [];
     let smartMatch = { school: '', education: '', grade: '', department: '' };
+    // Debug log: 用戶輸入與解析條件
+    console.log('[DEBUG] 用戶特殊需求／願望:', specialWish);
     if (specialWish) {
       try {
         const SMART_MATCH_PROMPT = `你是一個履歷智能推薦系統的助手。\n請根據用戶輸入的「特殊需求／願望」欄位，判斷是否包含明確的學校、學歷、年級、科系等條件。\n如果有，請將這些條件以結構化 JSON 格式回傳，欄位包含：school（學校）、education（學歷）、grade（年級）、department（科系），若無則為空字串。\n如果沒有明確條件，請回傳全空字串的 JSON。\n\n範例1：\n用戶輸入：「我想要清華大學學長」\n回傳：{"school": "清華大學", "education": "", "grade": "", "department": ""}\n\n範例2：\n用戶輸入：「我想要碩士學位學長」\n回傳：{"school": "", "education": "碩士", "grade": "", "department": ""}\n\n範例3：\n用戶輸入：「我想要資工系的碩士學長」\n回傳：{"school": "", "education": "碩士", "grade": "", "department": "資工系"}\n\n範例4：\n用戶輸入：「希望學長有實習經驗」\n回傳：{"school": "", "education": "", "grade": "", "department": ""}\n\n請根據下方用戶輸入，回傳結構化 JSON：\n「{specialWish}」`;
@@ -89,9 +91,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (smartMatch.education) query = query.ilike('education', `%${smartMatch.education}%`);
       if (smartMatch.grade) query = query.ilike('grade', `%${smartMatch.grade}%`);
       if (smartMatch.department) query = query.ilike('department', `%${smartMatch.department}%`);
+      // Debug log: 查詢條件
+      console.log('[DEBUG] AI智能匹配查詢條件:', smartMatch);
       const { data: alumni } = await query;
       if (Array.isArray(alumni)) {
         aiMatched = alumni as Alumni[];
+        // Debug log: 查詢結果
+        console.log('[DEBUG] AI智能匹配查詢結果:', aiMatched.map(a => ({ id: a.id, name: a.name, school: a.school, interests: a.interests })));
       }
     }
 
@@ -132,6 +138,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 4. 組合推薦名單
     let recommended: Alumni[] = [];
     let aiMatchReasons: string[] = [];
+    // Debug log: 最終推薦名單
+    // 注意：推薦名單可能包含 AI 匹配與 interests 排序補位
+    // 只 log id, name, school, _matchCount
+    // eslint-disable-next-line no-console
+    setTimeout(() => {
+      try {
+        console.log('[DEBUG] 最終推薦名單:', recommended.map(a => ({ id: a.id, name: a.name, school: a.school, _matchCount: a._matchCount })));
+      } catch {}
+    }, 0);
     if (aiMatched.length > 1) {
       // 多於 1 位，直接交集排序取前 3
       recommended = sortByInterests(aiMatched, interests).slice(0, 3);
