@@ -41,6 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const interests = Array.isArray(fields.interests) ? fields.interests : (fields.interests ? [fields.interests] : []);
     const otherLanguage = Array.isArray(fields.otherLanguage) ? fields.otherLanguage[0] : fields.otherLanguage || '';
     const specialWish = Array.isArray(fields.specialWish) ? fields.specialWish[0] : fields.specialWish || '';
+    // 不再檢查 resume 是否存在，允許無履歷也能查詢
 
     // 組合語意查詢描述
     const interestsText = (interests || []).join('、');

@@ -93,6 +93,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             } catch (e) {
                 geminiExtracted = { error: (e as Error).message };
             }
+        } else {
+            geminiExtracted = null;
         }
 
         if (resumeFiles && resumeFiles.length > 0) {
@@ -114,8 +116,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
                 uploadedCvPaths.push({ path: uploadData.path, originalName: file.originalFilename! });
             }
-        } else {
-             return res.status(400).json({ error: 'At least one resume file is required.' });
         }
         
         // 4. Insert requirement data into the database
