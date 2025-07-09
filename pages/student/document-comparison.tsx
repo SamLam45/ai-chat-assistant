@@ -519,6 +519,26 @@ const DocumentComparisonPage = () => {
             throw new Error(result.error || '遞交失敗，請稍後再試。');
         }
 
+        // === 自動寫入 student table ===
+        const { jobTitle, school, department, grade, educationRequirements, experienceRequirements } = submittedRequirements.formData;
+        await fetch('/api/add-student', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            user_id: session.user.id,
+            name: jobTitle,
+            school,
+            department,
+            grade,
+            education: educationRequirements,
+            experience: experienceRequirements,
+          }),
+        });
+        // === End ===
+
         // === Gemini AI 自動填入欄位 ===
         if (result.geminiExtracted && typeof result.geminiExtracted === 'object') {
           const g = result.geminiExtracted;
