@@ -940,7 +940,7 @@ const DocumentComparisonPage = () => {
                           </div>
                           {isSelected && (
                             <div className="position-absolute top-0 end-0 m-2">
-                              <i className="bi bi-check-circle-fill text-primary fs-2"></i>
+                              {/* <i className="bi bi-check-circle-fill text-primary fs-2"></i> */}
                             </div>
                           )}
                         </div>
