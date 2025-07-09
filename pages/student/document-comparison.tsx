@@ -391,53 +391,55 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                         <h5 className="mb-0"><i className="bi bi-journal-text me-2 text-primary"></i>AI自動填欄（可手動修改）</h5>
                     </div>
                     <div className="card-body p-4">
-                        <div className="mb-3">
+                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.1s' }}>
                             <label htmlFor="jobTitle" className="form-label">姓名（中英文）</label>
                             <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文 / David Chen" value={formData.jobTitle || ''} onChange={handleInputChange} />
                         </div>
-                        <div className="mb-3">
+                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.2s' }}>
                             <label htmlFor="email" className="form-label">電郵地址</label>
                             <input type="email" className="form-control" id="email" placeholder="例如：david@email.com" value={formData.email || ''} onChange={handleInputChange} />
                         </div>
-                        <div className="mb-3">
+                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.3s' }}>
                             <label htmlFor="school" className="form-label">學校</label>
                             <input type="text" className="form-control" id="school" placeholder="例如：國立台灣大學" value={formData.school || ''} onChange={handleInputChange} />
                         </div>
-                        <div className="mb-3">
+                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.4s' }}>
                             <label htmlFor="department" className="form-label">學系</label>
                             <input type="text" className="form-control" id="department" placeholder="例如：資訊工程學系" value={formData.department || ''} onChange={handleInputChange} />
                         </div>
-                        <div className="mb-3">
+                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.5s' }}>
                             <label htmlFor="grade" className="form-label">年級</label>
                             <input type="text" className="form-control" id="grade" placeholder="例如：三年級" value={formData.grade || ''} onChange={handleInputChange} />
                         </div>
-                        <div className="mb-3">
+                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.6s' }}>
                             <label htmlFor="educationRequirements" className="form-label">學歷</label>
                             <input type="text" className="form-control" id="educationRequirements" placeholder="例如：大學學位" value={formData.educationRequirements || ''} onChange={handleInputChange} />
                         </div>
-                        <div className="mb-4">
+                        <div className="mb-4 animate__fadeInUp" style={{ animationDelay: '0.7s' }}>
                           <label className="form-label fw-bold">興趣／學術選擇（最多 10 項）</label>
                           <div className="d-flex flex-wrap gap-2">
-                            {INTEREST_OPTIONS.map((option: string) => (
-                              <label key={option} className={`btn btn-outline-primary mb-2 ${formData.interests?.includes(option) ? 'active' : ''}`}
-                                style={{ minWidth: 120 }}>
+                            {INTEREST_OPTIONS.map((option: string, idx: number) => (
+                              <label
+                                key={option}
+                                className={`btn btn-outline-primary mb-2 animate__fadeInUp ${formData.interests?.includes(option) ? 'active' : ''}`}
+                                style={{ minWidth: 120, animationDelay: `${0.8 + idx * 0.05}s` }}
+                              >
                                 <input
                                   type="checkbox"
                                   className="btn-check"
                                   autoComplete="off"
                                   checked={!!formData.interests?.includes(option)}
                                   onChange={() => handleInterestChange(option)}
-                                  disabled={
-                                    !formData.interests?.includes(option) && (formData.interests?.length || 0) >= 10
-                                  }
+                                  disabled={!formData.interests?.includes(option) && (formData.interests?.length || 0) >= 10}
                                 />
+                                {formData.interests?.includes(option) && <i className="bi bi-check-lg me-1"></i>}
                                 {option}
                               </label>
                             ))}
                           </div>
                           {/* 顯示其他語言輸入欄位 */}
                           {formData.interests?.includes('Other languages') && (
-                            <div className="mt-2">
+                            <div className="mt-2 animate__fadeInUp" style={{ animationDelay: '1.5s' }}>
                               <input
                                 type="text"
                                 className="form-control"
@@ -449,7 +451,7 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                           )}
                           <div className="form-text">可多選，最多 10 項</div>
                         </div>
-                        <div className="mb-3">
+                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '1.6s' }}>
                           <label htmlFor="specialWish" className="form-label">特殊需求／願望（可選填）</label>
                           <textarea
                             className="form-control"
@@ -462,7 +464,7 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                         </div>
                     </div>
                 </div>
-                <div className="d-flex justify-content-end mt-4">
+                <div className="d-flex justify-content-end mt-4 animate__fadeInUp" style={{ animationDelay: '1.7s' }}>
                     <button type="submit" className="btn btn-primary btn-lg px-5">
                         <i className="bi bi-arrow-right-circle-fill me-2"></i>
                         建立並預覽
@@ -867,7 +869,7 @@ const DocumentComparisonPage = () => {
         <title>AI 履歷評估系統</title>
          {/* You might need to add Bootstrap CSS if not globally available */}
          {/* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" /> */}
-         {/* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" /> */}
+         {<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />}
       </Head>
 
       <div className="container-fluid bg-light py-5">

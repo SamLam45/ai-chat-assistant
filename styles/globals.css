@@ -25,42 +25,89 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Stepper 導覽條 */
-.stepper {
-  display: flex;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-.step .circle {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+/* 多選按鈕與打勾 icon 動畫 */
+.btn-outline-primary.active, .btn-outline-primary:active, .btn-outline-primary:checked {
   background: #2563eb;
   color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.15);
-  transition: background 0.2s;
+  border-color: #2563eb;
+  position: relative;
+  transition: background 0.2s, color 0.2s;
 }
-.step.active .circle {
-  background: #22c55e;
+.btn-outline-primary .bi-check-lg {
+  font-size: 1.1em;
+  vertical-align: -0.1em;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.2s, transform 0.2s;
 }
-.step.completed .circle {
-  background: #64748b;
+.btn-outline-primary.active .bi-check-lg {
+  opacity: 1;
+  transform: scale(1);
 }
-.step .label {
+.btn-outline-primary {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.btn-outline-primary:hover {
+  box-shadow: 0 2px 8px #2563eb33;
+  transform: translateY(-2px) scale(1.04);
+}
+
+/* 欄位聚焦、錯誤、成功提示 */
+.form-control:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px #2563eb22;
+}
+.form-control.is-invalid {
+  border-color: #ef4444;
+  background: #fff0f0;
+}
+.form-control.is-valid {
+  border-color: #22c55e;
+  background: #f0fff4;
+}
+
+/* 卡片與陰影 */
+.card {
+  border-radius: 1rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  border: none;
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 4px 24px rgba(37,99,235,0.12);
+}
+
+/* 卡片與表單 */
+.card-header {
+  border-radius: 1rem 1rem 0 0;
+  background: #f1f5f9;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+.card-body {
+  background: #fff;
+}
+
+.form-label {
   font-weight: 600;
   color: #2563eb;
-  font-size: 1rem;
+}
+.form-control, .form-select {
+  border-radius: 0.5rem;
+  border: 1.5px solid #e0e7ef;
+  font-size: 1.08rem;
+}
+.form-text {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* 多選興趣 badge/按鈕 */
+.btn-outline-primary {
+  border-radius: 2rem;
+  font-weight: 500;
+  padding: 0.5em 1.2em;
+  font-size: 1.05rem;
 }
 
 /* 卡片與表單 */
@@ -120,13 +167,13 @@ body {
   box-shadow: 0 2px 8px rgba(37,99,235,0.07);
 }
 
-/* 結果卡片動畫 */
-.animate__fadeInUp {
-  animation: fadeInUp 0.7s;
-}
+/* 動畫（如 animate__fadeInUp） */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
+}
+.animate__fadeInUp {
+  animation: fadeInUp 0.7s;
 }
 
 /* 響應式優化 */
@@ -139,6 +186,10 @@ body {
   }
   .step .label {
     font-size: 0.95rem;
+  }
+  .btn-outline-primary {
+    min-width: 90px !important;
+    font-size: 0.98rem;
   }
 }
 
@@ -158,7 +209,7 @@ body {
   font-weight: 500;
 }
 
-/* Alert icon 調整 */
+/* Alert icon 微調 */
 .alert .bi {
   vertical-align: -0.2em;
   margin-right: 0.5em;
