@@ -639,6 +639,16 @@ const DocumentComparisonPage = () => {
         matchFormData.append('education', submittedRequirements.formData.educationRequirements);
         matchFormData.append('experience', submittedRequirements.formData.experienceRequirements);
         matchFormData.append('skills', submittedRequirements.requiredSkills.join(','));
+        // 傳遞語意搜尋關鍵欄位
+        if (submittedRequirements.formData.interests) {
+          submittedRequirements.formData.interests.forEach(i => matchFormData.append('interests', i));
+        }
+        if (submittedRequirements.formData.otherLanguage) {
+          matchFormData.append('otherLanguage', submittedRequirements.formData.otherLanguage);
+        }
+        if (submittedRequirements.formData.specialWish) {
+          matchFormData.append('specialWish', submittedRequirements.formData.specialWish);
+        }
 
         const matchRes = await fetch('/api/match-alumni', {
           method: 'POST',
