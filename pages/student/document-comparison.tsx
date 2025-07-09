@@ -119,18 +119,23 @@ const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep
       const res = await fetch('/api/extract-cv-info', { method: 'POST', body: formData });
       if (!res.ok) throw new Error('AI 分析失敗，請稍後再試');
       const { geminiExtracted } = await res.json();
-      setRequirementsState((prev: RequirementData) => ({
-        ...prev,
-        formData: {
-          ...prev.formData,
-          jobTitle: (geminiExtracted.name ?? prev.formData.jobTitle) || '',
-          email: (geminiExtracted.email ?? prev.formData.email) || '',
-          school: (geminiExtracted.school ?? prev.formData.school) || '',
-          department: (geminiExtracted.department ?? prev.formData.department) || '',
-          grade: (geminiExtracted.grade ?? prev.formData.grade) || '',
-          educationRequirements: (geminiExtracted.education ?? prev.formData.educationRequirements) || '',
-        }
-      }));
+      console.log('Gemini Extracted:', geminiExtracted);
+      setRequirementsState((prev: RequirementData) => {
+        const updated = {
+          ...prev,
+          formData: {
+            ...prev.formData,
+            jobTitle: (geminiExtracted.name ?? prev.formData.jobTitle) || '',
+            email: (geminiExtracted.email ?? prev.formData.email) || '',
+            school: (geminiExtracted.school ?? prev.formData.school) || '',
+            department: (geminiExtracted.department ?? prev.formData.department) || '',
+            grade: (geminiExtracted.grade ?? prev.formData.grade) || '',
+            educationRequirements: (geminiExtracted.education ?? prev.formData.educationRequirements) || '',
+          }
+        };
+        console.log('setRequirementsState 更新:', updated);
+        return updated;
+      });
       setCurrentStep(2);
     } catch (e: unknown) {
       if (e instanceof Error) {
@@ -283,19 +288,13 @@ const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, s
 };
 
 // Step 2: Job Requirements Component
-const RequirementsStep = ({ initialData, onFormSubmit }: { initialData: RequirementData, onFormSubmit: (data: RequirementData) => void }) => {
-    const [formData, setFormData] = useState(initialData.formData);
-
-    useEffect(() => {
-        setFormData(initialData.formData);
-    }, [initialData]);
-
+const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: RequirementData['formData'], setFormData: (formData: RequirementData['formData']) => void, onFormSubmit: (data: RequirementData) => void }) => {
     // Debug log
     console.log('RequirementsStep formData:', formData);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
-        setFormData(prev => ({ ...prev, [id]: value }));
+        setFormData({ ...formData, [id]: value });
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -530,11 +529,13 @@ const DocumentComparisonPage = () => {
   }, [router]);
 
   const renderStepContent = () => {
+    console.log('renderStepContent requirementsState:', requirementsState);
+    console.log('renderStepContent currentStep:', currentStep);
     switch (currentStep) {
       case 1:
         return <UploadStep files={uploadedFiles} onFilesChange={setUploadedFiles} setRequirementsState={setRequirementsState} setCurrentStep={setCurrentStep} />;
       case 2:
-        return <RequirementsStep initialData={requirementsState} onFormSubmit={handleRequirementSubmit} />;
+        return <RequirementsStep formData={requirementsState.formData} setFormData={formData => setRequirementsState(prev => ({ ...prev, formData }))} onFormSubmit={handleRequirementSubmit} />;
       case 3:
         return <>
           <SavedRequirementsStep 
