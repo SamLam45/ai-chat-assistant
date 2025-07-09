@@ -483,7 +483,7 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
 
 const DocumentComparisonPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const steps = ['上傳履歷', '你想學什麼語言、科目？', '已存要求', '查看結果'];
+  const steps = ['上傳履歷', '你想學什麼語言、科目？', '已存要求', '查看結果', '預約體驗時間'];
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isStudent, setIsStudent] = useState(false);
@@ -501,8 +501,8 @@ const DocumentComparisonPage = () => {
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   // 新增：選擇學長狀態
   const [selectedTutors, setSelectedTutors] = useState<string[]>([]);
-  const [trialDate, setTrialDate] = useState('');
-  const [trialTime, setTrialTime] = useState('');
+  // 多學長預約時間 state（移到頂層）
+  const [tutorSchedules, setTutorSchedules] = useState<{ [id: string]: { date: string; time: string } }>({});
   
   const [requirementsState, setRequirementsState] = useState<RequirementData>({
     formData: {
@@ -921,7 +921,7 @@ const DocumentComparisonPage = () => {
                 </div>
                 {/* 右下角下一步按鈕 */}
                 {selectedTutors.length > 0 && (
-                  <div style={{ position: 'fixed', right: 40, bottom: 40, zIndex: 9999 }}>
+                  <div className="d-flex justify-content-end mt-4">
                     <button className="btn btn-primary btn-lg shadow" onClick={() => setCurrentStep(5)}>
                       下一步：選擇體驗時間 <i className="bi bi-arrow-right-circle ms-2"></i>
                     </button>
@@ -939,26 +939,41 @@ const DocumentComparisonPage = () => {
       case 5:
         // Step 5：選擇日期與時間
         const topAlumniStep5: TopAlumniType[] = matchedAlumni.slice(0, 3);
+        // 只顯示已選擇的學長
+        const selectedAlumni = topAlumniStep5.filter(a => selectedTutors.includes(a.id));
+        // 所有已選學長都選了日期和時間才可預約
+        const canBook = selectedAlumni.length > 0 && selectedAlumni.every(a => tutorSchedules[a.id]?.date && tutorSchedules[a.id]?.time);
         return (
           <div className="mt-5">
             <h4 className="mb-4 text-center">預約 20 分鐘體驗課</h4>
             <div className="mb-3">
               <strong>已選擇學長：</strong>
               <ul>
-                {topAlumniStep5.filter(a => selectedTutors.includes(a.id)).map(a => (
+                {selectedAlumni.map(a => (
                   <li key={a.id}>{a.name}（{a.school} {a.department}）</li>
                 ))}
               </ul>
             </div>
-            <div className="mb-3">
-              <label className="form-label">選擇日期</label>
-              <input type="date" className="form-control" value={trialDate} onChange={e => setTrialDate(e.target.value)} />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">選擇時間</label>
-              <input type="time" className="form-control" value={trialTime} onChange={e => setTrialTime(e.target.value)} />
-            </div>
-            <button className="btn btn-success btn-lg" disabled={!trialDate || !trialTime || selectedTutors.length === 0}>
+            {selectedAlumni.map(a => (
+              <div key={a.id} className="mb-4 border rounded p-3 bg-light">
+                <div className="mb-2 fw-bold">{a.name}（{a.school} {a.department}）</div>
+                <div className="row g-2 align-items-center">
+                  <div className="col-auto">
+                    <label className="form-label mb-0">日期</label>
+                  </div>
+                  <div className="col-auto">
+                    <input type="date" className="form-control" value={tutorSchedules[a.id]?.date || ''} onChange={e => setTutorSchedules(prev => ({ ...prev, [a.id]: { ...prev[a.id], date: e.target.value } }))} />
+                  </div>
+                  <div className="col-auto">
+                    <label className="form-label mb-0">時間</label>
+                  </div>
+                  <div className="col-auto">
+                    <input type="time" className="form-control" value={tutorSchedules[a.id]?.time || ''} onChange={e => setTutorSchedules(prev => ({ ...prev, [a.id]: { ...prev[a.id], time: e.target.value } }))} />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button className="btn btn-success btn-lg" disabled={!canBook}>
               確認預約
             </button>
           </div>
