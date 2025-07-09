@@ -165,18 +165,79 @@ body {
 
 /* 響應式優化 */
 @media (max-width: 768px) {
+  .container {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
   .card, .card-body, .card-header {
-    padding: 1rem !important;
+    padding: 0.7rem !important;
+    border-radius: 0.7rem !important;
+  }
+  .card {
+    box-shadow: 0 1px 6px rgba(37,99,235,0.08);
+  }
+  .stepper {
+    flex-direction: column;
+    gap: 0.2rem;
+    margin-bottom: 1.2rem;
+  }
+  .step {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 0.5rem;
   }
   .step .circle {
-    width: 36px; height: 36px; font-size: 1.1rem;
+    width: 32px; height: 32px; font-size: 1rem;
+    margin-bottom: 0;
+    margin-right: 0.7rem;
   }
   .step .label {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
+    margin: 0;
   }
   .btn-outline-primary {
-    min-width: 90px !important;
-    font-size: 0.98rem;
+    min-width: 70px !important;
+    font-size: 0.93rem;
+    padding: 0.4em 0.8em;
+  }
+  .upload-dropzone {
+    min-height: 120px;
+    padding: 1.2rem 0.5rem !important;
+  }
+  .upload-file-list .list-group-item {
+    font-size: 0.97rem;
+    padding: 0.5rem 0.7rem;
+  }
+  .form-label, .form-control, .form-select, .form-text {
+    font-size: 0.97rem !important;
+  }
+  .alert-info {
+    font-size: 1rem;
+    padding: 0.7rem 1rem;
+  }
+  .row.g-4 > [class^='col-'] {
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+  .card .card-body {
+    padding: 0.7rem !important;
+  }
+  /* 推薦學長卡片區塊 */
+  .selected-tutor-card {
+    box-shadow: 0 0 0 3px #2563eb33 !important;
+  }
+  .card .badge {
+    font-size: 0.95rem !important;
+    padding: 0.4em 0.7em !important;
+  }
+  .card pre {
+    font-size: 0.93rem !important;
+  }
+  .d-flex.justify-content-end.mt-4 {
+    justify-content: center !important;
+    margin-top: 1.2rem !important;
   }
 }
 

@@ -830,7 +830,7 @@ const DocumentComparisonPage = () => {
                               <span> 與您的興趣有 <span className="text-primary fw-bold">{a._matchCount}</span> 項相同</span>
                             )}
                             {typeof a._matchCount === 'number' && a._matchCount === 0 && (
-                              <span className="text-warning"> 僅語意相近（無興趣交集）</span>
+                              <span className="text-warning"> 願望相近（但是無興趣交集）</span>
                             )}
                           </li>
                         ))}
