@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // 進階提示詞設計：可擴充欄位，或要求回傳 SQL WHERE 子句
         const prompt = SMART_MATCH_PROMPT.replace('{specialWish}', specialWish);
         const response = await ai.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-2.5-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
         });
         const text = response.text || '';
@@ -64,9 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (match) {
           smartMatch = JSON.parse(match[0]);
         }
-      } catch {
-        // 若解析失敗則忽略，fallback 到 embedding
-      }
+      } catch { /* 解析失敗則忽略 */ }
     }
 
     // 2. 若有明確條件，優先查詢完全匹配的學長
@@ -77,8 +75,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (smartMatch.education) query = query.ilike('education', `%${smartMatch.education}%`);
       if (smartMatch.grade) query = query.ilike('grade', `%${smartMatch.grade}%`);
       if (smartMatch.department) query = query.ilike('department', `%${smartMatch.department}%`);
-      const { data: alumni, error } = await query;
-      if (!error && Array.isArray(alumni)) {
+      const { data: alumni } = await query;
+      if (Array.isArray(alumni)) {
         alumniByCondition = alumni as Alumni[];
       }
     }
@@ -87,28 +85,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let recommended: Alumni[] = [];
     if (alumniByCondition.length > 0 && interests.length > 0) {
       const sorted = alumniByCondition
-        .map(a => {
-          // 強制 interests 轉為陣列
-          let arr: string[] = [];
-          if (Array.isArray(a.interests)) {
-            arr = a.interests;
-          } else if (typeof a.interests === 'string' && (a.interests as string).length > 0) {
-            try {
-              // 嘗試 JSON 解析
-              arr = JSON.parse(a.interests as string);
-              if (!Array.isArray(arr)) {
-                arr = (a.interests as string).split(',').map((s: string) => s.trim());
-              }
-            } catch {
-              arr = (a.interests as string).split(',').map((s: string) => s.trim());
-            }
-          }
-          return {
-            ...a,
-            interests: arr,
-            _matchCount: arr.filter((i: string) => interests.includes(i)).length
-          };
-        })
+        .map(a => ({
+          ...a,
+          _matchCount: Array.isArray(a.interests)
+            ? a.interests.filter((i: string) => interests.includes(i)).length
+            : 0
+        }))
         .sort((a, b) => b._matchCount - a._matchCount);
       recommended = sorted;
     } else if (alumniByCondition.length > 0) {
@@ -127,7 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (Array.isArray(response.embeddings) && response.embeddings.length > 0 && Array.isArray(response.embeddings[0].values)) {
           embedding = response.embeddings[0].values;
         }
-      } catch{
+      } catch {
         return res.status(500).json({ error: 'Gemini embedding 產生失敗' });
       }
       // 用 embedding 查詢
