@@ -17,7 +17,7 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         res.setHeader('Allow', 'POST');
-        return res.status(405).end('Method Not Allowed');
+        return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
     try {
@@ -38,9 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const requirements = JSON.parse(requirementDataString);
         const { formData, requiredSkills, preferredSkills, weights } = requirements;
 
-        // 3. 移除檔案上傳與 Gemini 分析
-        // 只處理純表單
-        // 4. Insert requirement data into the database
+        // 3. Insert requirement data into the database
         const { data: requirementRecord, error: dbError } = await supabaseAdmin
             .from('requirements')
             .insert({
@@ -59,19 +57,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 interests: formData.interests,
                 other_language: formData.otherLanguage,
                 special_wish: formData.specialWish,
-                // email: formData.email, // 已移除
-                // phone: formData.phone, // 已移除
-                // name_en: formData.nameEn, // 已移除
             })
             .select()
             .single();
 
         if (dbError) {
             console.error('Supabase insert error:', dbError);
-            throw new Error(`Database insertion failed: ${dbError.message}`);
+            return res.status(500).json({ error: `Database insertion failed: ${dbError.message}` });
         }
 
-        res.status(200).json({ 
+        return res.status(200).json({ 
             message: 'Requirement submitted successfully.',
             requirementId: requirementRecord.id
         });
@@ -79,10 +74,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error('Error in submit-requirement handler:', error);
-            res.status(500).json({ error: error.message });
+            return res.status(500).json({ error: error.message });
         } else {
             console.error('Unknown error in submit-requirement handler:', error);
-            res.status(500).json({ error: 'Unknown error' });
+            return res.status(500).json({ error: 'Unknown error' });
         }
     }
 } 
