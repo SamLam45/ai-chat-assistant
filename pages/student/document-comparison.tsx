@@ -194,11 +194,6 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
       setFormData({ ...formData, otherLanguage: e.target.value });
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
-        setFormData({ ...formData, [id]: value });
-    };
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onFormSubmit({
@@ -214,59 +209,34 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
             <form onSubmit={handleSubmit}>
                 <div className="card shadow-sm mb-4">
                     <div className="card-header bg-light">
-                        <h5 className="mb-0"><i className="bi bi-journal-text me-2 text-primary"></i>AI自動填欄（可手動修改）</h5>
+                        <h5 className="mb-0"><i className="bi bi-journal-text me-2 text-primary"></i>告訴我們你想學習的語言、科目。</h5>
                     </div>
                     <div className="card-body p-4">
-                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.1s' }}>
-                            <label htmlFor="jobTitle" className="form-label">姓名（中英文）</label>
-                            <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文 / David Chen" value={formData.jobTitle || ''} onChange={handleInputChange} />
-                        </div>
-                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.2s' }}>
-                            <label htmlFor="email" className="form-label">電郵地址</label>
-                            <input type="email" className="form-control" id="email" placeholder="例如：david@email.com" value={formData.email || ''} onChange={handleInputChange} />
-                        </div>
-                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.25s' }}>
-                          <label htmlFor="phone" className="form-label">電話號碼</label>
-                          <input type="tel" className="form-control" id="phone" placeholder="例如：0912345678" value={formData.phone || ''} onChange={handleInputChange} />
-                        </div>
-                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.3s' }}>
-                            <label htmlFor="school" className="form-label">學校</label>
-                            <input type="text" className="form-control" id="school" placeholder="例如：國立台灣大學" value={formData.school || ''} onChange={handleInputChange} />
-                        </div>
-                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.4s' }}>
-                            <label htmlFor="department" className="form-label">學系</label>
-                            <input type="text" className="form-control" id="department" placeholder="例如：資訊工程學系" value={formData.department || ''} onChange={handleInputChange} />
-                        </div>
-                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.5s' }}>
-                            <label htmlFor="grade" className="form-label">年級</label>
-                            <input type="text" className="form-control" id="grade" placeholder="例如：三年級" value={formData.grade || ''} onChange={handleInputChange} />
-                        </div>
-                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '0.6s' }}>
-                            <label htmlFor="educationRequirements" className="form-label">學歷</label>
-                            <input type="text" className="form-control" id="educationRequirements" placeholder="例如：大學學位" value={formData.educationRequirements || ''} onChange={handleInputChange} />
-                        </div>
                         <div className="mb-4 animate__fadeInUp" style={{ animationDelay: '0.7s' }}>
                           <label className="form-label fw-bold">興趣／學術選擇（最多 10 項）</label>
-                          <div className="d-flex flex-wrap gap-2">
-                            {INTEREST_OPTIONS.map((option: string, idx: number) => (
-                              <label
-                                key={option}
-                                className={`btn btn-outline-primary mb-2 animate__fadeInUp ${formData.interests?.includes(option) ? 'active' : ''}`}
-                                style={{ minWidth: 120, animationDelay: `${0.8 + idx * 0.05}s` }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  className="btn-check"
-                                  autoComplete="off"
-                                  checked={!!formData.interests?.includes(option)}
-                                  onChange={() => handleInterestChange(option)}
-                                  disabled={!formData.interests?.includes(option) && (formData.interests?.length || 0) >= 10}
-                                />
-                                {formData.interests?.includes(option) && <i className="bi bi-check-lg me-1"></i>}
-                                {option}
-                              </label>
-                            ))}
-                          </div>
+                          <ul className="list-group mb-2">
+                            {INTEREST_OPTIONS.map((option: string, idx: number) => {
+                              const checked = !!formData.interests?.includes(option);
+                              const disabled = !checked && (formData.interests?.length || 0) >= 10;
+                              return (
+                                <li
+                                  key={option}
+                                  className={`list-group-item d-flex align-items-center animate__fadeInUp ${checked ? 'active border-primary' : ''}`}
+                                  style={{ cursor: disabled ? 'not-allowed' : 'pointer', animationDelay: `${0.8 + idx * 0.05}s`, userSelect: 'none' }}
+                                  onClick={() => !disabled && handleInterestChange(option)}
+                                >
+                                  <span
+                                    className={`me-3 d-inline-flex align-items-center justify-content-center border rounded ${checked ? 'bg-primary border-primary' : 'bg-white border-secondary'}`}
+                                    style={{ width: 28, height: 28, fontSize: 20, transition: 'background 0.2s, border 0.2s' }}
+                                    onClick={e => { e.stopPropagation(); if (!disabled) handleInterestChange(option); }}
+                                  >
+                                    {checked && <i className="bi bi-check-lg text-white"></i>}
+                                  </span>
+                                  <span style={{ fontSize: '1.08rem', color: disabled ? '#aaa' : undefined }}>{option}</span>
+                                </li>
+                              );
+                            })}
+                          </ul>
                           {/* 顯示其他語言輸入欄位 */}
                           {formData.interests?.includes('Other languages') && (
                             <div className="mt-2 animate__fadeInUp" style={{ animationDelay: '1.5s' }}>
