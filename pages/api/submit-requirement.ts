@@ -46,7 +46,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .insert({
                 user_id: user.id,
                 job_title: formData.jobTitle,
-                name_en: formData.nameEn,
                 job_description: formData.jobDescription,
                 school: formData.school,
                 department: formData.department,
@@ -60,8 +59,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 interests: formData.interests,
                 other_language: formData.otherLanguage,
                 special_wish: formData.specialWish,
-                email: formData.email,
-                phone: formData.phone,
+                // email: formData.email, // 已移除
+                // phone: formData.phone, // 已移除
+                // name_en: formData.nameEn, // 已移除
             })
             .select()
             .single();
