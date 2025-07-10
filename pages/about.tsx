@@ -135,8 +135,8 @@ export default function About({ user }: AboutProps) {
             </div>
             {user ? (
               <div className="dropdown">
-                <button className="btn btn-outline-primary px-4 fw-bold" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  個人檔案
+                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
+                  <i className="fas fa-user"></i>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                   <li><span className="dropdown-item-text">{user.email}</span></li>
