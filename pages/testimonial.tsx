@@ -133,8 +133,8 @@ export default function Testimonial({ user }: TestimonialProps) {
             </div>
             {user ? (
               <div className="dropdown">
-                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
-                  <i className="fas fa-user"></i>
+                <button className="btn btn-outline-primary px-4 fw-bold" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
+                  個人檔案
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                   <li><span className="dropdown-item-text">{user.email}</span></li>

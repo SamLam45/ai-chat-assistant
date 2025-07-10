@@ -135,8 +135,8 @@ export default function Team({ user }: TeamProps) {
             </div>
             {user ? (
               <div className="dropdown">
-                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
-                  <i className="fas fa-user"></i>
+                <button className="btn btn-outline-primary px-4 fw-bold" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
+                  個人檔案
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                   <li><span className="dropdown-item-text">{user.email}</span></li>
@@ -194,7 +194,7 @@ export default function Team({ user }: TeamProps) {
             <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">我们的专业导师团队</h1>
           </div>
           <div className="team-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
-            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.1s">
+            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.1s" style={{cursor:'pointer'}} onClick={() => router.push('/login')}>
               <div className="team-img team-orange-bg rounded-top">
                 <Image src="/img/team-1.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
@@ -209,7 +209,7 @@ export default function Team({ user }: TeamProps) {
                 <p className="text-dark">香港大学毕业，教育战略专家</p>
               </div>
             </div>
-            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.3s">
+            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.3s" style={{cursor:'pointer'}} onClick={() => router.push('/login')}>
               <div className="team-img team-orange-bg rounded-top">
                 <Image src="/img/team-2.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">
@@ -224,7 +224,7 @@ export default function Team({ user }: TeamProps) {
                 <p className="text-dark">牛津大学毕业，国际关系专家</p>
               </div>
             </div>
-            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.5s">
+            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.5s" style={{cursor:'pointer'}} onClick={() => router.push('/login')}>
               <div className="team-img team-orange-bg rounded-top">
                 <Image src="/img/team-3.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
                 <div className="team-icon">

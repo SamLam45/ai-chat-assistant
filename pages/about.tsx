@@ -135,8 +135,8 @@ export default function About({ user }: AboutProps) {
             </div>
             {user ? (
               <div className="dropdown">
-                <button className="btn btn-primary rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
-                  <i className="fas fa-user"></i>
+                <button className="btn btn-outline-primary px-4 fw-bold" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => router.push('/login')}>
+                  個人檔案
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                   <li><span className="dropdown-item-text">{user.email}</span></li>
@@ -285,117 +285,43 @@ export default function About({ user }: AboutProps) {
       <div className="container-fluid team py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s">
-              舞蹈导师
-            </h4>
-            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">
-              我们的专业导师团队
-            </h1>
+            <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>团队介绍</h4>
+            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">我们的精英导师团队</h1>
           </div>
           <div className="team-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
-            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.1s">
-              <div className="team-img team-orange-bg rounded-top">
-                <Image src="/img/team-1.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
-                <div className="team-icon">
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weixin"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-linkedin-in"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weibo"></i>
-                  </a>
+            {[
+              { name: '陳大文', title: '香港大學', desc: '香港大学毕业，計算機科學系', img: 'team-1.jpg' },
+              { name: '王小明', title: '台灣大學', desc: '台灣大學毕业，電機系', img: 'team-2.jpg' },
+              { name: '張志明', title: '香港科技大學', desc: '電機工程系', img: 'team-3.jpg' }
+            ].map((member, idx) => (
+              <div
+                className="team-item border rounded wow fadeInUp"
+                data-wow-delay={`${0.1 + idx*0.2}s`}
+                key={idx}
+                style={{ cursor: 'pointer' }}
+                onClick={() => window.location.href = '/login'}
+              >
+                <div className="team-img team-orange-bg rounded-top">
+                  <Image
+                      src={`/img/${member.img}`}
+                      className="img-fluid rounded-top w-100"
+                      alt={member.name}
+                      width={400}
+                      height={400}
+                    />
+                  <div className="team-icon">
+                    <a className="btn btn-square btn-primary rounded-circle mx-1" href="#"><i className="fab fa-weixin"></i></a>
+                    <a className="btn btn-square btn-primary rounded-circle mx-1" href="#"><i className="fab fa-linkedin-in"></i></a>
+                    <a className="btn btn-square btn-primary rounded-circle mx-1" href="#"><i className="fab fa-weibo"></i></a>
+                  </div>
+                </div>
+                <div className="team-content text-center p-4">
+                  <span className="h4">{member.name}</span>
+                  <p className="mb-0 text-primary">{member.title}</p>
+                  <p className="text-dark">{member.desc}</p>
                 </div>
               </div>
-              <div className="team-content text-center p-4">
-                <a href="#" className="h4">李伟博士</a>
-                <p className="mb-0 text-primary">项目总监</p>
-                <p className="text-dark">香港大学毕业，教育战略专家</p>
-              </div>
-            </div>
-            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.3s">
-              <div className="team-img team-orange-bg rounded-top">
-                <Image src="/img/team-2.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
-                <div className="team-icon">
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weixin"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-linkedin-in"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weibo"></i>
-                  </a>
-                </div>
-              </div>
-              <div className="team-content text-center p-4">
-                <a href="#" className="h4">陈艾米</a>
-                <p className="mb-0 text-primary">首席导师</p>
-                <p className="text-dark">牛津大学毕业，国际关系专家</p>
-              </div>
-            </div>
-            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.5s">
-              <div className="team-img team-orange-bg rounded-top">
-                <Image src="/img/team-3.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
-                <div className="team-icon">
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weixin"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-linkedin-in"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weibo"></i>
-                  </a>
-                </div>
-              </div>
-              <div className="team-content text-center p-4">
-                <a href="#" className="h4">黄杰森</a>
-                <p className="mb-0 text-primary">青少年心理教练</p>
-                <p className="text-dark">常春藤联盟毕业，专注心理韧性与学习方法</p>
-              </div>
-            </div>
-            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.7s">
-              <div className="team-img team-orange-bg rounded-top">
-                <Image src="/img/team-4.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
-                <div className="team-icon">
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weixin"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-linkedin-in"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weibo"></i>
-                  </a>
-                </div>
-              </div>
-              <div className="team-content text-center p-4">
-                <a href="#" className="h4">Emily Ava</a>
-                <p className="mb-0 text-primary">Instructor</p>
-              </div>
-            </div>
-            <div className="team-item border rounded wow fadeInUp" data-wow-delay="0.9s">
-              <div className="team-img team-orange-bg rounded-top">
-                <Image src="/img/team-4.jpg" className="img-fluid rounded-top w-100" alt="Image" width={400} height={400} />
-                <div className="team-icon">
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weixin"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-linkedin-in"></i>
-                  </a>
-                  <a className="btn btn-square btn-primary rounded-circle mx-1" href="">
-                    <i className="fab fa-weibo"></i>
-                  </a>
-                </div>
-              </div>
-              <div className="team-content text-center p-4">
-                <a href="#" className="h4">Emily Ava</a>
-                <p className="mb-0 text-primary">Instructor</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
