@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Layout from '../../components/Layout'; // Assuming a Layout component exists
 import { useRouter } from 'next/router';
@@ -19,6 +19,7 @@ interface RequirementData {
       otherLanguage?: string;
       specialWish?: string;
       phone?: string; // Added phone field
+      nameEn?: string; // Added nameEn field
     };
     requiredSkills: string[];
     preferredSkills: string[];
@@ -44,182 +45,8 @@ type AlumniType = {
 };
 
 // Step 1: Upload Resumes Component
-const allowedTypes = [
-  'application/pdf',
-  'text/plain',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-];
-const maxFileSize = 5 * 1024 * 1024; // 5MB
-
-const UploadStep = ({ files, onFilesChange, setRequirementsState, setCurrentStep }: {
-  files: File[],
-  onFilesChange: (files: File[]) => void,
-  setRequirementsState: Dispatch<SetStateAction<RequirementData>>,
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
-}) => {
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleFiles = (selectedFiles: FileList | null) => {
-    if (!selectedFiles) return;
-    const newFiles: File[] = [];
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
-      if (!allowedTypes.includes(file.type)) {
-        setError('只允許 PDF, TXT, DOC, 和 DOCX 檔案。');
-        continue;
-      }
-      if (file.size > maxFileSize) {
-        setError('每個檔案必須小於 5MB。');
-        continue;
-      }
-      // Prevent duplicate file names by checking against the files from props
-      if (files.some(f => f.name === file.name)) continue;
-      newFiles.push(file);
-    }
-    if (newFiles.length > 0) {
-      onFilesChange([...files, ...newFiles]);
-      setError(null);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files);
-    e.target.value = '';
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    handleFiles(e.dataTransfer.files);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const removeFile = (name: string) => {
-    onFilesChange(files.filter(f => f.name !== name));
-  };
-
-  const handleNext = async () => {
-    if (files.length === 0) {
-      // 沒有檔案，直接進入下一步
-      setCurrentStep(2);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const formData = new FormData();
-      files.forEach(file => formData.append('resumes', file));
-      const res = await fetch('/api/extract-cv-info', { method: 'POST', body: formData });
-      if (!res.ok) throw new Error('AI 分析失敗，請稍後再試');
-      const { geminiExtracted } = await res.json();
-      let parsed = geminiExtracted;
-      if ('raw' in geminiExtracted && typeof geminiExtracted.raw === 'string') {
-        const match = geminiExtracted.raw.match(/```json\n([\s\S]*)```/);
-        if (match && match[1]) {
-          try {
-            parsed = JSON.parse(match[1]);
-          } catch {
-            parsed = {};
-          }
-        }
-      }
-      setRequirementsState((prev: RequirementData) => {
-        const updated = {
-          ...prev,
-          formData: {
-            ...prev.formData,
-            jobTitle: (parsed.name ?? prev.formData.jobTitle) || '',
-            email: (parsed.email ?? prev.formData.email) || '',
-            phone: (parsed.phone ?? prev.formData.phone) || '',
-            school: (parsed.school ?? prev.formData.school) || '',
-            department: (parsed.department ?? prev.formData.department) || '',
-            grade: (parsed.grade ?? prev.formData.grade) || '',
-            educationRequirements: (parsed.education ?? prev.formData.educationRequirements) || '',
-          }
-        };
-        return updated;
-      });
-      setCurrentStep(2);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'AI 分析失敗');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      <h4 className="mb-4">上傳履歷</h4>
-      <div
-        className="upload-dropzone d-flex flex-column align-items-center justify-content-center p-5 text-center"
-        style={{
-          border: '2px dashed var(--bs-primary)',
-          borderRadius: '15px',
-          background: 'rgba(var(--bs-primary-rgb), 0.05)',
-          cursor: 'pointer',
-          transition: 'background-color 0.3s ease'
-        }}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onClick={() => document.getElementById('resume-upload-input')?.click()}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--bs-primary-rgb), 0.1)'}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--bs-primary-rgb), 0.05)'}
-      >
-        <i className="bi bi-cloud-arrow-up-fill fs-1 text-primary mb-3"></i>
-        <h5 className="mt-3">拖曳或點擊此處上傳履歷</h5>
-        <p className="text-muted small">支援 PDF, TXT, DOC, DOCX 檔案 (每個檔案上限 5MB)</p>
-        <input
-          id="resume-upload-input"
-          type="file"
-          accept=".pdf,.txt,.doc,.docx"
-          multiple
-          style={{ display: 'none' }}
-          onChange={handleInputChange}
-        />
-      </div>
-      {error && (
-        <div className="alert alert-danger mt-3" role="alert">
-          <i className="bi bi-x-circle me-2"></i>
-          {error}
-        </div>
-      )}
-      {files.length > 0 ? (
-        <div className="upload-file-list list-group">
-          {files.map(file => (
-            <div key={file.name} className="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <i className="bi bi-file-earmark-text me-2"></i>
-                <span className="fw-bold">{file.name}</span>
-                <span className="text-muted ms-2 small">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-              </div>
-              <button className="btn btn-sm btn-outline-danger" onClick={() => removeFile(file.name)}>
-                <i className="bi bi-trash3-fill"></i>
-              </button>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="alert alert-secondary text-center mt-4" role="alert">
-          <i className="bi bi-info-circle me-2"></i>
-          履歷可選填，若未上傳也可直接進行下一步。
-        </div>
-      )}
-      <div className="d-flex justify-content-end mt-4">
-        <button 
-          className="btn btn-primary btn-lg px-5" 
-          onClick={handleNext} 
-          disabled={loading}
-        >
-          {loading ? (<><span className="spinner-border spinner-border-sm me-2"></span>AI 分析中...</>) : (<>下一步 <i className="bi bi-arrow-right"></i></>)}
-        </button>
-      </div>
-    </div>
-  );
-};
+// 移除 UploadStep
+// 移除 setUploadedFiles
 
 // Step 3: Saved Requirements Component
 const SavedRequirementsStep = ({ requirements, onEdit, onSubmit, isSubmitting, submissionError, aiSummaryLoading }: { 
@@ -478,16 +305,82 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
     );
 };
 
+// Step 1: Personal Info Form Component
+const PersonalInfoStep = ({ formData, setFormData, setCurrentStep }: {
+  formData: RequirementData['formData'],
+  setFormData: (formData: RequirementData['formData']) => void,
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+}) => {
+  const [error, setError] = useState<string | null>(null);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
+  const handleNext = (e: React.FormEvent) => {
+    e.preventDefault();
+    // 基本驗證
+    if (!formData.jobTitle || !formData.nameEn || !formData.email || !formData.phone || !formData.school || !formData.department || !formData.grade || !formData.educationRequirements) {
+      setError('請完整填寫所有欄位');
+      return;
+    }
+    setError(null);
+    setCurrentStep(2);
+  };
+
+  return (
+    <form onSubmit={handleNext}>
+      <h4 className="mb-4">個人資訊</h4>
+      <div className="mb-3">
+        <label htmlFor="jobTitle" className="form-label">姓名（中文）</label>
+        <input type="text" className="form-control" id="jobTitle" placeholder="例如：陳大文" value={formData.jobTitle || ''} onChange={handleInputChange} />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="nameEn" className="form-label">name (英文)</label>
+        <input type="text" className="form-control" id="nameEn" placeholder="例如：David Chen" value={formData.nameEn || ''} onChange={handleInputChange} />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="email" className="form-label">電郵地址</label>
+        <input type="email" className="form-control" id="email" placeholder="例如：david@email.com" value={formData.email || ''} onChange={handleInputChange} />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="phone" className="form-label">電話號碼</label>
+        <input type="tel" className="form-control" id="phone" placeholder="例如：0912345678" value={formData.phone || ''} onChange={handleInputChange} />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="school" className="form-label">學校</label>
+        <input type="text" className="form-control" id="school" placeholder="例如：國立台灣大學" value={formData.school || ''} onChange={handleInputChange} />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="department" className="form-label">學系</label>
+        <input type="text" className="form-control" id="department" placeholder="例如：資訊工程學系" value={formData.department || ''} onChange={handleInputChange} />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="grade" className="form-label">年級</label>
+        <input type="text" className="form-control" id="grade" placeholder="例如：三年級" value={formData.grade || ''} onChange={handleInputChange} />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="educationRequirements" className="form-label">學歷</label>
+        <input type="text" className="form-control" id="educationRequirements" placeholder="例如：大學學位" value={formData.educationRequirements || ''} onChange={handleInputChange} />
+      </div>
+      {error && <div className="alert alert-danger">{error}</div>}
+      <div className="d-flex justify-content-end mt-4">
+        <button type="submit" className="btn btn-primary btn-lg px-5">下一步 <i className="bi bi-arrow-right"></i></button>
+      </div>
+    </form>
+  );
+};
+
 
 const DocumentComparisonPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const steps = ['上傳履歷', '你想學什麼語言、科目？', '已存要求', '查看結果', '預約體驗時間'];
+  const steps = ['個人資料', '你想學什麼語言、科目？', '已存要求', '查看結果', '預約體驗時間'];
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isStudent, setIsStudent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [submittedRequirements, setSubmittedRequirements] = useState<RequirementData | null>(null);
   const [matchedAlumni, setMatchedAlumni] = useState<AlumniType[]>([]);
   // 新增 AI 匹配理由 state
@@ -505,6 +398,7 @@ const DocumentComparisonPage = () => {
   const [requirementsState, setRequirementsState] = useState<RequirementData>({
     formData: {
         jobTitle: '',
+        nameEn: '',
         jobDescription: '',
         school: '',
         department: '',
@@ -512,6 +406,8 @@ const DocumentComparisonPage = () => {
         experienceRequirements: '',
         educationRequirements: '',
         additionalNotes: '',
+        email: '',
+        phone: '',
     },
     requiredSkills: [],
     preferredSkills: [],
@@ -574,9 +470,9 @@ const DocumentComparisonPage = () => {
 
     const formData = new FormData();
     formData.append('requirements', JSON.stringify(submittedRequirements));
-    uploadedFiles.forEach(file => {
-        formData.append('resumes', file);
-    });
+    // uploadedFiles.forEach(file => { // This line is removed
+    //     formData.append('resumes', file);
+    // });
 
     try {
         const response = await fetch('/api/submit-requirement', {
@@ -642,9 +538,9 @@ const DocumentComparisonPage = () => {
 
         // 遞交成功後自動比對學長
         const matchFormData = new FormData();
-        if (uploadedFiles.length > 0) {
-          matchFormData.append('resume', uploadedFiles[0]);
-        }
+        // if (uploadedFiles.length > 0) { // This line is removed
+        //   matchFormData.append('resume', uploadedFiles[0]);
+        // }
         matchFormData.append('school', submittedRequirements.formData.school);
         matchFormData.append('department', submittedRequirements.formData.department);
         matchFormData.append('grade', submittedRequirements.formData.grade);
@@ -723,7 +619,7 @@ const DocumentComparisonPage = () => {
     console.log('renderStepContent currentStep:', currentStep);
     switch (currentStep) {
       case 1:
-        return <UploadStep files={uploadedFiles} onFilesChange={setUploadedFiles} setRequirementsState={setRequirementsState} setCurrentStep={setCurrentStep} />;
+        return <PersonalInfoStep formData={requirementsState.formData} setFormData={formData => setRequirementsState(prev => ({ ...prev, formData }))} setCurrentStep={setCurrentStep} />;
       case 2:
         return <RequirementsStep formData={requirementsState.formData} setFormData={formData => setRequirementsState(prev => ({ ...prev, formData }))} onFormSubmit={handleRequirementSubmit} />;
       case 3:

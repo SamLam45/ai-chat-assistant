@@ -59,3 +59,16 @@ CREATE TABLE IF NOT EXISTS alumni (
     created_by UUID REFERENCES profiles(id), -- 建立者
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS student (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id),
+    name TEXT,
+    nameEn TEXT, -- 新增英文姓名欄位
+    school TEXT,
+    department TEXT,
+    grade TEXT,
+    education TEXT,
+    experience TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);

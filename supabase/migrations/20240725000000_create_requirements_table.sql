@@ -34,3 +34,5 @@ COMMENT ON COLUMN public.requirements.preferred_skills IS 'Array of nice-to-have
 COMMENT ON COLUMN public.requirements.weights IS 'JSON object storing the weights for skills, experience, and education.';
 COMMENT ON COLUMN public.requirements.uploaded_cv_paths IS 'JSONB array of Supabase Storage paths for the uploaded CVs.';
 COMMENT ON COLUMN public.requirements.created_at IS 'Timestamp of when the record was created.'; 
+
+ALTER TABLE student ADD COLUMN IF NOT EXISTS nameEn TEXT; -- 新增英文姓名欄位 

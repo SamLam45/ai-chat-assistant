@@ -184,16 +184,51 @@ export default function Home({ user }: HomeProps) {
       </div>
       {/* Carousel End */}
 
-      {/* Banner Start */}
-      <div className="container-fluid wow zoomInDown" data-wow-delay="0.1s" style={{ backgroundColor: '#f28b00' }}>
-        <div className="container">
-          <div className="d-flex flex-column flex-lg-row align-items-center justify-content-center text-center p-5">
-            <h1 className="me-4"><span className="fw-normal">加入我们今日，</span><span>赋能新一代全球青年领袖</span></h1>
-            <a href="#" className="text-white fw-bold fs-2"><i className="fa fa-phone me-1"></i> +86 123-4567-890</a>
+      {/* Team Start */}
+      <div className="container-fluid team py-5 bg-light">
+        <div className="container py-5">
+          <div className="pb-5">
+            <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>团队介绍</h4>
+            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">我们的精英导师团队</h1>
+          </div>
+          <div className="team-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
+            {[
+              { name: '陳大文', title: '香港大學', desc: '香港大学毕业，計算機科學系', img: 'team-1.jpg' },
+              { name: '王小明', title: '台灣大學', desc: '台灣大學毕业，電機系', img: 'team-2.jpg' },
+              { name: '張志明', title: '香港科技大學', desc: '電機工程系', img: 'team-3.jpg' }
+            ].map((member, idx) => (
+              <div
+                className="team-item border rounded wow fadeInUp"
+                data-wow-delay={`${0.1 + idx*0.2}s`}
+                key={idx}
+                style={{ cursor: 'pointer' }}
+                onClick={() => window.location.href = '/login'}
+              >
+                <div className="team-img team-orange-bg rounded-top">
+                  <Image
+                      src={`/img/${member.img}`}
+                      className="img-fluid rounded-top w-100"
+                      alt={member.name}
+                      width={400}
+                      height={400}
+                    />
+                  <div className="team-icon">
+                    <a className="btn btn-square btn-primary rounded-circle mx-1" href="#"><i className="fab fa-weixin"></i></a>
+                    <a className="btn btn-square btn-primary rounded-circle mx-1" href="#"><i className="fab fa-linkedin-in"></i></a>
+                    <a className="btn btn-square btn-primary rounded-circle mx-1" href="#"><i className="fab fa-weibo"></i></a>
+                  </div>
+                </div>
+                <div className="team-content text-center p-4">
+                  <span className="h4">{member.name}</span>
+                  <p className="mb-0 text-primary">{member.title}</p>
+                  <p className="text-dark">{member.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-      {/* Banner End */}
+      {/* Team End */}
 
       {/* About Start */}
       <div className="container-fluid py-5 bg-light">
@@ -287,47 +322,7 @@ export default function Home({ user }: HomeProps) {
       </div>
       {/* Why Choose Us End */}
 
-    {/* Team Start */}
-      <div className="container-fluid team py-5 bg-light">
-        <div className="container py-5">
-          <div className="pb-5">
-            <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>团队介绍</h4>
-            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">我们的精英导师团队</h1>
-          </div>
-          <div className="team-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
-            {[
-              { name: '李伟博士', title: '项目总监', desc: '香港大学毕业，教育战略专家', img: 'team-1.jpg' },
-              { name: '陈艾米', title: '首席导师', desc: '牛津大学毕业，国际关系专家', img: 'team-2.jpg' },
-              { name: '黄杰森', title: '青少年心理教练', desc: '常春藤联盟毕业，专注心理韧性与学习方法', img: 'team-3.jpg' }
-            ].map((member, idx) => (
-              <div className="team-item border rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
-                <div className="team-img team-orange-bg rounded-top">
-                  <Image
-                      src={`/img/${member.img}`}
-                      className="img-fluid rounded-top w-100"
-                      alt={member.name}
-                      width={400}
-                      height={400}
-                    />
-                  <div className="team-icon">
-                    <a className="btn btn-square btn-primary rounded-circle mx-1" href=""><i className="fab fa-weixin"></i></a>
-                    <a className="btn btn-square btn-primary rounded-circle mx-1" href=""><i className="fab fa-linkedin-in"></i></a>
-                    <a className="btn btn-square btn-primary rounded-circle mx-1" href=""><i className="fab fa-weibo"></i></a>
-                  </div>
-                </div>
-                <div className="team-content text-center p-4">
-                  <a href="#" className="h4">{member.name}</a>
-                  <p className="mb-0 text-primary">{member.title}</p>
-                  <p className="text-dark">{member.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      {/* Team End */}
-
-      {/* Blogs Start */}
+    {/* Blogs Start */}
       <div className="container-fluid blog py-5 bg-white">
         <div className="container py-5">
           <div className="pb-5">
