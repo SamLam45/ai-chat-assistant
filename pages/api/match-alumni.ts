@@ -12,8 +12,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
-
 // 定義 Alumni 型別（可根據實際欄位擴充）
 type Alumni = {
   id: string;
@@ -49,6 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const queryText = `興趣／學術選擇：${interestsText}${otherLanguage ? '，其他語言：' + otherLanguage : ''}${specialWish ? '，特殊需求：' + specialWish : ''}`;
 
     // Gemini 產生 embedding
+    /*
     try {
       const response = await ai.models.embedContent({
         model: 'gemini-embedding-exp-03-07',
@@ -65,6 +64,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('Gemini embedding 產生失敗', error);
       return res.status(500).json({ error: 'Gemini embedding 產生失敗' });
     }
+    */
+    // 直接跳過 embedding，讓後面 interests 排序能執行
 
     // 1. AI 智能匹配
     let aiMatched: Alumni[] = [];
@@ -147,7 +148,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Debug log: 最終推薦名單
     // 注意：推薦名單可能包含 AI 匹配與 interests 排序補位
     // 只 log id, name, school, _matchCount
-    // eslint-disable-next-line no-console
     setTimeout(() => {
       try {
         console.log('[DEBUG] 最終推薦名單:', recommended.map(a => ({ id: a.id, name: a.name, school: a.school, _matchCount: a._matchCount })));
