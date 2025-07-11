@@ -737,7 +737,7 @@ const DocumentComparisonPage = () => {
             </div>
             {/* 推薦學長卡片區塊：三欄固定分佈 */}
             <h5 className="mb-4" style={{marginBottom: '2.2rem'}}><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
-            <div className="d-flex flex-column align-items-center gap-4 mb-2">
+            <div className="row justify-content-center g-4">
               {topAlumni.map((a: TopAlumniType) => {
                 const isSelected = selectedTutors.includes(a.id);
                 const userInterests = submittedRequirements?.formData.interests || [];
@@ -746,27 +746,22 @@ const DocumentComparisonPage = () => {
                 const setShowFullResume = (open: boolean) => setShowFullResumeMap(prev => ({ ...prev, [a.id]: open }));
                 const matchedInterests = userInterests.filter(i => alumniInterests.includes(i));
                 const unmatchedInterests = userInterests.filter(i => !alumniInterests.includes(i));
-                // 取首字母
                 const avatar = a.name ? a.name[0] : '?';
                 return (
-                  <div key={a.id} className="col-12 col-md-6 col-lg-4 d-flex">
+                  <div key={a.id} className="col-12 col-md-8 col-lg-6 d-flex justify-content-center">
                     <div
-                      className={`alumni-card flex-fill position-relative ${isSelected ? 'border-primary' : ''}`}
+                      className={`card shadow-sm w-100 mb-3 animate__animated animate__fadeInUp ${isSelected ? 'border-primary' : ''}`}
                       style={{
-                        borderRadius: 18,
+                        borderRadius: 16,
                         border: isSelected ? '2.5px solid #0d6efd' : '1.2px solid #e0e0e0',
                         background: '#fff',
                         boxShadow: '0 2px 12px 0 #e0e0e0a0',
-                        padding: 0,
-                        margin: '0 auto',
-                        minHeight: 180,
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'stretch',
-                        transition: 'box-shadow 0.2s, border 0.2s',
+                        padding: '0 0 0 0',
+                        minHeight: 0,
                         cursor: 'pointer',
-                        overflow: 'hidden',
-                        marginBottom: 24,
+                        position: 'relative',
+                        transition: 'box-shadow 0.2s, border 0.2s',
+                        marginBottom: 18,
                       }}
                       onClick={() => {
                         if (isSelected) {
@@ -776,57 +771,51 @@ const DocumentComparisonPage = () => {
                         }
                       }}
                     >
-                      {/* 左側：頭像與基本資料 */}
-                      <div style={{ minWidth: 90, background: '#f6f8fa', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '18px 8px 18px 12px' }}>
-                        <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#0d6efd22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 700, color: '#0d6efd', marginBottom: 8 }}>{avatar}</div>
-                        <div className="fw-bold text-center" style={{ fontSize: '1.08rem', lineHeight: 1.2 }}>{a.name}</div>
-                        <div className="text-muted text-center" style={{ fontSize: '0.97rem', lineHeight: 1.1 }}>{a.school}<br />{a.department}</div>
-                      </div>
-                      {/* 中間：年級/學歷/經驗/技能 */}
-                      <div style={{ flex: 1, padding: '18px 12px 18px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <div className="d-flex flex-wrap gap-2 mb-2" style={{ fontSize: '0.98rem', color: '#555' }}>
-                          <span><i className="bi bi-calendar-event me-1 text-muted"></i>{a.grade}</span>
-                          <span><i className="bi bi-mortarboard me-1 text-muted"></i>{a.education}</span>
-                          <span><i className="bi bi-briefcase me-1 text-muted"></i>{a.experience}</span>
+                      {/* 頭像與姓名 */}
+                      <div className="d-flex align-items-center gap-3 p-3 pb-2">
+                        <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#0d6efd22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 700, color: '#0d6efd' }}>{avatar}</div>
+                        <div>
+                          <div className="fw-bold" style={{ fontSize: '1.18rem', lineHeight: 1.2 }}>{a.name}</div>
+                          <div className="text-muted" style={{ fontSize: '0.97rem', lineHeight: 1.1 }}>{a.school} {a.department}</div>
                         </div>
-                        <div className="mb-1" style={{ fontSize: '0.97rem', color: '#888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180 }}>
-                          <i className="bi bi-star me-1 text-muted"></i>{a.skills?.join('、') || '未提供'}
-                        </div>
-                        {/* 摘要展開按鈕 */}
-                        {a.resume_content && (
-                          <div className="mt-2">
-                            <button className="btn btn-link btn-sm p-0" style={{ color: '#0d6efd', textDecoration: 'underline', fontSize: '0.97rem' }} onClick={e => { e.stopPropagation(); setShowFullResume(!showFullResume); }}>
-                              {showFullResume ? '收起履歷摘要' : '展開履歷摘要'}
-                            </button>
-                            {showFullResume && (
-                              <pre className="text-muted small mb-0 mt-1" style={{ fontSize: '1.01rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0, maxHeight: 180, overflow: 'auto' }}>
-                                {a.resume_content.split('、').map((line, idx, arr) => idx < arr.length - 1 ? line + '、\n' : line).join('')}
-                              </pre>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      {/* 右側：興趣比對 tag 區塊 */}
-                      <div style={{ minWidth: 120, background: '#f8f9fa', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '18px 10px 18px 10px', borderLeft: '1.5px solid #e0e0e0' }}>
-                        <div className="mb-1" style={{ fontWeight: 500, color: '#333', fontSize: '1.01rem' }}><i className="bi bi-check2-all me-2 text-success"></i>興趣比對</div>
-                        <div className="d-flex flex-wrap gap-1">
-                          {matchedInterests.map((interest, idx) => (
-                            <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', background: '#e6f9ed', color: '#28a745', borderRadius: 14, padding: '2px 9px 2px 7px', fontWeight: 'bold', fontSize: '0.97rem', border: '1.1px solid #28a745', marginRight: 4, marginBottom: 2 }}>
-                              <i className="bi bi-check-circle-fill me-1" style={{ fontSize: 14 }}></i>{interest}
-                            </span>
-                          ))}
-                          {unmatchedInterests.map((interest, idx) => (
-                            <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', background: '#fbeaea', color: '#dc3545', borderRadius: 14, padding: '2px 9px 2px 7px', fontWeight: 'normal', fontSize: '0.97rem', border: '1.1px solid #dc3545', marginRight: 4, marginBottom: 2 }}>
-                              <i className="bi bi-x-circle-fill me-1" style={{ fontSize: 14 }}></i>{interest}
-                            </span>
-                          ))}
+                        <div style={{ position: 'absolute', top: 16, right: 16, width: 32, height: 32, border: '2px solid #0d6efd', borderRadius: 6, background: isSelected ? '#0d6efd' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2, transition: 'background 0.2s', cursor: 'pointer' }}
+                          onClick={e => { e.stopPropagation(); if (isSelected) { setSelectedTutors(selectedTutors.filter(id => id !== a.id)); } else if (selectedTutors.length < 3) { setSelectedTutors([...selectedTutors, a.id]); } }}>
+                          {isSelected && <i className="bi bi-check-lg text-white fs-4"></i>}
                         </div>
                       </div>
-                      {/* 右上角勾選框 */}
-                      <div style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, border: '2px solid #0d6efd', borderRadius: 6, background: isSelected ? '#0d6efd' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2, transition: 'background 0.2s', cursor: 'pointer' }}
-                        onClick={e => { e.stopPropagation(); if (isSelected) { setSelectedTutors(selectedTutors.filter(id => id !== a.id)); } else if (selectedTutors.length < 3) { setSelectedTutors([...selectedTutors, a.id]); } }}>
-                        {isSelected && <i className="bi bi-check-lg text-white fs-4"></i>}
+                      {/* 年級/學歷/技能 */}
+                      <div className="d-flex flex-wrap gap-3 px-3 pb-2" style={{ fontSize: '0.98rem', color: '#555' }}>
+                        <span><i className="bi bi-calendar-event me-1 text-muted"></i>{a.grade}</span>
+                        <span><i className="bi bi-mortarboard me-1 text-muted"></i>{a.education}</span>
+                        <span><i className="bi bi-briefcase me-1 text-muted"></i>{a.experience}</span>
+                        <span><i className="bi bi-star me-1 text-muted"></i>{a.skills?.join('、') || '未提供'}</span>
                       </div>
+                      {/* 興趣比對 tag 區塊 */}
+                      <div className="d-flex flex-wrap gap-1 px-3 pb-2">
+                        {matchedInterests.map((interest, idx) => (
+                          <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', background: '#e6f9ed', color: '#28a745', borderRadius: 14, padding: '2px 9px 2px 7px', fontWeight: 'bold', fontSize: '0.97rem', border: '1.1px solid #28a745', marginRight: 4, marginBottom: 2 }}>
+                            <i className="bi bi-check-circle-fill me-1" style={{ fontSize: 14 }}></i>{interest}
+                          </span>
+                        ))}
+                        {unmatchedInterests.map((interest, idx) => (
+                          <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', background: '#fbeaea', color: '#dc3545', borderRadius: 14, padding: '2px 9px 2px 7px', fontWeight: 'normal', fontSize: '0.97rem', border: '1.1px solid #dc3545', marginRight: 4, marginBottom: 2 }}>
+                            <i className="bi bi-x-circle-fill me-1" style={{ fontSize: 14 }}></i>{interest}
+                          </span>
+                        ))}
+                      </div>
+                      {/* 摘要展開按鈕與內容 */}
+                      {a.resume_content && (
+                        <div className="px-3 pb-3">
+                          <button className="btn btn-link btn-sm p-0" style={{ color: '#0d6efd', textDecoration: 'underline', fontSize: '0.97rem' }} onClick={e => { e.stopPropagation(); setShowFullResume(!showFullResume); }}>
+                            {showFullResume ? '收起履歷摘要' : '展開履歷摘要'}
+                          </button>
+                          {showFullResume && (
+                            <pre className="text-muted small mb-0 mt-1" style={{ fontSize: '1.01rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0, maxHeight: 180, overflow: 'auto' }}>
+                              {a.resume_content.split('、').map((line, idx, arr) => idx < arr.length - 1 ? line + '、\n' : line).join('')}
+                            </pre>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
