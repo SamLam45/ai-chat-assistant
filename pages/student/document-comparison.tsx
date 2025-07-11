@@ -390,7 +390,7 @@ const DocumentComparisonPage = () => {
   const [resultLoading, setResultLoading] = useState(false);
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   // 新增：選擇學長狀態
-  const [selectedTutors, setSelectedTutors] = useState<string[]>([]);
+  const [selectedTutors] = useState<string[]>([]);
   // 多學長預約時間 state（移到頂層）
   const [tutorSchedules, setTutorSchedules] = useState<{ [id: string]: { date: string; time: string } }>({});
   const [showFullResumeMap, setShowFullResumeMap] = useState<{ [id: string]: boolean }>({});
