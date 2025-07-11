@@ -756,24 +756,22 @@ const DocumentComparisonPage = () => {
                 // 取首字母
                 const avatar = a.name ? a.name[0] : '?';
                 return (
-                  <div key={a.id} className="col-12 col-md-6 col-lg-4 d-flex">
+                  <div key={a.id} className="col-12 col-md-8 col-lg-6 d-flex justify-content-center">
                     <div
-                      className={`alumni-card flex-fill position-relative ${isSelected ? 'border-primary' : ''}`}
+                      className={`card shadow-sm w-100 mb-3 animate__animated animate__fadeInUp ${isSelected ? 'border-primary' : ''}`}
                       style={{
-                        borderRadius: 18,
+                        borderRadius: 16,
                         border: isSelected ? '2.5px solid #0d6efd' : '1.2px solid #e0e0e0',
                         background: '#fff',
                         boxShadow: '0 2px 12px 0 #e0e0e0a0',
-                        padding: 0,
-                        margin: '0 auto',
-                        minHeight: 180,
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'stretch',
-                        transition: 'box-shadow 0.2s, border 0.2s',
+                        padding: '0 0 0 0',
+                        minHeight: 0,
                         cursor: 'pointer',
-                        overflow: 'hidden',
-                        marginBottom: 24,
+                        position: 'relative',
+                        transition: 'box-shadow 0.2s, border 0.2s',
+                        marginBottom: 18,
+                        maxWidth: 1000,
+                        width: '100%',
                       }}
                       onClick={() => {
                         if (isSelected) {
