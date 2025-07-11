@@ -677,65 +677,63 @@ const DocumentComparisonPage = () => {
                   boxShadow: '0 4px 24px 0 rgba(13,110,253,0.08)',
                   borderWidth: 2,
                   borderColor: '#0d6efd',
-                  padding: '32px 0 24px 0',
-                  border: '2px solid #0d6efd',
                 }}>
-                  <div className="d-flex align-items-center justify-content-center mb-3">
-                    <span className="fw-bold text-primary" style={{ fontSize: '1.25rem', letterSpacing: 1 }}>AI 智能匹配</span>
-                    <span className="mx-3" style={{ fontSize: 22, color: '#0d6efd' }}><i className="bi bi-link-45deg"></i></span>
-                    <span className="fw-bold text-danger" style={{ fontSize: '1.18rem', letterSpacing: 1 }}>推薦學長</span>
+                  <div className="card-header bg-primary text-white" style={{ borderTopLeftRadius: 18, borderTopRightRadius: 18, fontSize: '1.18rem', letterSpacing: 1 }}>
+                    <h5 className="mb-0"><i className="bi bi-lightbulb-fill me-2"></i>AI 智能匹配結果</h5>
                   </div>
-                  <div className="row align-items-center justify-content-center" style={{ minHeight: 80 }}>
-                    {/* 左側：用戶條件 */}
-                    <div className="col-12 col-md-5 text-center mb-3 mb-md-0">
-                      <div className="p-3 rounded" style={{ background: '#e3f2fd', display: 'inline-block', minWidth: 220 }}>
-                        <div className="fw-bold mb-1" style={{ color: '#1976d2', fontSize: '1.08rem' }}>您的條件</div>
-                        <div style={{ color: '#333', fontSize: '1.02rem' }}>
-                          {submittedRequirements?.formData.interests?.map((interest, idx) => (
-                            <span key={idx} className="badge bg-primary me-1 mb-1" style={{ fontSize: '0.97rem', fontWeight: 500 }}>{interest}</span>
-                          ))}
-                          {submittedRequirements?.formData.specialWish && (
-                            <span className="badge bg-danger ms-1 mb-1" style={{ fontSize: '0.97rem', fontWeight: 500 }}>願望：{submittedRequirements.formData.specialWish}</span>
-                          )}
+                  <div className="card-body animate__animated animate__fadeInUp" style={{ fontSize: '1.08rem', background: 'rgba(255,255,255,0.85)', borderRadius: 12 }}>
+                    <div className="row align-items-center">
+                      {/* 左側：用戶條件 */}
+                      <div className="col-md-5 text-center text-md-end mb-3 mb-md-0">
+                        <div className="p-3" style={{ background: '#e3f2fd', borderRadius: 12, display: 'inline-block', minWidth: 180 }}>
+                          <div className="fw-bold mb-2" style={{ color: '#1976d2', fontSize: '1.08rem' }}>您的條件</div>
+                          <div style={{ color: '#333', fontSize: '1.02rem' }}>
+                            <div><strong>學校：</strong>{submittedRequirements?.formData.school || '—'}</div>
+                            <div><strong>學系：</strong>{submittedRequirements?.formData.department || '—'}</div>
+                            <div><strong>年級：</strong>{submittedRequirements?.formData.grade || '—'}</div>
+                            <div><strong>學歷：</strong>{submittedRequirements?.formData.educationRequirements || '—'}</div>
+                            <div><strong>興趣：</strong>{(submittedRequirements?.formData.interests || []).join('、') || '—'}</div>
+                            <div><strong>特殊需求：</strong>{submittedRequirements?.formData.specialWish || '—'}</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    {/* 中間箭頭/連結 */}
-                    <div className="col-12 col-md-2 text-center d-flex flex-column align-items-center justify-content-center" style={{ minHeight: 60 }}>
-                      <span className="d-inline-block" style={{ fontSize: 36, color: '#0d6efd', lineHeight: 1 }}>
-                        <i className="bi bi-arrow-right-circle-fill"></i>
-                      </span>
-                      <span className="text-muted small mt-1">智能匹配</span>
-                    </div>
-                    {/* 右側：推薦學長（只顯示第一位） */}
-                    <div className="col-12 col-md-5 text-center">
-                      <div className="p-3 rounded" style={{ background: '#fffde7', display: 'inline-block', minWidth: 220 }}>
-                        <div className="fw-bold mb-1" style={{ color: '#f9a825', fontSize: '1.08rem' }}>推薦學長</div>
+                      {/* 中間箭頭/連結線條 */}
+                      <div className="col-md-2 d-flex justify-content-center align-items-center">
+                        <div style={{ fontSize: 38, color: '#0d6efd', fontWeight: 700 }}>
+                          <i className="bi bi-arrow-right-circle-fill"></i>
+                        </div>
+                      </div>
+                      {/* 右側：推薦學長（只顯示第一位） */}
+                      <div className="col-md-5 text-center text-md-start">
                         {topAlumni[0] ? (
-                          <div style={{ color: '#333', fontSize: '1.02rem' }}>
-                            <span className="badge bg-success mb-1" style={{ fontSize: '0.97rem', fontWeight: 500 }}>{topAlumni[0].name}（{topAlumni[0].school} {topAlumni[0].department}）</span>
-                            <br />
-                            {topAlumni[0].interests && topAlumni[0].interests.map((interest, idx) => (
-                              <span key={idx} className="badge bg-info text-dark me-1 mb-1" style={{ fontSize: '0.97rem', fontWeight: 500 }}>{interest}</span>
-                            ))}
+                          <div className="p-3" style={{ background: '#fffde7', borderRadius: 12, display: 'inline-block', minWidth: 180 }}>
+                            <div className="fw-bold mb-2" style={{ color: '#f9a825', fontSize: '1.08rem' }}>推薦學長</div>
+                            <div style={{ color: '#333', fontSize: '1.02rem' }}>
+                              <div><strong>姓名：</strong>{topAlumni[0].name}</div>
+                              <div><strong>學校：</strong>{topAlumni[0].school}</div>
+                              <div><strong>學系：</strong>{topAlumni[0].department}</div>
+                              <div><strong>年級：</strong>{topAlumni[0].grade}</div>
+                              <div><strong>學歷：</strong>{topAlumni[0].education}</div>
+                              <div><strong>興趣：</strong>{Array.isArray(topAlumni[0].interests) ? topAlumni[0].interests.join('、') : '—'}</div>
+                            </div>
                           </div>
                         ) : (
-                          <span className="text-muted">無推薦</span>
+                          <div className="text-muted">暫無推薦</div>
                         )}
                       </div>
                     </div>
+                    {/* AI 匹配理由顯示區塊 */}
+                    {aiMatchReasons && aiMatchReasons.length > 0 && (
+                      <div className="alert alert-info mt-4 mb-0 animate__animated animate__fadeInUp">
+                        <strong>AI 匹配理由：</strong>
+                        <ul className="mb-0 ps-3">
+                          {aiMatchReasons.map((reason: string, idx: number) => (
+                            <li key={idx}>{reason}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                  {/* AI 匹配理由顯示區塊 */}
-                  {aiMatchReasons && aiMatchReasons.length > 0 && (
-                    <div className="alert alert-info mt-4 mb-0 mx-4 animate__animated animate__fadeInUp" style={{ borderRadius: 10, fontSize: '1.01rem' }}>
-                      <strong>AI 匹配理由：</strong>
-                      <ul className="mb-0 ps-3">
-                        {aiMatchReasons.map((reason: string, idx: number) => (
-                          <li key={idx}>{reason}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </div>
 
                 {/* 推薦學長卡片區塊：直式排列，動畫、色彩強化 */}
