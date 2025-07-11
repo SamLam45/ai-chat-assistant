@@ -761,6 +761,14 @@ const DocumentComparisonPage = () => {
                           margin: 0,
                           width: '100%',
                           transition: 'box-shadow 0.2s, border 0.2s',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedTutors(selectedTutors.filter(id => id !== a.id));
+                          } else if (selectedTutors.length < 3) {
+                            setSelectedTutors([...selectedTutors, a.id]);
+                          }
                         }}
                       >
                         {/* 頂部：姓名、學校科系 */}
@@ -979,28 +987,41 @@ const DocumentComparisonPage = () => {
           {/* <UserMenu /> 可加用戶資訊/登出 */}
         </div>
         {/* Stepper 置中、寬版 */}
-        <div className="stepper mb-5">{steps.map((title, index) => {
-          const stepNumber = index + 1;
-          const isActive = currentStep === stepNumber;
-          const isCompleted = currentStep > stepNumber;
-          return (
-            <React.Fragment key={index}>
-              <div className={`step ${isActive ? 'active' : isCompleted ? 'completed' : ''}`}
-                style={{ cursor: 'pointer' }}
-                onClick={() => setCurrentStep(stepNumber)}>
-                <div className="circle">
-                  {isCompleted ? <i className="bi bi-check-lg fs-4"></i> : <span className="fs-5 fw-bold">{stepNumber}</span>}
+        <div className="stepper mb-5 d-flex justify-content-center align-items-center" style={{ maxWidth: 900, margin: '0 auto' }}>
+          {steps.map((title, index) => {
+            const stepNumber = index + 1;
+            const isActive = currentStep === stepNumber;
+            const isCompleted = currentStep > stepNumber;
+            return (
+              <React.Fragment key={index}>
+                <div
+                  className={`step ${isActive ? 'active' : isCompleted ? 'completed' : ''} animate__animated animate__fadeIn`}
+                  style={{
+                    cursor: 'pointer',
+                    background: isActive ? 'linear-gradient(90deg, #e3f2fd 0%, #fffde7 100%)' : isCompleted ? '#e0f7fa' : '#f8f9fa',
+                    borderRadius: 12,
+                    boxShadow: isActive ? '0 2px 12px 0 rgba(13,110,253,0.10)' : 'none',
+                    border: isActive ? '2px solid #0d6efd' : '1.2px solid #e0e0e0',
+                    minWidth: 80,
+                    padding: '10px 0',
+                    transition: 'all 0.2s',
+                  }}
+                  onClick={() => setCurrentStep(stepNumber)}
+                >
+                  <div className="circle" style={{ background: isActive ? '#0d6efd' : isCompleted ? '#28a745' : '#fff', color: isActive ? '#fff' : '#0d6efd', border: '2px solid #0d6efd', width: 36, height: 36, fontSize: 20, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+                    {isCompleted ? <i className="bi bi-check-lg fs-4"></i> : <span className="fs-5 fw-bold">{stepNumber}</span>}
+                  </div>
+                  <p className="fw-bold mt-2 mb-0 label" style={{ fontSize: '1.05rem', color: isActive ? '#0d6efd' : '#333' }}>{title}</p>
                 </div>
-                <p className={`fw-bold mt-2 mb-0 label`}>{title}</p>
-              </div>
-              {index < steps.length - 1 && <div className="flex-grow-1 mx-3" style={{ height: '2px', backgroundColor: isCompleted ? 'var(--primary)' : '#e0e0e0', transition: 'background-color 0.3s' }}></div>}
-            </React.Fragment>
-          );
-        })}</div>
+                {index < steps.length - 1 && <div className="flex-grow-1 mx-3" style={{ height: '2px', backgroundColor: isCompleted ? 'var(--primary)' : '#e0e0e0', transition: 'background-color 0.3s' }}></div>}
+              </React.Fragment>
+            );
+          })}
+        </div>
         {/* 主要內容卡片置中，最大寬度1400px */}
         <div className="d-flex justify-content-center">
-          <div style={{ maxWidth: 1400, width: '100%' }}>
-            <div className="card shadow-sm p-4">
+          <div style={{ maxWidth: 900, width: '100%' }}>
+            <div className="card shadow-sm p-4 animate__animated animate__fadeInUp" style={{ borderRadius: 18, background: 'linear-gradient(90deg, #f8fafc 0%, #e3f2fd 100%)', boxShadow: '0 4px 24px 0 rgba(13,110,253,0.08)' }}>
               {/* 根據 currentStep 顯示不同內容 */}
               {renderStepContent()}
             </div>
