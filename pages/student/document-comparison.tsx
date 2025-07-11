@@ -637,13 +637,19 @@ const DocumentComparisonPage = () => {
                   </div>
                   <div className="modal-body">
                     <p>您確定要遞交這份要求並進行 AI 智能分析嗎？</p>
+                    {isSubmitting && (
+                      <div className="alert alert-info text-center mt-3">
+                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        AI 正在分析中，請稍候...
+                      </div>
+                    )}
                   </div>
                   <div className="modal-footer">
-                    <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>取消</button>
+                    <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)} disabled={isSubmitting}>取消</button>
                     <button className="btn btn-primary" onClick={() => {
                       setCurrentStep(4);
                       finalSubmit();
-                    }}>確認遞交</button>
+                    }} disabled={isSubmitting}>確認遞交</button>
                   </div>
                 </div>
               </div>
@@ -656,89 +662,82 @@ const DocumentComparisonPage = () => {
         const topAlumni: TopAlumniType[] = matchedAlumni.slice(0, 3);
         return (
           <div>
-            {/* 最相似的學長卡片 */}
-            <div className="mb-4">
-              <div className="alumni-card flex-fill position-relative" style={{
-                borderRadius: 18,
-                border: '1.5px solid #0d6efd',
-                background: '#f6f8fa',
-                boxShadow: '0 2px 12px 0 #e0e0e0a0',
-                padding: '0 0 0 0',
-                margin: '0 auto 24px auto',
-                minHeight: 120,
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'stretch',
-                transition: 'box-shadow 0.2s, border 0.2s',
-                overflow: 'hidden',
-              }}>
-                {/* 左：AI 智能匹配結果標題與用戶願望 */}
-                <div style={{ minWidth: 120, background: '#0d6efd', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 12px 24px 12px' }}>
-                  <div style={{ fontWeight: 700, fontSize: '1.18rem', marginBottom: 6 }}><i className="bi bi-lightbulb-fill me-2"></i>AI 智能匹配</div>
-                  <div style={{ fontSize: '0.98rem', opacity: 0.95 }}>您的特殊需求／願望：</div>
-                  <div style={{ fontWeight: 500, fontSize: '1.05rem', color: '#ffe066', marginTop: 2 }}>{userSpecialWish ? userSpecialWish : '（未填寫）'}</div>
-                </div>
-                {/* 右：AI 匹配理由與興趣交集 */}
-                <div style={{ flex: 1, padding: '18px 18px 18px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  {aiMatchReasons && aiMatchReasons.length > 0 && (
-                    <div className="alert alert-info mb-2 p-2" style={{ fontSize: '1.01rem', background: '#e6f9ed', color: '#1a7f37', border: '1.1px solid #28a745', borderRadius: 10 }}>
-                      <strong>AI 匹配理由：</strong>
-                      <ul className="mb-0 ps-3">
-                        {aiMatchReasons.map((reason: string, idx: number) => (
-                          <li key={idx}>{reason}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  <div className="d-flex flex-wrap align-items-center gap-2 mb-2" style={{ fontSize: '0.98rem', color: '#555' }}>
-                    <span><i className="bi bi-people-fill me-1 text-primary"></i>最相似的學長</span>
-                    <span className="badge bg-primary" style={{ fontSize: '0.97rem', padding: '0.4em 0.9em' }}>{topAlumni[0]?.name || '無'}</span>
-                    <span className="badge bg-success" style={{ fontSize: '0.97rem', padding: '0.4em 0.9em' }}>{topAlumni[0]?.school} {topAlumni[0]?.department}</span>
-                    {typeof topAlumni[0]?._matchCount === 'number' && (
-                      <span className="badge bg-info ms-2">興趣相同數：{topAlumni[0]?._matchCount}</span>
-                    )}
+            {/* 重新設計最相似的學長卡片 */}
+            <div className="d-flex flex-column align-items-center gap-4 mb-4">
+              {topAlumni.length > 0 && (
+                <div className="alumni-card flex-fill position-relative" style={{
+                  borderRadius: 18,
+                  border: '2.5px solid #0d6efd',
+                  background: '#fff',
+                  boxShadow: '0 2px 12px 0 #e0e0e0a0',
+                  padding: 0,
+                  margin: '0 auto',
+                  minHeight: 180,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'stretch',
+                  transition: 'box-shadow 0.2s, border 0.2s',
+                  overflow: 'hidden',
+                  width: '100%',
+                  maxWidth: 520,
+                }}>
+                  {/* 左側：頭像與基本資料 */}
+                  <div style={{ minWidth: 90, background: '#f6f8fa', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '18px 8px 18px 12px' }}>
+                    <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#0d6efd22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 700, color: '#0d6efd', marginBottom: 8 }}>{topAlumni[0].name ? topAlumni[0].name[0] : '?'}</div>
+                    <div className="fw-bold text-center" style={{ fontSize: '1.08rem', lineHeight: 1.2 }}>{topAlumni[0].name}</div>
+                    <div className="text-muted text-center" style={{ fontSize: '0.97rem', lineHeight: 1.1 }}>{topAlumni[0].school}<br />{topAlumni[0].department}</div>
                   </div>
-                  {/* 興趣交集表格 */}
-                  {submittedRequirements?.formData.interests && Array.isArray(topAlumni[0]?.interests) && (
-                    <div className="table-responsive">
-                      <table className="table table-bordered align-middle mb-0" style={{ minWidth: 320, background: '#fff' }}>
-                        <thead>
-                          <tr>
-                            <th className="text-center" style={{ width: '45%' }}>用戶興趣</th>
-                            <th className="text-center" style={{ width: '10%' }}>吻合</th>
-                            <th className="text-center" style={{ width: '45%' }}>學長興趣</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {submittedRequirements.formData.interests.map((userInterest, idx) => {
-                            const alumniInterests = Array.isArray(topAlumni[0].interests) ? topAlumni[0].interests : [];
-                            const matched = alumniInterests.includes(userInterest);
-                            return (
-                              <tr key={idx}>
-                                <td className="text-end pe-3" style={{ color: matched ? '#28a745' : '#dc3545', fontWeight: matched ? 'bold' : 'normal', fontSize: '1.08rem' }}>{userInterest}</td>
-                                <td className="text-center">
-                                  {matched ? (
-                                    <span style={{ color: '#28a745', fontSize: '1.6rem' }}><i className="bi bi-check-circle-fill"></i></span>
-                                  ) : (
-                                    <span style={{ color: '#dc3545', fontSize: '1.6rem' }}><i className="bi bi-x-circle-fill"></i></span>
-                                  )}
-                                </td>
-                                <td className="text-start ps-3" style={{ color: matched ? '#28a745' : '#dc3545', fontWeight: matched ? 'bold' : 'normal', fontSize: '1.08rem' }}>
-                                  {matched ? userInterest : ''}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                  {/* 中間：年級/學歷/經驗/技能 */}
+                  <div style={{ flex: 1, padding: '18px 12px 18px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <div className="d-flex flex-wrap gap-2 mb-2" style={{ fontSize: '0.98rem', color: '#555' }}>
+                      <span><i className="bi bi-calendar-event me-1 text-muted"></i>{topAlumni[0].grade}</span>
+                      <span><i className="bi bi-mortarboard me-1 text-muted"></i>{topAlumni[0].education}</span>
+                      <span><i className="bi bi-briefcase me-1 text-muted"></i>{topAlumni[0].experience}</span>
                     </div>
-                  )}
+                    <div className="mb-1" style={{ fontSize: '0.97rem', color: '#888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180 }}>
+                      <i className="bi bi-star me-1 text-muted"></i>{topAlumni[0].skills?.join('、') || '未提供'}
+                    </div>
+                    {/* AI 匹配理由 */}
+                    {aiMatchReasons && aiMatchReasons.length > 0 && (
+                      <div className="alert alert-info mb-2 p-2" style={{ fontSize: '1.01rem', background: '#e6f9ed', color: '#1a7f37', border: '1.1px solid #28a745', borderRadius: 10 }}>
+                        <strong>AI 匹配理由：</strong>
+                        <ul className="mb-0 ps-3">
+                          {aiMatchReasons.map((reason: string, idx: number) => (
+                            <li key={idx}>{reason}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {/* 用戶願望 */}
+                    <div className="mt-1" style={{ fontSize: '0.97rem', color: '#0d6efd' }}>
+                      <i className="bi bi-heart-fill me-1"></i>用戶願望：<span style={{ color: '#e67e22' }}>{userSpecialWish ? userSpecialWish : '（未填寫）'}</span>
+                    </div>
+                  </div>
+                  {/* 右側：興趣比對 tag 區塊 */}
+                  <div style={{ minWidth: 120, background: '#f8f9fa', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '18px 10px 18px 10px', borderLeft: '1.5px solid #e0e0e0' }}>
+                    <div className="mb-1" style={{ fontWeight: 500, color: '#333', fontSize: '1.01rem' }}><i className="bi bi-check2-all me-2 text-success"></i>興趣比對</div>
+                    <div className="d-flex flex-wrap gap-1">
+                      {submittedRequirements?.formData.interests && Array.isArray(topAlumni[0]?.interests) && submittedRequirements.formData.interests.map((userInterest, idx) => {
+                        const alumniInterests = Array.isArray(topAlumni[0].interests) ? topAlumni[0].interests : [];
+                        const matched = alumniInterests.includes(userInterest);
+                        return matched ? (
+                          <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', background: '#e6f9ed', color: '#28a745', borderRadius: 14, padding: '2px 9px 2px 7px', fontWeight: 'bold', fontSize: '0.97rem', border: '1.1px solid #28a745', marginRight: 4, marginBottom: 2 }}>
+                            <i className="bi bi-check-circle-fill me-1" style={{ fontSize: 14 }}></i>{userInterest}
+                          </span>
+                        ) : (
+                          <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', background: '#fbeaea', color: '#dc3545', borderRadius: 14, padding: '2px 9px 2px 7px', fontWeight: 'normal', fontSize: '0.97rem', border: '1.1px solid #dc3545', marginRight: 4, marginBottom: 2 }}>
+                            <i className="bi bi-x-circle-fill me-1" style={{ fontSize: 14 }}></i>{userInterest}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             {/* 推薦學長卡片區塊：三欄固定分佈 */}
             <h5 className="mb-4" style={{marginBottom: '2.2rem'}}><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
-            <div className="row justify-content-center g-4 mb-2">
+            <div className="d-flex flex-column align-items-center gap-4 mb-2">
               {topAlumni.map((a: TopAlumniType) => {
                 const isSelected = selectedTutors.includes(a.id);
                 const userInterests = submittedRequirements?.formData.interests || [];
