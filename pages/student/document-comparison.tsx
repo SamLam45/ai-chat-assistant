@@ -393,6 +393,7 @@ const DocumentComparisonPage = () => {
   const [selectedTutors, setSelectedTutors] = useState<string[]>([]);
   // 多學長預約時間 state（移到頂層）
   const [tutorSchedules, setTutorSchedules] = useState<{ [id: string]: { date: string; time: string } }>({});
+  const [showFullResumeMap, setShowFullResumeMap] = useState<{ [id: string]: boolean }>({});
   
   const [requirementsState, setRequirementsState] = useState<RequirementData>({
     formData: {
@@ -737,148 +738,126 @@ const DocumentComparisonPage = () => {
                 {/* 推薦學長卡片區塊：三欄固定分佈 */}
                 <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
                 <div className="row justify-content-center g-4">
-                  {topAlumni.map((a: TopAlumniType, index: number) => {
+                  {topAlumni.map((a: TopAlumniType) => {
                     const isSelected = selectedTutors.includes(a.id);
+                    // 興趣比對
+                    const userInterests = submittedRequirements?.formData.interests || [];
+                    const alumniInterests = Array.isArray(a.interests) ? a.interests : [];
+                    // 摘要展開狀態（由父層管理）
+                    const showFullResume = showFullResumeMap[a.id] || false;
+                    const setShowFullResume = (open: boolean) => setShowFullResumeMap(prev => ({ ...prev, [a.id]: open }));
+                    // 興趣比對資料
+                    const interestTags = userInterests.map((userInterest, idx) => {
+                      const matched = alumniInterests.includes(userInterest);
+                      return (
+                        <span key={idx} style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          background: matched ? '#e6f9ed' : '#fbeaea',
+                          color: matched ? '#28a745' : '#dc3545',
+                          borderRadius: 16,
+                          padding: '2px 10px 2px 8px',
+                          marginRight: 8,
+                          marginBottom: 6,
+                          fontWeight: matched ? 'bold' : 'normal',
+                          fontSize: '1rem',
+                          border: matched ? '1.5px solid #28a745' : '1.5px solid #dc3545',
+                        }}>
+                          {matched ? <i className="bi bi-check-circle-fill me-1" style={{ fontSize: 18 }}></i> : <i className="bi bi-x-circle-fill me-1" style={{ fontSize: 18 }}></i>}
+                          {userInterest}
+                        </span>
+                      );
+                    });
                     return (
-                      <div key={a.id} className="col-12 col-md-4 d-flex">
-                        <div
-                          className={`card mb-3 shadow-sm animate__animated animate__fadeInUp flex-fill ${isSelected ? 'border-3 border-primary selected-tutor-card' : ''}`}
-                          style={{
-                            minWidth: 340,
-                            maxWidth: 440,
-                            width: '100%',
-                            fontSize: '1.12rem',
-                            margin: '0 auto',
-                            cursor: 'pointer',
-                            boxShadow: isSelected ? '0 0 0 4px #0d6efd33' : undefined,
-                            position: 'relative'
-                          }}
-                          onClick={() => {
-                            if (isSelected) {
-                              setSelectedTutors(selectedTutors.filter(id => id !== a.id));
-                            } else if (selectedTutors.length < 3) {
-                              setSelectedTutors([...selectedTutors, a.id]);
-                            }
-                          }}
-                        >
-                          {/* 右上角可點擊方塊（checkbox 樣式） */}
-                          <div
-                            style={{
-                              position: 'absolute',
-                              top: 16,
-                              right: 16,
-                              width: 32,
-                              height: 32,
-                              border: '2px solid #0d6efd',
-                              borderRadius: 6,
-                              background: isSelected ? '#0d6efd' : '#fff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              zIndex: 2,
-                              transition: 'background 0.2s',
-                            }}
-                            onClick={e => {
-                              e.stopPropagation();
-                              if (isSelected) {
-                                setSelectedTutors(selectedTutors.filter(id => id !== a.id));
-                              } else if (selectedTutors.length < 3) {
-                                setSelectedTutors([...selectedTutors, a.id]);
-                              }
-                            }}
-                          >
-                            {isSelected && <i className="bi bi-check-lg text-white fs-4"></i>}
+                      <div key={a.id} className={`card mb-3 animate__animated animate__fadeInUp flex-fill ${isSelected ? 'border-3 border-primary selected-tutor-card' : ''}`}
+                        style={{
+                          minWidth: 320,
+                          maxWidth: 400,
+                          width: '100%',
+                          margin: '0 auto',
+                          boxShadow: 'none',
+                          borderRadius: 18,
+                          border: isSelected ? '2.5px solid #0d6efd' : '1.5px solid #e0e0e0',
+                          padding: 0,
+                          background: '#fff',
+                        }}
+                      >
+                        {/* 頂部重點資訊 */}
+                        <div className="d-flex align-items-center justify-content-between px-4 pt-4 pb-2">
+                          <div>
+                            <span className="fw-bold" style={{ fontSize: '1.25rem' }}>{a.name}</span>
+                            <span className="badge bg-success ms-2" style={{ fontSize: '1rem', padding: '0.5em 1em' }}>{a.school} {a.department}</span>
                           </div>
-                          <div className="card-body d-flex flex-column h-100 p-4">
-                            <div className="d-flex flex-column align-items-start mb-4">
-                              <span className="badge bg-primary mb-2">#{index + 1}</span>
-                              <div className="mb-2" style={{ width: '100%' }}>
-                                <span className="badge bg-success" style={{ fontSize: '1rem', padding: '0.6em 1em' }}>
-                                  {a.school} {a.department}
-                                </span>
-                              </div>
-                              <span className="fw-bold" style={{ fontSize: '1.35rem', wordBreak: 'break-all', maxWidth: 220, display: 'inline-block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {a.name}
-                              </span>
-                              {/* 顯示交集數量（如有） */}
-                              {typeof a._matchCount === 'number' && (
-                                <span className="badge bg-info ms-2">興趣相同數：{a._matchCount}</span>
-                              )}
+                          <div style={{ position: 'relative' }}>
+                            <div
+                              style={{
+                                width: 32,
+                                height: 32,
+                                border: '2px solid #0d6efd',
+                                borderRadius: 6,
+                                background: isSelected ? '#0d6efd' : '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'background 0.2s',
+                              }}
+                              onClick={e => {
+                                e.stopPropagation();
+                                if (isSelected) {
+                                  setSelectedTutors(selectedTutors.filter(id => id !== a.id));
+                                } else if (selectedTutors.length < 3) {
+                                  setSelectedTutors([...selectedTutors, a.id]);
+                                }
+                              }}
+                            >
+                              {isSelected && <i className="bi bi-check-lg text-white fs-4"></i>}
                             </div>
-                            <div className="row mb-3">
-                              <div className="col-md-6">
-                                <p style={{ fontSize: '1.08rem' }}><i className="bi bi-calendar-event me-2 text-muted"></i><strong>年級：</strong>{a.grade}</p>
-                                <p style={{ fontSize: '1.08rem' }}><i className="bi bi-mortarboard me-2 text-muted"></i><strong>學歷：</strong>{a.education}</p>
-                              </div>
-                              <div className="col-md-6">
-                                <p style={{ fontSize: '1.08rem' }}><i className="bi bi-briefcase me-2 text-muted"></i><strong>經驗：</strong>{a.experience}</p>
-                                <p style={{ fontSize: '1.08rem' }}><i className="bi bi-star me-2 text-muted"></i><strong>技能：</strong>{a.skills?.join('、') || '未提供'}</p>
-                              </div>
-                            </div>
-                            {/* 興趣／學術選擇點列式顯示 */}
-                            {Array.isArray(a.interests) && a.interests.length > 0 && (
-                              <div className="mt-4">
-                                <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-list-check me-2 text-primary"></i>興趣／學術選擇</h6>
-                                <ul className="list-unstyled mb-0 ps-2">
-                                  {a.interests.map((interest: string, _idx: number) => (
-                                    <li key={_idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                            {a.resume_content && (
-                              <div className="mt-4">
-                                <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
-                                <pre className="text-muted small" style={{ fontSize: '1.05rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0 }}>
-                                  {a.resume_content.split('、').map((line, idx, arr) => idx < arr.length - 1 ? line + '、\n' : line).join('')}
-                                </pre>
-                                {/* 興趣比對區塊 */}
-                                {Array.isArray(a.interests) && submittedRequirements?.formData.interests && (
-                                  <div className="mt-3">
-                                    <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-check2-all me-2 text-success"></i>興趣比對</h6>
-                                    <div className="table-responsive">
-                                      <table className="table table-bordered align-middle mb-0" style={{ minWidth: 320 }}>
-                                        <thead>
-                                          <tr>
-                                            <th className="text-center" style={{ width: '45%' }}>用戶興趣</th>
-                                            <th className="text-center" style={{ width: '10%' }}>吻合</th>
-                                            <th className="text-center" style={{ width: '45%' }}>導師興趣</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {submittedRequirements.formData.interests.map((userInterest, idx) => {
-                                            const alumniInterests = Array.isArray(a.interests) ? a.interests : [];
-                                            const matched = alumniInterests.includes(userInterest);
-                                            return (
-                                              <tr key={idx}>
-                                                <td className="text-end pe-3" style={{ color: matched ? '#28a745' : '#dc3545', fontWeight: matched ? 'bold' : 'normal', fontSize: '1.08rem' }}>{userInterest}</td>
-                                                <td className="text-center">
-                                                  {matched ? (
-                                                    <span style={{ color: '#28a745', fontSize: '1.6rem' }}><i className="bi bi-check-circle-fill"></i></span>
-                                                  ) : (
-                                                    <span style={{ color: '#dc3545', fontSize: '1.6rem' }}><i className="bi bi-x-circle-fill"></i></span>
-                                                  )}
-                                                </td>
-                                                <td className="text-start ps-3" style={{ color: matched ? '#28a745' : '#dc3545', fontWeight: matched ? 'bold' : 'normal', fontSize: '1.08rem' }}>
-                                                  {matched ? userInterest : ''}
-                                                </td>
-                                              </tr>
-                                            );
-                                          })}
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
                           </div>
-                          {isSelected && (
-                            <div className="position-absolute top-0 end-0 m-2">
-                              {/* <i className="bi bi-check-circle-fill text-primary fs-2"></i> */}
-                            </div>
-                          )}
                         </div>
+                        {/* 次要資訊 */}
+                        <div className="d-flex flex-wrap align-items-center gap-3 px-4 pb-2 pt-1" style={{ fontSize: '1.05rem', color: '#555' }}>
+                          <span><i className="bi bi-calendar-event me-1 text-muted"></i>{a.grade}</span>
+                          <span><i className="bi bi-mortarboard me-1 text-muted"></i>{a.education}</span>
+                          <span><i className="bi bi-briefcase me-1 text-muted"></i>{a.experience}</span>
+                        </div>
+                        {/* 興趣比對 tag 區塊 */}
+                        <div className="px-4 pb-2 pt-1">
+                          <div className="mb-1" style={{ fontWeight: 500, color: '#333', fontSize: '1.08rem' }}><i className="bi bi-check2-all me-2 text-success"></i>興趣比對</div>
+                          <div className="d-flex flex-wrap">{interestTags}</div>
+                        </div>
+                        {/* 摘要區塊 */}
+                        {a.resume_content && (
+                          <div className="px-4 pb-3 pt-2">
+                            <div style={{ fontWeight: 500, color: '#333', fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</div>
+                            <pre
+                              className="text-muted small mb-0"
+                              style={{
+                                fontSize: '1.05rem',
+                                whiteSpace: 'pre-wrap',
+                                wordBreak: 'break-all',
+                                background: 'none',
+                                border: 'none',
+                                padding: 0,
+                                maxHeight: showFullResume ? 'none' : 48,
+                                overflow: 'hidden',
+                                cursor: a.resume_content.length > 60 ? 'pointer' : 'default',
+                                transition: 'max-height 0.2s',
+                              }}
+                              onClick={() => setShowFullResume(!showFullResume)}
+                              title={a.resume_content.length > 60 ? (showFullResume ? '點擊收起' : '點擊展開') : ''}
+                            >
+                              {a.resume_content.split('，').map((line, idx, arr) => idx < arr.length - 1 ? line + '、\n' : line).join('')}
+                            </pre>
+                            {a.resume_content.length > 60 && (
+                              <div className="text-end mt-1">
+                                <button className="btn btn-link btn-sm p-0" style={{ color: '#0d6efd', textDecoration: 'underline', fontSize: '0.98rem' }} onClick={() => setShowFullResume(!showFullResume)}>
+                                  {showFullResume ? '收起' : '展開更多'}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
