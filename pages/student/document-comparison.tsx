@@ -390,7 +390,7 @@ const DocumentComparisonPage = () => {
   const [resultLoading, setResultLoading] = useState(false);
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   // 新增：選擇學長狀態
-  const [selectedTutors] = useState<string[]>([]);
+  const [selectedTutors, setSelectedTutors] = useState<string[]>([]);
   // 多學長預約時間 state（移到頂層）
   const [tutorSchedules, setTutorSchedules] = useState<{ [id: string]: { date: string; time: string } }>({});
   const [showFullResumeMap, setShowFullResumeMap] = useState<{ [id: string]: boolean }>({});
@@ -671,38 +671,80 @@ const DocumentComparisonPage = () => {
               </div>
             ) : topAlumni && topAlumni.length > 0 ? (
               <>
-                {/* AI 智能匹配結果卡片 */}
-                <div className="card mb-4 border-0 shadow-sm animate__animated animate__fadeInDown" style={{ borderRadius: 20, background: 'linear-gradient(90deg, #e0e7ff 0%, #f8fafc 100%)', boxShadow: '0 4px 24px 0 #b6c6e633' }}>
-                  <div className="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between p-4">
-                    <div className="mb-3 mb-md-0">
-                      <div className="fw-bold mb-2" style={{ fontSize: '1.18rem', color: '#0d6efd', letterSpacing: 1.5 }}><i className="bi bi-stars me-2"></i>AI 智能匹配結果</div>
-                      <div className="mb-1"><span className="text-muted">您的特殊需求：</span><span className="ms-2" style={{ color: '#e74c3c', fontWeight: 600 }}>{userSpecialWish ? userSpecialWish : '（未填寫）'}</span></div>
-                      {aiMatchReasons && aiMatchReasons.length > 0 && (
-                        <div className="mb-1">
-                          <span className="text-muted">AI 匹配理由：</span>
-                          <span className="ms-2" style={{ color: '#0d6efd', fontWeight: 600 }}>{aiMatchReasons[0]}</span>
-                        </div>
-                      )}
-                      <div className="mt-2">
-                        <span className="text-muted">興趣吻合數：</span>
-                        <span className="fw-bold" style={{ fontSize: '1.15rem', color: '#ff9800', textShadow: '0 1px 6px #fffbe6' }}>{topAlumni[0]?._matchCount ?? 0}</span>
-                      </div>
+                {/* 智能匹配資訊卡片 */}
+                <div className="card mb-4 border-primary animate__animated animate__fadeInDown" style={{
+                  background: 'linear-gradient(90deg, #e0f7fa 0%, #fce4ec 100%)',
+                  borderRadius: 18,
+                  boxShadow: '0 4px 24px 0 rgba(13,110,253,0.08)',
+                  borderWidth: 2,
+                  borderColor: '#0d6efd',
+                }}>
+                  <div className="card-header bg-primary text-white" style={{ borderTopLeftRadius: 18, borderTopRightRadius: 18, fontSize: '1.18rem', letterSpacing: 1 }}>
+                    <h5 className="mb-0"><i className="bi bi-lightbulb-fill me-2"></i>AI 智能匹配結果</h5>
+                  </div>
+                  <div className="card-body animate__animated animate__fadeInUp" style={{ fontSize: '1.08rem', background: 'rgba(255,255,255,0.85)', borderRadius: 12 }}>
+                    <div className="mb-2">
+                      <strong>您的特殊需求／願望：</strong>
+                      <span className="ms-2 text-danger">{userSpecialWish ? userSpecialWish : '（未填寫）'}</span>
                     </div>
-                    <div className="d-flex align-items-center gap-3">
-                      <div className="d-flex flex-wrap gap-2">
-                        {submittedRequirements?.formData.interests?.slice(0, 5).map((interest, idx) => (
-                          <span key={idx} className="badge border border-2" style={{ fontSize: '0.98rem', fontWeight: 500, background: idx%2===0 ? '#ffe0e6' : '#e0f7fa', color: idx%2===0 ? '#e74c3c' : '#00bcd4', borderColor: idx%2===0 ? '#e74c3c' : '#00bcd4' }}>{interest}</span>
-                        ))}
-                        {submittedRequirements?.formData.interests && submittedRequirements.formData.interests.length > 5 && (
-                          <span className="badge bg-secondary bg-opacity-10 text-secondary" style={{ fontSize: '0.98rem' }}>+{submittedRequirements.formData.interests.length - 5}</span>
-                        )}
+                    {/* AI 匹配理由顯示區塊 */}
+                    {aiMatchReasons && aiMatchReasons.length > 0 && (
+                      <div className="alert alert-info">
+                        <strong>AI 匹配理由：</strong>
+                        <ul className="mb-0 ps-3">
+                          {aiMatchReasons.map((reason: string, idx: number) => (
+                            <li key={idx}>{reason}</li>
+                          ))}
+                        </ul>
                       </div>
+                    )}
+                    <table className="table table-bordered mb-3">
+                      <thead>
+                        <tr>
+                          <th>興趣／學術選擇</th>
+                          <th>原始條件</th>
+                          <th>智能匹配</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>興趣／學術選擇</td>
+                          <td>
+                            <ul className="mb-0 ps-3">
+                              {submittedRequirements?.formData.interests?.map((interest, idx) => (
+                                <li key={idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
+                              ))}
+                            </ul>
+                          </td>
+                          <td>
+                            <span className="fw-bold text-primary">{topAlumni[0]?._matchCount}</span> 項相同
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div>
+                      <strong>AI 匹配理由：</strong>
+                      <ul className="mb-2">
+                        {topAlumni.map(a => (
+                          <li key={a.id}>
+                            <span className="fw-bold">{a.name}</span> 學長
+                            {typeof a._matchCount === 'number' && (
+                              <span> 與您的興趣有 <span className="text-primary fw-bold">{a._matchCount}</span> 項相同</span>
+                            )}
+                            {typeof a._matchCount === 'number' && a._matchCount === 0 && (
+                              <span className="text-warning"> 願望相近（但是無興趣交集）</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 </div>
 
-                {/* 推薦學長卡片區塊：直式排列，精簡資訊 */}
-                <h5 className="mb-4 animate__animated animate__fadeInLeft" style={{marginBottom: '2.2rem', color:'#0d6efd', letterSpacing:1.5}}><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
+                {/* 推薦學長卡片區塊：直式排列，動畫、色彩強化 */}
+                <h5 className="mb-4 animate__animated animate__fadeInLeft" style={{marginBottom: '2.2rem', color: '#0d6efd', fontWeight: 700, letterSpacing: 1}}>
+                  <i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）
+                </h5>
                 <div className="d-flex flex-column gap-4 mb-2">
                   {topAlumni.map((a: TopAlumniType, idx) => {
                     const isSelected = selectedTutors.includes(a.id);
@@ -711,55 +753,89 @@ const DocumentComparisonPage = () => {
                     const showFullResume = showFullResumeMap[a.id] || false;
                     const setShowFullResume = (open: boolean) => setShowFullResumeMap(prev => ({ ...prev, [a.id]: open }));
                     const matchedInterests = userInterests.filter(i => alumniInterests.includes(i));
-                    // 頭像首字母
-                    const avatar = a.name ? a.name[0] : '?';
-                    // 彩色卡片背景
-                    const cardBg = idx === 0 ? 'linear-gradient(90deg, #f8fafc 60%, #e0f7fa 100%)' : idx === 1 ? 'linear-gradient(90deg, #f8fafc 60%, #ffe0e6 100%)' : 'linear-gradient(90deg, #f8fafc 60%, #fffbe6 100%)';
-                    const shadow = idx === 0 ? '0 4px 24px 0 #00bcd433' : idx === 1 ? '0 4px 24px 0 #e74c3c33' : '0 4px 24px 0 #ff980033';
+                    const unmatchedInterests = userInterests.filter(i => !alumniInterests.includes(i));
                     return (
                       <div key={a.id}
                         className={`card animate__animated animate__fadeInUp ${isSelected ? 'border-3 border-primary selected-tutor-card' : ''}`}
                         style={{
                           borderRadius: 18,
                           border: isSelected ? '2.5px solid #0d6efd' : '1.2px solid #e0e0e0',
-                          boxShadow: shadow,
-                          background: cardBg,
-                          padding: '18px 22px',
+                          boxShadow: '0 4px 24px 0 rgba(13,110,253,0.10)',
+                          background: idx === 0 ? 'linear-gradient(90deg, #e3f2fd 0%, #fffde7 100%)' : idx === 1 ? 'linear-gradient(90deg, #fce4ec 0%, #e8f5e9 100%)' : 'linear-gradient(90deg, #fff3e0 0%, #e1f5fe 100%)',
+                          padding: '22px 28px',
                           margin: 0,
                           width: '100%',
-                          transition: 'transform 0.2s, box-shadow 0.2s',
-                          cursor: 'pointer',
+                          transition: 'box-shadow 0.2s, border 0.2s',
                         }}
-                        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.025)'}
-                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                       >
-                        <div className="d-flex align-items-center gap-3 mb-2">
-                          <div style={{ width: 54, height: 54, borderRadius: '50%', background: idx===0?'#00bcd4':idx===1?'#e74c3c':'#ff9800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 700, color: '#fff', boxShadow:'0 2px 8px #0001' }}>{avatar}</div>
-                          <div className="flex-grow-1">
-                            <div className="fw-bold" style={{ fontSize: '1.15rem', color: idx===0?'#00bcd4':idx===1?'#e74c3c':'#ff9800' }}>{a.name}</div>
-                            <div className="text-muted" style={{ fontSize: '1.01rem' }}>{a.school} {a.department}・{a.grade}</div>
+                        {/* 頂部：姓名、學校科系 */}
+                        <div className="d-flex align-items-center justify-content-between mb-2">
+                          <div>
+                            <span className="fw-bold" style={{ fontSize: '1.18rem' }}>{a.name}</span>
+                            <span className="badge bg-success ms-2" style={{ fontSize: '0.98rem', padding: '0.4em 0.9em' }}>{a.school} {a.department}</span>
                           </div>
-                          <div className="text-end">
-                            <div className="badge border border-2" style={{ fontSize: '1.01rem', fontWeight: 500, background: idx%2===0 ? '#e0f7fa' : '#ffe0e6', color: idx%2===0 ? '#00bcd4' : '#e74c3c', borderColor: idx%2===0 ? '#00bcd4' : '#e74c3c' }}>興趣吻合 {matchedInterests.length}</div>
+                          <div style={{ position: 'relative' }}>
+                            <div
+                              style={{
+                                width: 28,
+                                height: 28,
+                                border: '2px solid #0d6efd',
+                                borderRadius: 6,
+                                background: isSelected ? '#0d6efd' : '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'background 0.2s',
+                              }}
+                              onClick={e => {
+                                e.stopPropagation();
+                                if (isSelected) {
+                                  setSelectedTutors(selectedTutors.filter(id => id !== a.id));
+                                } else if (selectedTutors.length < 3) {
+                                  setSelectedTutors([...selectedTutors, a.id]);
+                                }
+                              }}
+                            >
+                              {isSelected && <i className="bi bi-check-lg text-white fs-5"></i>}
+                            </div>
                           </div>
                         </div>
-                        {/* 吻合興趣tag */}
-                        <div className="mb-2 d-flex flex-wrap gap-2">
-                          {matchedInterests.length === 0 ? <span style={{color:'#aaa',fontSize:'0.97rem'}}>無吻合興趣</span> : matchedInterests.map((interest, iidx) => (
-                            <span key={iidx} style={{
-                              display: 'inline-flex', alignItems: 'center', background: iidx%3===0?'#e0f7fa':iidx%3===1?'#ffe0e6':'#fffbe6', color: iidx%3===0?'#00bcd4':iidx%3===1?'#e74c3c':'#ff9800',
-                              borderRadius: 14, padding: '2px 10px 2px 8px', fontWeight: 'bold', fontSize: '0.97rem', border: '1.1px solid #bbb', boxShadow:'0 1px 4px #0001'
+                        {/* 次要資訊：年級、學歷、經驗 */}
+                        <div className="d-flex flex-wrap align-items-center gap-3 mb-2" style={{ fontSize: '0.98rem', color: '#555' }}>
+                          <span><i className="bi bi-calendar-event me-1 text-muted"></i>{a.grade}</span>
+                          <span><i className="bi bi-mortarboard me-1 text-muted"></i>{a.education}</span>
+                          <span><i className="bi bi-briefcase me-1 text-muted"></i>{a.experience}</span>
+                        </div>
+                        {/* 興趣比對 tag 區塊 */}
+                        <div className="mb-2">
+                          <span style={{fontWeight: 500, color: '#28a745', fontSize: '0.97rem'}}>吻合興趣：</span>
+                          {matchedInterests.length === 0 ? <span style={{color:'#aaa',fontSize:'0.97rem'}}>無</span> : matchedInterests.map((interest, idx) => (
+                            <span key={idx} style={{
+                              display: 'inline-flex', alignItems: 'center', background: '#e6f9ed', color: '#28a745',
+                              borderRadius: 14, padding: '2px 10px 2px 8px', marginRight: 5, marginBottom: 2,
+                              fontWeight: 'bold', fontSize: '0.97rem', border: '1.1px solid #28a745'
                             }}>
                               <i className="bi bi-check-circle-fill me-1" style={{ fontSize: 14 }}></i>{interest}
                             </span>
                           ))}
                         </div>
-                        {/* 摘要區塊（可展開/收起） */}
+                        <div className="mb-2">
+                          <span style={{fontWeight: 500, color: '#dc3545', fontSize: '0.97rem'}}>不吻合興趣：</span>
+                          {unmatchedInterests.length === 0 ? <span style={{color:'#aaa',fontSize:'0.97rem'}}>無</span> : unmatchedInterests.map((interest, idx) => (
+                            <span key={idx} style={{
+                              display: 'inline-flex', alignItems: 'center', background: '#fbeaea', color: '#dc3545',
+                              borderRadius: 14, padding: '2px 10px 2px 8px', marginRight: 5, marginBottom: 2,
+                              fontWeight: 'normal', fontSize: '0.97rem', border: '1.1px solid #dc3545'
+                            }}>
+                              <i className="bi bi-x-circle-fill me-1" style={{ fontSize: 14 }}></i>{interest}
+                            </span>
+                          ))}
+                        </div>
+                        {/* 摘要區塊 */}
                         {a.resume_content && (
                           <div className="mb-0">
-                            <button className="btn btn-link btn-sm p-0 mb-1" style={{ color: idx===0?'#00bcd4':idx===1?'#e74c3c':'#ff9800', textDecoration: 'underline', fontSize: '0.97rem' }} onClick={() => setShowFullResume(!showFullResume)}>
-                              {showFullResume ? '收起履歷摘要' : '展開履歷摘要'}
-                            </button>
+                            <div style={{ fontWeight: 500, color: '#333', fontSize: '1.05rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</div>
                             <pre
                               className="text-muted small mb-0"
                               style={{
@@ -769,13 +845,23 @@ const DocumentComparisonPage = () => {
                                 background: 'none',
                                 border: 'none',
                                 padding: 0,
-                                maxHeight: showFullResume ? 'none' : 0,
-                                overflow: showFullResume ? 'auto' : 'hidden',
+                                maxHeight: showFullResume ? 'none' : 44,
+                                overflow: 'hidden',
+                                cursor: a.resume_content.length > 60 ? 'pointer' : 'default',
                                 transition: 'max-height 0.2s',
                               }}
+                              onClick={() => setShowFullResume(!showFullResume)}
+                              title={a.resume_content.length > 60 ? (showFullResume ? '點擊收起' : '點擊展開') : ''}
                             >
                               {a.resume_content.split('，').map((line, idx, arr) => idx < arr.length - 1 ? line + '、\n' : line).join('')}
                             </pre>
+                            {a.resume_content.length > 60 && (
+                              <div className="text-end mt-1">
+                                <button className="btn btn-link btn-sm p-0" style={{ color: '#0d6efd', textDecoration: 'underline', fontSize: '0.97rem' }} onClick={() => setShowFullResume(!showFullResume)}>
+                                  {showFullResume ? '收起' : '展開更多'}
+                                </button>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
