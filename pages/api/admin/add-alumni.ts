@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
-//import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-// const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -24,24 +24,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const text = `學長是：${name}，畢業於${school}（${department}），畢業年份或者年級：${grade}，學歷：${education}，經驗：${experience || ''}，技能：${skillsText}，興趣／學術選擇：${interestsText}`;
 
   // 1. 呼叫 Gemini 產生 embedding
-  const embedding: number[] = [];
-  // try {
-  //   const response = await ai.models.embedContent({
-  //     model: 'gemini-embedding-exp-03-07',
-  //     contents: text,
-  //     config: { taskType: "SEMANTIC_SIMILARITY" }
-  //   });
-  //   if (Array.isArray(response.embeddings) && response.embeddings.length > 0 && Array.isArray(response.embeddings[0].values)) {
-  //     embedding = response.embeddings[0].values;
-  //   } else if (Array.isArray(response.embeddings)) {
-  //     embedding = response.embeddings as number[];
-  //   } else {
-  //     throw new Error('embedding 格式錯誤');
-  //   }
-  // } catch (err) {
-  //   console.error('Gemini embedding error:', err);
-  //   return res.status(500).json({ error: '產生 embedding 失敗' });
-  // }
+  let embedding: number[] = [];
+  try {
+    const response = await ai.models.embedContent({
+      model: 'gemini-embedding-exp-03-07',
+      contents: text,
+      config: { taskType: "SEMANTIC_SIMILARITY" }
+    });
+    // Gemini 回傳格式：{ embeddings: [{ values: number[] }] }
+    if (Array.isArray(response.embeddings) && response.embeddings.length > 0 && Array.isArray(response.embeddings[0].values)) {
+      embedding = response.embeddings[0].values;
+    } else if (Array.isArray(response.embeddings)) {
+      embedding = response.embeddings as number[];
+    } else {
+      throw new Error('embedding 格式錯誤');
+    }
+  } catch (err) {
+    console.error('Gemini embedding error:', err);
+    return res.status(500).json({ error: '產生 embedding 失敗' });
+  }
 
   // 2. 寫入 Supabase alumni table
   const { error } = await supabase.from('alumni').insert([{
