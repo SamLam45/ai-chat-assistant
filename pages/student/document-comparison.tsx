@@ -723,7 +723,7 @@ const DocumentComparisonPage = () => {
                       </div>
                     </div>
                     {/* AI 匹配理由顯示區塊 */}
-                    {aiMatchReasons && aiMatchReasons.length > 0 && (
+                    {Array.isArray(aiMatchReasons) && aiMatchReasons.length > 0 && (
                       <div className="alert alert-info mt-4 mb-0 animate__animated animate__fadeInUp">
                         <strong>AI 匹配理由：</strong>
                         <ul className="mb-0 ps-3">
@@ -741,7 +741,7 @@ const DocumentComparisonPage = () => {
                   <i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）
                 </h5>
                 <div className="d-flex flex-column gap-4 mb-2">
-                  {topAlumni.map((a: TopAlumniType, idx) => {
+                  {Array.isArray(topAlumni) && topAlumni.map((a: TopAlumniType, idx) => {
                     const isSelected = selectedTutors.includes(a.id);
                     const userInterests = submittedRequirements?.formData.interests || [];
                     const alumniInterests = Array.isArray(a.interests) ? a.interests : [];
