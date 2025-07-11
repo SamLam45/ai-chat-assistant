@@ -659,7 +659,6 @@ const DocumentComparisonPage = () => {
         </>;
       case 4:
         // 直接依照後端順序顯示前三位，並明確型別
-        const userSpecialWish = submittedRequirements?.formData.specialWish || '';
         const topAlumni: TopAlumniType[] = matchedAlumni.slice(0, 3);
         return (
           <div>
@@ -671,7 +670,7 @@ const DocumentComparisonPage = () => {
               </div>
             ) : topAlumni && topAlumni.length > 0 ? (
               <>
-                {/* 智能匹配資訊卡片 */}
+                {/* 智能匹配資訊卡片（匹配視覺設計） */}
                 <div className="card mb-4 border-primary animate__animated animate__fadeInDown" style={{
                   background: 'linear-gradient(90deg, #e0f7fa 0%, #fce4ec 100%)',
                   borderRadius: 18,
@@ -683,13 +682,45 @@ const DocumentComparisonPage = () => {
                     <h5 className="mb-0"><i className="bi bi-lightbulb-fill me-2"></i>AI 智能匹配結果</h5>
                   </div>
                   <div className="card-body animate__animated animate__fadeInUp" style={{ fontSize: '1.08rem', background: 'rgba(255,255,255,0.85)', borderRadius: 12 }}>
-                    <div className="mb-2">
-                      <strong>您的特殊需求／願望：</strong>
-                      <span className="ms-2 text-danger">{userSpecialWish ? userSpecialWish : '（未填寫）'}</span>
+                    <div className="row align-items-center g-0">
+                      {/* 左側：用戶條件 */}
+                      <div className="col-12 col-md-5 text-center text-md-end pe-md-4 mb-3 mb-md-0">
+                        <div className="fw-bold mb-2" style={{ fontSize: '1.12rem', color: '#0d6efd' }}>您的條件</div>
+                        <ul className="list-unstyled mb-0" style={{ fontSize: '1.05rem', color: '#333' }}>
+                          <li><strong>學校：</strong>{submittedRequirements?.formData.school || '—'}</li>
+                          <li><strong>學系：</strong>{submittedRequirements?.formData.department || '—'}</li>
+                          <li><strong>年級：</strong>{submittedRequirements?.formData.grade || '—'}</li>
+                          <li><strong>學歷：</strong>{submittedRequirements?.formData.educationRequirements || '—'}</li>
+                          <li><strong>興趣：</strong>{(submittedRequirements?.formData.interests || []).join('、') || '—'}</li>
+                          <li><strong>特殊需求：</strong>{submittedRequirements?.formData.specialWish || '—'}</li>
+                        </ul>
+                      </div>
+                      {/* 中間箭頭/連結線條 */}
+                      <div className="col-12 col-md-2 d-flex justify-content-center align-items-center mb-3 mb-md-0">
+                        <div style={{ fontSize: 38, color: '#0d6efd', fontWeight: 700 }}>
+                          <i className="bi bi-arrow-left-right"></i>
+                        </div>
+                      </div>
+                      {/* 右側：推薦學長（只顯示第一位） */}
+                      <div className="col-12 col-md-5 text-center text-md-start ps-md-4">
+                        <div className="fw-bold mb-2" style={{ fontSize: '1.12rem', color: '#198754' }}>推薦學長</div>
+                        {topAlumni[0] ? (
+                          <ul className="list-unstyled mb-0" style={{ fontSize: '1.05rem', color: '#333' }}>
+                            <li><strong>姓名：</strong>{topAlumni[0].name}</li>
+                            <li><strong>學校：</strong>{topAlumni[0].school}</li>
+                            <li><strong>學系：</strong>{topAlumni[0].department}</li>
+                            <li><strong>年級：</strong>{topAlumni[0].grade}</li>
+                            <li><strong>學歷：</strong>{topAlumni[0].education}</li>
+                            <li><strong>吻合興趣：</strong>{(submittedRequirements?.formData.interests || []).filter(i => Array.isArray(topAlumni[0].interests) && topAlumni[0].interests.includes(i)).join('、') || '—'}</li>
+                          </ul>
+                        ) : (
+                          <div className="text-muted">暫無推薦</div>
+                        )}
+                      </div>
                     </div>
                     {/* AI 匹配理由顯示區塊 */}
                     {aiMatchReasons && aiMatchReasons.length > 0 && (
-                      <div className="alert alert-info">
+                      <div className="alert alert-info mt-4">
                         <strong>AI 匹配理由：</strong>
                         <ul className="mb-0 ps-3">
                           {aiMatchReasons.map((reason: string, idx: number) => (
@@ -698,46 +729,6 @@ const DocumentComparisonPage = () => {
                         </ul>
                       </div>
                     )}
-                    <table className="table table-bordered mb-3">
-                      <thead>
-                        <tr>
-                          <th>興趣／學術選擇</th>
-                          <th>原始條件</th>
-                          <th>智能匹配</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>興趣／學術選擇</td>
-                          <td>
-                            <ul className="mb-0 ps-3">
-                              {submittedRequirements?.formData.interests?.map((interest, idx) => (
-                                <li key={idx}><i className="bi bi-check2-circle text-success me-1"></i>{interest}</li>
-                              ))}
-                            </ul>
-                          </td>
-                          <td>
-                            <span className="fw-bold text-primary">{topAlumni[0]?._matchCount}</span> 項相同
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div>
-                      <strong>AI 匹配理由：</strong>
-                      <ul className="mb-2">
-                        {topAlumni.map(a => (
-                          <li key={a.id}>
-                            <span className="fw-bold">{a.name}</span> 學長
-                            {typeof a._matchCount === 'number' && (
-                              <span> 與您的興趣有 <span className="text-primary fw-bold">{a._matchCount}</span> 項相同</span>
-                            )}
-                            {typeof a._matchCount === 'number' && a._matchCount === 0 && (
-                              <span className="text-warning"> 願望相近（但是無興趣交集）</span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
                   </div>
                 </div>
 
