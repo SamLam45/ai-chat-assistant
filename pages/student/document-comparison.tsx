@@ -829,7 +829,47 @@ const DocumentComparisonPage = () => {
                             {a.resume_content && (
                               <div className="mt-4">
                                 <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-file-text me-2 text-muted"></i>履歷摘要</h6>
-                                <pre className="text-muted small" style={{ fontSize: '1.05rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0 }}>{a.resume_content}</pre>
+                                <pre className="text-muted small" style={{ fontSize: '1.05rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: 'none', border: 'none', padding: 0 }}>
+                                  {a.resume_content.split('、').map((line, idx, arr) => idx < arr.length - 1 ? line + '、\n' : line).join('')}
+                                </pre>
+                                {/* 興趣比對區塊 */}
+                                {Array.isArray(a.interests) && submittedRequirements?.formData.interests && (
+                                  <div className="mt-3">
+                                    <h6 style={{ fontSize: '1.08rem' }}><i className="bi bi-check2-all me-2 text-success"></i>興趣比對</h6>
+                                    <div className="table-responsive">
+                                      <table className="table table-bordered align-middle mb-0" style={{ minWidth: 320 }}>
+                                        <thead>
+                                          <tr>
+                                            <th className="text-center" style={{ width: '45%' }}>用戶興趣</th>
+                                            <th className="text-center" style={{ width: '10%' }}>吻合</th>
+                                            <th className="text-center" style={{ width: '45%' }}>導師興趣</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {submittedRequirements.formData.interests.map((userInterest, idx) => {
+                                            const alumniInterests = Array.isArray(a.interests) ? a.interests : [];
+                                            const matched = alumniInterests.includes(userInterest);
+                                            return (
+                                              <tr key={idx}>
+                                                <td className="text-end pe-3" style={{ color: matched ? '#28a745' : '#dc3545', fontWeight: matched ? 'bold' : 'normal', fontSize: '1.08rem' }}>{userInterest}</td>
+                                                <td className="text-center">
+                                                  {matched ? (
+                                                    <span style={{ color: '#28a745', fontSize: '1.6rem' }}><i className="bi bi-check-circle-fill"></i></span>
+                                                  ) : (
+                                                    <span style={{ color: '#dc3545', fontSize: '1.6rem' }}><i className="bi bi-x-circle-fill"></i></span>
+                                                  )}
+                                                </td>
+                                                <td className="text-start ps-3" style={{ color: matched ? '#28a745' : '#dc3545', fontWeight: matched ? 'bold' : 'normal', fontSize: '1.08rem' }}>
+                                                  {matched ? userInterest : ''}
+                                                </td>
+                                              </tr>
+                                            );
+                                          })}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
