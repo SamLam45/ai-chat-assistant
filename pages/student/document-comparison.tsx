@@ -736,8 +736,8 @@ const DocumentComparisonPage = () => {
                 </div>
 
                 {/* 推薦學長卡片區塊：三欄固定分佈 */}
-                <h5 className="mb-3"><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
-                <div className="row justify-content-center g-4">
+                <h5 className="mb-4" style={{marginBottom: '2.2rem'}}><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
+                <div className="row justify-content-center g-4 mb-2">
                   {topAlumni.map((a: TopAlumniType) => {
                     const isSelected = selectedTutors.includes(a.id);
                     // 興趣比對
@@ -746,28 +746,9 @@ const DocumentComparisonPage = () => {
                     // 摘要展開狀態（由父層管理）
                     const showFullResume = showFullResumeMap[a.id] || false;
                     const setShowFullResume = (open: boolean) => setShowFullResumeMap(prev => ({ ...prev, [a.id]: open }));
-                    // 興趣比對資料
-                    const interestTags = userInterests.map((userInterest, idx) => {
-                      const matched = alumniInterests.includes(userInterest);
-                      return (
-                        <span key={idx} style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          background: matched ? '#e6f9ed' : '#fbeaea',
-                          color: matched ? '#28a745' : '#dc3545',
-                          borderRadius: 16,
-                          padding: '2px 10px 2px 8px',
-                          marginRight: 8,
-                          marginBottom: 6,
-                          fontWeight: matched ? 'bold' : 'normal',
-                          fontSize: '1rem',
-                          border: matched ? '1.5px solid #28a745' : '1.5px solid #dc3545',
-                        }}>
-                          {matched ? <i className="bi bi-check-circle-fill me-1" style={{ fontSize: 18 }}></i> : <i className="bi bi-x-circle-fill me-1" style={{ fontSize: 18 }}></i>}
-                          {userInterest}
-                        </span>
-                      );
-                    });
+                    // 分類興趣
+                    const matchedInterests = userInterests.filter(i => alumniInterests.includes(i));
+                    const unmatchedInterests = userInterests.filter(i => !alumniInterests.includes(i));
                     return (
                       <div key={a.id} className={`card mb-3 animate__animated animate__fadeInUp flex-fill ${isSelected ? 'border-3 border-primary selected-tutor-card' : ''}`}
                         style={{
@@ -821,10 +802,33 @@ const DocumentComparisonPage = () => {
                           <span><i className="bi bi-mortarboard me-1 text-muted"></i>{a.education}</span>
                           <span><i className="bi bi-briefcase me-1 text-muted"></i>{a.experience}</span>
                         </div>
-                        {/* 興趣比對 tag 區塊 */}
+                        {/* 興趣比對 tag 區塊（分兩行） */}
                         <div className="px-4 pb-2 pt-1">
                           <div className="mb-1" style={{ fontWeight: 500, color: '#333', fontSize: '1.08rem' }}><i className="bi bi-check2-all me-2 text-success"></i>興趣比對</div>
-                          <div className="d-flex flex-wrap">{interestTags}</div>
+                          <div style={{marginBottom: 4}}>
+                            <span style={{fontWeight: 500, color: '#28a745', fontSize: '0.98rem'}}>吻合興趣：</span>
+                            {matchedInterests.length === 0 ? <span style={{color:'#aaa',fontSize:'0.98rem'}}>無</span> : matchedInterests.map((interest, idx) => (
+                              <span key={idx} style={{
+                                display: 'inline-flex', alignItems: 'center', background: '#e6f9ed', color: '#28a745',
+                                borderRadius: 16, padding: '2px 10px 2px 8px', marginRight: 6, marginBottom: 2,
+                                fontWeight: 'bold', fontSize: '0.98rem', border: '1.2px solid #28a745'
+                              }}>
+                                <i className="bi bi-check-circle-fill me-1" style={{ fontSize: 15 }}></i>{interest}
+                              </span>
+                            ))}
+                          </div>
+                          <div>
+                            <span style={{fontWeight: 500, color: '#dc3545', fontSize: '0.98rem'}}>不吻合興趣：</span>
+                            {unmatchedInterests.length === 0 ? <span style={{color:'#aaa',fontSize:'0.98rem'}}>無</span> : unmatchedInterests.map((interest, idx) => (
+                              <span key={idx} style={{
+                                display: 'inline-flex', alignItems: 'center', background: '#fbeaea', color: '#dc3545',
+                                borderRadius: 16, padding: '2px 10px 2px 8px', marginRight: 6, marginBottom: 2,
+                                fontWeight: 'normal', fontSize: '0.98rem', border: '1.2px solid #dc3545'
+                              }}>
+                                <i className="bi bi-x-circle-fill me-1" style={{ fontSize: 15 }}></i>{interest}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                         {/* 摘要區塊 */}
                         {a.resume_content && (
