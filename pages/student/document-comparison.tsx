@@ -637,19 +637,13 @@ const DocumentComparisonPage = () => {
                   </div>
                   <div className="modal-body">
                     <p>您確定要遞交這份要求並進行 AI 智能分析嗎？</p>
-                    {isSubmitting && (
-                      <div className="alert alert-info text-center mt-3">
-                        <span className="spinner-border spinner-border-sm me-2"></span>
-                        AI 正在分析中，請稍候...
-                      </div>
-                    )}
                   </div>
                   <div className="modal-footer">
-                    <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)} disabled={isSubmitting}>取消</button>
+                    <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>取消</button>
                     <button className="btn btn-primary" onClick={() => {
                       setCurrentStep(4);
                       finalSubmit();
-                    }} disabled={isSubmitting}>確認遞交</button>
+                    }}>確認遞交</button>
                   </div>
                 </div>
               </div>
@@ -744,7 +738,7 @@ const DocumentComparisonPage = () => {
             </div>
             {/* 推薦學長卡片區塊：三欄固定分佈 */}
             <h5 className="mb-4" style={{marginBottom: '2.2rem'}}><i className="bi bi-people-fill me-2 text-primary"></i>推薦學長（由多至少顯示，僅列出前三位）</h5>
-            <div className="d-flex flex-column align-items-center gap-4 mb-2">
+            <div className="row justify-content-center g-4 mb-2">
               {topAlumni.map((a: TopAlumniType) => {
                 const isSelected = selectedTutors.includes(a.id);
                 const userInterests = submittedRequirements?.formData.interests || [];
@@ -756,22 +750,24 @@ const DocumentComparisonPage = () => {
                 // 取首字母
                 const avatar = a.name ? a.name[0] : '?';
                 return (
-                  <div key={a.id} className="col-12 col-md-8 col-lg-6 d-flex justify-content-center">
+                  <div key={a.id} className="col-12 col-md-6 col-lg-4 d-flex">
                     <div
-                      className={`card shadow-sm w-100 mb-3 animate__animated animate__fadeInUp ${isSelected ? 'border-primary' : ''}`}
+                      className={`alumni-card flex-fill position-relative ${isSelected ? 'border-primary' : ''}`}
                       style={{
-                        borderRadius: 16,
+                        borderRadius: 18,
                         border: isSelected ? '2.5px solid #0d6efd' : '1.2px solid #e0e0e0',
                         background: '#fff',
                         boxShadow: '0 2px 12px 0 #e0e0e0a0',
-                        padding: '0 0 0 0',
-                        minHeight: 0,
-                        cursor: 'pointer',
-                        position: 'relative',
+                        padding: 0,
+                        margin: '0 auto',
+                        minHeight: 180,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'stretch',
                         transition: 'box-shadow 0.2s, border 0.2s',
-                        marginBottom: 18,
-                        maxWidth: 1000,
-                        width: '100%',
+                        cursor: 'pointer',
+                        overflow: 'hidden',
+                        marginBottom: 24,
                       }}
                       onClick={() => {
                         if (isSelected) {
