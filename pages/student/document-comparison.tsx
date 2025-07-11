@@ -241,17 +241,17 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                         <h5 className="mb-0"><i className="bi bi-journal-text me-2 text-primary"></i>告訴我們你想學習的語言、科目。</h5>
                     </div>
                     <div className="card-body p-4">
-                        <div className="mb-4 animate__fadeInUp" style={{ animationDelay: '0.7s' }}>
+                        <div className="mb-4">
                           <label className="form-label fw-bold">興趣／學術選擇（最多 10 項）</label>
                           <ul className="list-group mb-2">
-                            {INTEREST_OPTIONS.map((option: string, idx: number) => {
+                            {INTEREST_OPTIONS.map((option: string) => {
                               const checked = !!formData.interests?.includes(option);
                               const disabled = !checked && (formData.interests?.length || 0) >= 10;
                               return (
                                 <li
                                   key={option}
-                                  className={`list-group-item d-flex align-items-center animate__fadeInUp ${checked ? 'active border-primary' : ''}`}
-                                  style={{ cursor: disabled ? 'not-allowed' : 'pointer', animationDelay: `${0.8 + idx * 0.05}s`, userSelect: 'none' }}
+                                  className={`list-group-item d-flex align-items-center ${checked ? 'active border-primary' : ''}`}
+                                  style={{ cursor: disabled ? 'not-allowed' : 'pointer', userSelect: 'none' }}
                                   onClick={() => !disabled && handleInterestChange(option)}
                                 >
                                   <span
@@ -268,7 +268,7 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                           </ul>
                           {/* 顯示其他語言輸入欄位 */}
                           {formData.interests?.includes('Other languages') && (
-                            <div className="mt-2 animate__fadeInUp" style={{ animationDelay: '1.5s' }}>
+                            <div className="mt-2">
                               <input
                                 type="text"
                                 className="form-control"
@@ -280,7 +280,7 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                           )}
                           <div className="form-text">可多選，最多 10 項</div>
                         </div>
-                        <div className="mb-3 animate__fadeInUp" style={{ animationDelay: '1.6s' }}>
+                        <div className="mb-3">
                           <label htmlFor="specialWish" className="form-label">特殊需求／願望（可選填）</label>
                           <textarea
                             className="form-control"
@@ -293,7 +293,7 @@ const RequirementsStep = ({ formData, setFormData, onFormSubmit }: { formData: R
                         </div>
                     </div>
                 </div>
-                <div className="d-flex justify-content-end mt-4 animate__fadeInUp" style={{ animationDelay: '1.7s' }}>
+                <div className="d-flex justify-content-end mt-4">
                     <button type="submit" className="btn btn-primary btn-lg px-5">
                         <i className="bi bi-arrow-right-circle-fill me-2"></i>
                         建立並預覽
@@ -987,41 +987,28 @@ const DocumentComparisonPage = () => {
           {/* <UserMenu /> 可加用戶資訊/登出 */}
         </div>
         {/* Stepper 置中、寬版 */}
-        <div className="stepper mb-5 d-flex justify-content-center align-items-center" style={{ maxWidth: 900, margin: '0 auto' }}>
-          {steps.map((title, index) => {
-            const stepNumber = index + 1;
-            const isActive = currentStep === stepNumber;
-            const isCompleted = currentStep > stepNumber;
-            return (
-              <React.Fragment key={index}>
-                <div
-                  className={`step ${isActive ? 'active' : isCompleted ? 'completed' : ''} animate__animated animate__fadeIn`}
-                  style={{
-                    cursor: 'pointer',
-                    background: isActive ? 'linear-gradient(90deg, #e3f2fd 0%, #fffde7 100%)' : isCompleted ? '#e0f7fa' : '#f8f9fa',
-                    borderRadius: 12,
-                    boxShadow: isActive ? '0 2px 12px 0 rgba(13,110,253,0.10)' : 'none',
-                    border: isActive ? '2px solid #0d6efd' : '1.2px solid #e0e0e0',
-                    minWidth: 80,
-                    padding: '10px 0',
-                    transition: 'all 0.2s',
-                  }}
-                  onClick={() => setCurrentStep(stepNumber)}
-                >
-                  <div className="circle" style={{ background: isActive ? '#0d6efd' : isCompleted ? '#28a745' : '#fff', color: isActive ? '#fff' : '#0d6efd', border: '2px solid #0d6efd', width: 36, height: 36, fontSize: 20, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
-                    {isCompleted ? <i className="bi bi-check-lg fs-4"></i> : <span className="fs-5 fw-bold">{stepNumber}</span>}
-                  </div>
-                  <p className="fw-bold mt-2 mb-0 label" style={{ fontSize: '1.05rem', color: isActive ? '#0d6efd' : '#333' }}>{title}</p>
+        <div className="stepper mb-5">{steps.map((title, index) => {
+          const stepNumber = index + 1;
+          const isActive = currentStep === stepNumber;
+          const isCompleted = currentStep > stepNumber;
+          return (
+            <React.Fragment key={index}>
+              <div className={`step ${isActive ? 'active' : isCompleted ? 'completed' : ''}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => setCurrentStep(stepNumber)}>
+                <div className="circle">
+                  {isCompleted ? <i className="bi bi-check-lg fs-4"></i> : <span className="fs-5 fw-bold">{stepNumber}</span>}
                 </div>
-                {index < steps.length - 1 && <div className="flex-grow-1 mx-3" style={{ height: '2px', backgroundColor: isCompleted ? 'var(--primary)' : '#e0e0e0', transition: 'background-color 0.3s' }}></div>}
-              </React.Fragment>
-            );
-          })}
-        </div>
+                <p className={`fw-bold mt-2 mb-0 label`}>{title}</p>
+              </div>
+              {index < steps.length - 1 && <div className="flex-grow-1 mx-3" style={{ height: '2px', backgroundColor: isCompleted ? 'var(--primary)' : '#e0e0e0', transition: 'background-color 0.3s' }}></div>}
+            </React.Fragment>
+          );
+        })}</div>
         {/* 主要內容卡片置中，最大寬度1400px */}
         <div className="d-flex justify-content-center">
-          <div style={{ maxWidth: 900, width: '100%' }}>
-            <div className="card shadow-sm p-4 animate__animated animate__fadeInUp" style={{ borderRadius: 18, background: 'linear-gradient(90deg, #f8fafc 0%, #e3f2fd 100%)', boxShadow: '0 4px 24px 0 rgba(13,110,253,0.08)' }}>
+          <div style={{ maxWidth: 1400, width: '100%' }}>
+            <div className="card shadow-sm p-4">
               {/* 根據 currentStep 顯示不同內容 */}
               {renderStepContent()}
             </div>
