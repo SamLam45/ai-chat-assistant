@@ -784,16 +784,16 @@ const DocumentComparisonPage = () => {
                               let label = '';
                               let color = '';
                               if (userInterests.length > 0 && matchedInterests.length === userInterests.length) {
-                                label = '與你完全相似';
+                                label = `與你完全相似（${matchedInterests.length}/${userInterests.length}）`;
                                 color = '#6f42c1'; // 紫色
                               } else if (ratio >= 0.7) {
-                                label = '非常相似';
+                                label = `非常相似（${matchedInterests.length}/${userInterests.length}）`;
                                 color = '#28a745'; // 綠色
                               } else if (ratio >= 0.4) {
-                                label = '與你相似';
+                                label = `與你相似（${matchedInterests.length}/${userInterests.length}）`;
                                 color = '#1976d2'; // 藍色
                               } else {
-                                label = `有${matchedInterests.length}個興趣與你相似`;
+                                label = `有${matchedInterests.length}個興趣與你相似（${matchedInterests.length}/${userInterests.length}）`;
                                 color = '#adb5bd'; // 灰色
                               }
                               return (
