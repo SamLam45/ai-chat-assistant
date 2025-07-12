@@ -778,9 +778,39 @@ const DocumentComparisonPage = () => {
                             <span className="badge bg-success ms-2" style={{ fontSize: '0.98rem', padding: '0.4em 0.9em' }}>{a.school} {a.department}</span>
                           </div>
                           <div className="d-flex align-items-center gap-2">
-                            <span className="badge bg-primary" style={{ fontSize: '0.97rem', padding: '0.4em 0.9em', background: '#1976d2' }}>
-                              有{matchedInterests.length}個興趣與你相似
-                            </span>
+                            {/* 相似度分級標籤 */}
+                            {(() => {
+                              const ratio = userInterests.length > 0 ? matchedInterests.length / userInterests.length : 0;
+                              let label = '';
+                              let color = '';
+                              if (userInterests.length > 0 && matchedInterests.length === userInterests.length) {
+                                label = '與你完全相似';
+                                color = '#6f42c1'; // 紫色
+                              } else if (ratio >= 0.7) {
+                                label = '非常相似';
+                                color = '#28a745'; // 綠色
+                              } else if (ratio >= 0.4) {
+                                label = '與你相似';
+                                color = '#1976d2'; // 藍色
+                              } else {
+                                label = `有${matchedInterests.length}個興趣與你相似`;
+                                color = '#adb5bd'; // 灰色
+                              }
+                              return (
+                                <span
+                                  className="badge"
+                                  style={{
+                                    fontSize: '0.97rem',
+                                    padding: '0.4em 0.9em',
+                                    background: color,
+                                    color: '#fff',
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {label}
+                                </span>
+                              );
+                            })()}
                             <div style={{ position: 'relative' }}>
                               <div
                                 style={{
