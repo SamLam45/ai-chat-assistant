@@ -870,6 +870,24 @@ const DocumentComparisonPage = () => {
                             </span>
                           ))}
                         </div>
+                        {/* 導師還有的興趣 */}
+                        {(() => {
+                          const extraInterests = alumniInterests.filter(i => !userInterests.includes(i));
+                          return (
+                            <div className="mb-2">
+                              <span style={{fontWeight: 500, color: '#888', fontSize: '0.97rem'}}>導師還有的興趣：</span>
+                              {extraInterests.length === 0 ? <span style={{color:'#aaa',fontSize:'0.97rem'}}>無</span> : extraInterests.map((interest, idx) => (
+                                <span key={idx} style={{
+                                  display: 'inline-flex', alignItems: 'center', background: '#f3f3f3', color: '#888',
+                                  borderRadius: 14, padding: '2px 10px 2px 8px', marginRight: 5, marginBottom: 2,
+                                  fontWeight: 'normal', fontSize: '0.97rem', border: '1.1px solid #ccc'
+                                }}>
+                                  <i className="bi bi-dot me-1" style={{ fontSize: 14 }}></i>{interest}
+                                </span>
+                              ))}
+                            </div>
+                          );
+                        })()}
                         {/* 摘要區塊 */}
                         {a.resume_content && (
                           <div className="mb-0">
