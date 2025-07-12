@@ -36,3 +36,30 @@ COMMENT ON COLUMN public.requirements.uploaded_cv_paths IS 'JSONB array of Supab
 COMMENT ON COLUMN public.requirements.created_at IS 'Timestamp of when the record was created.'; 
 
 ALTER TABLE student ADD COLUMN IF NOT EXISTS nameEn TEXT; -- 新增英文姓名欄位 
+
+-- 修改現有 alumni 資料表結構
+-- 1. 移除 embedding 欄位
+ALTER TABLE alumni DROP COLUMN IF EXISTS embedding;
+
+-- 2. 移除向量索引
+DROP INDEX IF EXISTS alumni_embedding_idx;
+
+-- 3. 新增 interests 欄位（如果不存在）
+ALTER TABLE alumni ADD COLUMN IF NOT EXISTS interests TEXT[];
+
+-- 4. 確保 RLS 政策存在
+DO $$
+BEGIN
+    -- 檢查是否已存在該政策
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'alumni' 
+        AND policyname = 'Admins can manage alumni'
+    ) THEN
+        -- 建立政策
+        CREATE POLICY "Admins can manage alumni"
+            ON alumni
+            FOR ALL
+            USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+    END IF;
+END $$; 
