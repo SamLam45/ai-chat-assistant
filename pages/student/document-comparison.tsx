@@ -773,34 +773,39 @@ const DocumentComparisonPage = () => {
                       >
                         {/* 頂部：姓名、學校科系 */}
                         <div className="d-flex align-items-center justify-content-between mb-2">
-                          <div>
+                          <div className="d-flex align-items-center gap-2">
                             <span className="fw-bold" style={{ fontSize: '1.18rem' }}>{a.name}</span>
                             <span className="badge bg-success ms-2" style={{ fontSize: '0.98rem', padding: '0.4em 0.9em' }}>{a.school} {a.department}</span>
                           </div>
-                          <div style={{ position: 'relative' }}>
-                            <div
-                              style={{
-                                width: 28,
-                                height: 28,
-                                border: '2px solid #0d6efd',
-                                borderRadius: 6,
-                                background: isSelected ? '#0d6efd' : '#fff',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                transition: 'background 0.2s',
-                              }}
-                              onClick={e => {
-                                e.stopPropagation();
-                                if (isSelected) {
-                                  setSelectedTutors(selectedTutors.filter(id => id !== a.id));
-                                } else if (selectedTutors.length < 3) {
-                                  setSelectedTutors([...selectedTutors, a.id]);
-                                }
-                              }}
-                            >
-                              {isSelected && <i className="bi bi-check-lg text-white fs-5"></i>}
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="badge bg-primary" style={{ fontSize: '0.97rem', padding: '0.4em 0.9em', background: '#1976d2' }}>
+                              有{matchedInterests.length}個興趣與你相似
+                            </span>
+                            <div style={{ position: 'relative' }}>
+                              <div
+                                style={{
+                                  width: 28,
+                                  height: 28,
+                                  border: '2px solid #0d6efd',
+                                  borderRadius: 6,
+                                  background: isSelected ? '#0d6efd' : '#fff',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer',
+                                  transition: 'background 0.2s',
+                                }}
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  if (isSelected) {
+                                    setSelectedTutors(selectedTutors.filter(id => id !== a.id));
+                                  } else if (selectedTutors.length < 3) {
+                                    setSelectedTutors([...selectedTutors, a.id]);
+                                  }
+                                }}
+                              >
+                                {isSelected && <i className="bi bi-check-lg text-white fs-5"></i>}
+                              </div>
                             </div>
                           </div>
                         </div>
