@@ -276,61 +276,37 @@ export default function Home({ user }: HomeProps) {
           <div className="pb-5">
             <div className="row g-4 align-items-end">
               <div className="col-xl-8">
-                <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>服務項目</h4>
-                <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">MIG專業服務</h1>
+                <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>服务项目</h4>
+                <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">全球视野新一代精英少年培训计划</h1>
               </div>
                <div className="col-xl-4 text-xl-end wow fadeInUp" data-wow-delay="0.3s">
-                <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">查看所有服務</a>
+                <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">查看所有课程</a>
               </div>
             </div>
           </div>
-          <div className="row g-4">
+          <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
             {[
-              {
-                icon: "fas fa-calendar-alt",
-                title: "升學及留學顧問服務",
-                description: "提供個人化升學規劃建議，包括學校選擇、申請流程、面試技巧，同時協助申請海外大學，適合計劃出國升學嘅學生及家庭。",
-                image: "/img/teaching-training-1.jpg"
-              },
-              {
-                icon: "fas fa-users",
-                title: "職涯規劃與就業支援",
-                description: "為學生及年青人提供職涯諮詢、職場參觀、實習機會配對、履歷優化及面試培訓，幫助客戶提升未來就業競爭力。",
-                image: "/img/teaching-training-2.jpg"
-              },
-              {
-                icon: "fas fa-language",
-                title: "語言培訓與學術輔導",
-                description: "開設多語言課程及學術補習（如英語、普通話、專科補習），結合線上線下教學，提升語言能力同學術成績。",
-                image: "/img/teaching-training-3.jpg"
-              },
-              {
-                icon: "fas fa-building",
-                title: "移民與簽證申請服務",
-                description: "一站式協助辦理海外升學相關簽證、移民文件，提供專業顧問解答及文件審查，減低申請風險。",
-                image: "/img/teaching-training-4.jpg"
-              },
-              {
-                icon: "fas fa-certificate",
-                title: "學歷認證及專業發展課程",
-                description: "協助學員申請學歷認證，推廣持續進修，亦提供職場技能提升課程（如簡報技巧、團隊合作、領導力發展等）。",
-                image: "/img/teaching-training-5.jpg"
-              }
-            ].map((item, index) => (
-              <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay={`${0.1 * (index + 1)}s`} key={index}>
-                <div className="training-item bg-white rounded">
-                  <div className="training-img rounded-top">
-                    <img src={item.image} className="img-fluid rounded-top w-100" alt="服務圖片" />
-                  </div>
-                  <div className="bg-light rounded-bottom p-4">
-                    <div className="d-flex align-items-center mb-3">
-                      <div className="btn-square bg-primary rounded-circle me-3">
-                        <i className={`${item.icon} text-white`}></i>
-                      </div>
-                      <h4 className="mb-0">{item.title}</h4>
-                    </div>
-                    <p className="mb-0">{item.description}</p>
-                  </div>
+              { img: 'teaching-3', title: '升學及留學顧問服務', desc: '提供個人化升學規劃建議，包括學校選擇、申請流程、面試技巧，同時協助申請海外大學，適合計劃出國升學嘅學生及家庭。' },
+              { img: 'teaching-4', title: '職涯規劃與就業支援', desc: '為學生及年青人提供職涯諮詢、職場參觀、實習機會配對、履歷優化及面試培訓，幫助客戶提升未來就業競爭力。' },
+              { img: 'teaching-5', title: '語言培訓與學術輔導', desc: '開設多語言課程及學術補習（如英語、普通話、專科補習），結合線上線下教學，提升語言能力同學術成績。' },
+              { img: 'teaching-6', title: '移民與簽證申請服務', desc: '一站式協助辦理海外升學相關簽證、移民文件，提供專業顧問解答及文件審查，減低申請風險。' },
+              { img: 'teaching-7', title: '學歷認證及專業發展課程', desc: '協助學員申請學歷認證，推廣持續進修，亦提供職場技能提升課程（如簡報技巧、團隊合作、領導力發展等）。' }
+            ].map((item, idx) => (
+              <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
+                <div className="training-img rounded-top">
+                    <Image
+                      src={`/img/teaching-training-${idx+1}.jpg`}
+                      className="img-fluid rounded-top w-100"
+                      alt="服务图片"
+                      width={600}
+                      height={400}
+                    />
+                  <h1 className="fs-1 fw-bold bg-primary text-white d-inline-block rounded p-2 position-absolute" style={{top: 0, left: 0}}>{`0${idx+1}`}</h1>
+                </div>
+                <div className="rounded-bottom border border-top-0 p-4">
+                  <a href="#" className="h4 mb-3 d-block">{item.title}</a>
+                  <p className="mb-3 text-dark">{item.desc}</p>
+                  <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">了解详情</a>
                 </div>
               </div>
             ))}
@@ -343,38 +319,25 @@ export default function Home({ user }: HomeProps) {
       <div className="container-fluid py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>項目特色</h4>
-            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">為什麼選擇我們</h1>
+            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>项目特色</h4>
+            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">为什么选择我们</h1>
           </div>
           <div className="row g-4">
-            <div className="col-12">
-              <ol style={{ fontSize: '1.25rem', lineHeight: 2, paddingLeft: '1.2em' }}>
-                <li>
-                  <strong>一站式全方位規劃</strong><br/>
-                  我們提供升學、留學、語言、職涯、移民等全方位服務，一個平台滿足你所有需求，節省時間又放心。
-                </li>
-                <li>
-                  <strong>專業團隊 豐富經驗</strong><br/>
-                  顧問團隊擁有多年行業經驗，熟悉本地與海外教育資源，為你提供業界最專業貼心的建議。
-                </li>
-                <li>
-                  <strong>量身訂造 個性化方案</strong><br/>
-                  根據每位學員不同興趣、能力與規劃，設計最合適的升學及發展路徑，助你脫穎而出。
-                </li>
-                <li>
-                  <strong>全球網絡 海量資源</strong><br/>
-                  與多間世界頂尖學府、專業機構建立合作關係，持續掌握最新升學與職涯趨勢，提供最前沿選擇。
-                </li>
-                <li>
-                  <strong>持續支援 陪伴成長</strong><br/>
-                  不止一次性服務，我們重視長遠發展，從規劃到適應全程陪伴，助你順利過渡人生各階段。
-                </li>
-                <li>
-                  <strong>便捷高效的教學模式</strong><br/>
-                  以線上授課為主，靈活配合學生時間安排，減少頻繁線下奔波，提升學習效率。同時定期舉辦高端線下沙龍及實體活動，讓學生保持真實交流與人脈拓展，實現線上線下教學的最佳結合。
-                </li>
-              </ol>
-            </div>
+            {[
+              { title: '一站式全方位規劃', desc: '我們提供升學、留學、語言、職涯、移民等全方位服務，一個平台滿足你所有需求，節省時間又放心。' },
+              { title: '專業團隊 豐富經驗', desc: '顧問團隊擁有多年行業經驗，熟悉本地與海外教育資源，為你提供業界最專業貼心的建議。' },
+              { title: '量身訂造 個性化方案', desc: '根據每位學員不同興趣、能力與規劃，設計最合適的升學及發展路徑，助你脫穎而出。' },
+              { title: '全球網絡 海量資源', desc: '與多間世界頂尖學府、專業機構建立合作關係，持續掌握最新升學與職涯趨勢，提供最前沿選擇。' },
+              { title: '持續支援 陪伴成長', desc: '不止一次性服務，我們重視長遠發展，從規劃到適應全程陪伴，助你順利過渡人生各階段。' },
+              { title: '便捷高效的教學模式', desc: '以線上授課為主，靈活配合學生時間安排，減少頻繁線下奔波，提升學習效率。同時定期舉辦高端線下沙龍及實體活動，讓學生保持真實交流與人脈拓展，實現線上線下教學的最佳結合。' }
+            ].map((item, idx) => (
+              <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
+                <div className="bg-white rounded p-4">
+                  <h5 className="mb-3">{item.title}</h5>
+                  <p className="text-dark">{item.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
