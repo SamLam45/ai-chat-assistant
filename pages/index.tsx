@@ -343,24 +343,38 @@ export default function Home({ user }: HomeProps) {
       <div className="container-fluid py-5 bg-light">
         <div className="container py-5">
           <div className="pb-5">
-            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>项目特色</h4>
-            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">为什么选择我们</h1>
+            <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>項目特色</h4>
+            <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">為什麼選擇我們</h1>
           </div>
           <div className="row g-4">
-            {[
-              { title: '同龄榜样力量', desc: '18-25岁顶尖留学生导师，经历过中高考及海外申请，能精准解答学员困惑' },
-              { title: '全方位成长', desc: '学业辅导、心理支持与国际视野培养三位一体' },
-              { title: '显著效果', desc: '82%学员因导师影响主动制定学习计划，亲子沟通冲突减少60%' },
-              { title: '便捷高效', desc: '线上授课为主，减少频繁线下奔波，配合高端线下沙龙' },
-              { title: '独特课程内容', desc: '探讨AI时代职业变革、中美贸易等前沿话题，培养未来竞争力' }
-            ].map((item, idx) => (
-              <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
-                <div className="bg-white rounded p-4">
-                  <h5 className="mb-3">{item.title}</h5>
-                  <p className="text-dark">{item.desc}</p>
-                </div>
-              </div>
-            ))}
+            <div className="col-12">
+              <ol style={{ fontSize: '1.25rem', lineHeight: 2, paddingLeft: '1.2em' }}>
+                <li>
+                  <strong>一站式全方位規劃</strong><br/>
+                  我們提供升學、留學、語言、職涯、移民等全方位服務，一個平台滿足你所有需求，節省時間又放心。
+                </li>
+                <li>
+                  <strong>專業團隊 豐富經驗</strong><br/>
+                  顧問團隊擁有多年行業經驗，熟悉本地與海外教育資源，為你提供業界最專業貼心的建議。
+                </li>
+                <li>
+                  <strong>量身訂造 個性化方案</strong><br/>
+                  根據每位學員不同興趣、能力與規劃，設計最合適的升學及發展路徑，助你脫穎而出。
+                </li>
+                <li>
+                  <strong>全球網絡 海量資源</strong><br/>
+                  與多間世界頂尖學府、專業機構建立合作關係，持續掌握最新升學與職涯趨勢，提供最前沿選擇。
+                </li>
+                <li>
+                  <strong>持續支援 陪伴成長</strong><br/>
+                  不止一次性服務，我們重視長遠發展，從規劃到適應全程陪伴，助你順利過渡人生各階段。
+                </li>
+                <li>
+                  <strong>便捷高效的教學模式</strong><br/>
+                  以線上授課為主，靈活配合學生時間安排，減少頻繁線下奔波，提升學習效率。同時定期舉辦高端線下沙龍及實體活動，讓學生保持真實交流與人脈拓展，實現線上線下教學的最佳結合。
+                </li>
+              </ol>
+            </div>
           </div>
         </div>
       </div>
