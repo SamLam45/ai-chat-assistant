@@ -208,15 +208,15 @@ export default function Training({ user }: TrainingProps) {
             <div className="row g-4 align-items-end">
               <div className="col-xl-8">
                 <h4 className="sub-title fw-bold wow fadeInUp team-orange" data-wow-delay="0.1s">
-                  服务项目
+                  服務項目
                 </h4>
                 <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">
-                  服务项目平台
+                  MIG專業服務
                 </h1>
               </div>
               <div className="col-xl-4 text-xl-end wow fadeInUp" data-wow-delay="0.3s">
                 <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">
-                  查看所有服务
+                  查看所有服務
                 </a>
               </div>
             </div>
@@ -225,39 +225,39 @@ export default function Training({ user }: TrainingProps) {
             {[
               {
                 icon: "fas fa-calendar-alt",
-                title: "12个月沉浸式课程",
-                description: "每月围绕AI、国际关系等12大主题展开，系统化培养全球视野。",
+                title: "升學及留學顧問服務",
+                description: "提供個人化升學規劃建議，包括學校選擇、申請流程、面試技巧，同時協助申請海外大學，適合計劃出國升學嘅學生及家庭。",
                 image: "/img/teaching-training-1.jpg"
               },
               {
                 icon: "fas fa-users",
-                title: "1对2小组辅导",
-                description: "香港及海外精英大学生导师，非大班网课，个性化指导。",
+                title: "職涯規劃與就業支援",
+                description: "為學生及年青人提供職涯諮詢、職場參觀、實習機會配對、履歷優化及面試培訓，幫助客戶提升未來就業競爭力。",
                 image: "/img/teaching-training-2.jpg"
               },
               {
                 icon: "fas fa-language",
-                title: "双语课程",
-                description: "结合新闻分析与批判性思维训练，提升语言与思维能力。",
+                title: "語言培訓與學術輔導",
+                description: "開設多語言課程及學術補習（如英語、普通話、專科補習），結合線上線下教學，提升語言能力同學術成績。",
                 image: "/img/teaching-training-3.jpg"
               },
               {
                 icon: "fas fa-building",
-                title: "独家企业参观与大师班",
-                description: "每年两次一线城市高端沙龙（北京、上海、深圳、香港）。",
+                title: "移民與簽證申請服務",
+                description: "一站式協助辦理海外升學相關簽證、移民文件，提供專業顧問解答及文件審查，減低申請風險。",
                 image: "/img/teaching-training-4.jpg"
               },
               {
                 icon: "fas fa-certificate",
-                title: "国际素养证书",
-                description: "结业颁发由香港精英教育机构认证的国际素养证书。",
+                title: "學歷認證及專業發展課程",
+                description: "協助學員申請學歷認證，推廣持續進修，亦提供職場技能提升課程（如簡報技巧、團隊合作、領導力發展等）。",
                 image: "/img/teaching-training-5.jpg"
               }
             ].map((item, index) => (
               <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay={`${0.1 * (index + 1)}s`} key={index}>
                 <div className="training-item bg-white rounded">
                   <div className="training-img rounded-top">
-                    <img src={item.image} className="img-fluid rounded-top w-100" alt="教师教导学生" />
+                    <img src={item.image} className="img-fluid rounded-top w-100" alt="教師教導學生" />
                   </div>
                   <div className="bg-light rounded-bottom p-4">
                     <div className="d-flex align-items-center mb-3">

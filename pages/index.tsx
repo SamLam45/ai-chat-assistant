@@ -276,37 +276,61 @@ export default function Home({ user }: HomeProps) {
           <div className="pb-5">
             <div className="row g-4 align-items-end">
               <div className="col-xl-8">
-                <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>服务项目</h4>
-                <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">全球视野新一代精英少年培训计划</h1>
+                <h4 className="sub-title fw-bold wow fadeInUp" data-wow-delay="0.1s" style={{ color: '#f28b00' }}>服務項目</h4>
+                <h1 className="display-2 mb-0 wow fadeInUp" data-wow-delay="0.3s">MIG專業服務</h1>
               </div>
                <div className="col-xl-4 text-xl-end wow fadeInUp" data-wow-delay="0.3s">
-                <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">查看所有课程</a>
+                <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">查看所有服務</a>
               </div>
             </div>
           </div>
-          <div className="training-carousel owl-carousel pt-5 wow fadeInUp" data-wow-delay="0.1s">
+          <div className="row g-4">
             {[
-              { img: 'teaching-3', title: '沉浸式课程', desc: '12个月课程，每月围绕AI、国际关系等12大主题展开' },
-              { img: 'teaching-4', title: '精英导师辅导', desc: '香港及海外顶尖大学生1对2小组辅导，非大班网课' },
-              { img: 'teaching-5', title: '双语教学', desc: '结合新闻分析与批判性思维训练，全面提升能力' },
-              { img: 'teaching-6', title: '高端体验', desc: '独家企业参观、名师大师班及一线城市高端沙龙' },
-              { img: 'teaching-7', title: '国际认证', desc: '结业颁发香港精英教育机构认证的国际素养证书' }
-            ].map((item, idx) => (
-              <div className="training-item bg-white rounded wow fadeInUp" data-wow-delay={`${0.1 + idx*0.2}s`} key={idx}>
-                <div className="training-img rounded-top">
-                    <Image
-                      src={`/img/teaching-training-${idx+1}.jpg`}
-                      className="img-fluid rounded-top w-100"
-                      alt="服务图片"
-                      width={600}
-                      height={400}
-                    />
-                  <h1 className="fs-1 fw-bold bg-primary text-white d-inline-block rounded p-2 position-absolute" style={{top: 0, left: 0}}>{`0${idx+1}`}</h1>
-                </div>
-                <div className="rounded-bottom border border-top-0 p-4">
-                  <a href="#" className="h4 mb-3 d-block">{item.title}</a>
-                  <p className="mb-3 text-dark">{item.desc}</p>
-                  <a className="btn btn-primary rounded-pill text-white py-2 px-4" href="#">了解详情</a>
+              {
+                icon: "fas fa-calendar-alt",
+                title: "升學及留學顧問服務",
+                description: "提供個人化升學規劃建議，包括學校選擇、申請流程、面試技巧，同時協助申請海外大學，適合計劃出國升學嘅學生及家庭。",
+                image: "/img/teaching-training-1.jpg"
+              },
+              {
+                icon: "fas fa-users",
+                title: "職涯規劃與就業支援",
+                description: "為學生及年青人提供職涯諮詢、職場參觀、實習機會配對、履歷優化及面試培訓，幫助客戶提升未來就業競爭力。",
+                image: "/img/teaching-training-2.jpg"
+              },
+              {
+                icon: "fas fa-language",
+                title: "語言培訓與學術輔導",
+                description: "開設多語言課程及學術補習（如英語、普通話、專科補習），結合線上線下教學，提升語言能力同學術成績。",
+                image: "/img/teaching-training-3.jpg"
+              },
+              {
+                icon: "fas fa-building",
+                title: "移民與簽證申請服務",
+                description: "一站式協助辦理海外升學相關簽證、移民文件，提供專業顧問解答及文件審查，減低申請風險。",
+                image: "/img/teaching-training-4.jpg"
+              },
+              {
+                icon: "fas fa-certificate",
+                title: "學歷認證及專業發展課程",
+                description: "協助學員申請學歷認證，推廣持續進修，亦提供職場技能提升課程（如簡報技巧、團隊合作、領導力發展等）。",
+                image: "/img/teaching-training-5.jpg"
+              }
+            ].map((item, index) => (
+              <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay={`${0.1 * (index + 1)}s`} key={index}>
+                <div className="training-item bg-white rounded">
+                  <div className="training-img rounded-top">
+                    <img src={item.image} className="img-fluid rounded-top w-100" alt="服務圖片" />
+                  </div>
+                  <div className="bg-light rounded-bottom p-4">
+                    <div className="d-flex align-items-center mb-3">
+                      <div className="btn-square bg-primary rounded-circle me-3">
+                        <i className={`${item.icon} text-white`}></i>
+                      </div>
+                      <h4 className="mb-0">{item.title}</h4>
+                    </div>
+                    <p className="mb-0">{item.description}</p>
+                  </div>
                 </div>
               </div>
             ))}
