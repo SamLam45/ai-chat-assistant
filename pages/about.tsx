@@ -201,15 +201,25 @@ export default function About({ user }: AboutProps) {
               </div>
             </div>
             <div className="col-lg-7 wow fadeInRight" data-wow-delay="0.3s">
-              <h4 className="sub-title fw-bold" style={{ color: '#f28b00' }}>
+              <h4 className="sub-title fw-bold" style={{ color: '#f28b00', letterSpacing: '2px', marginBottom: '1rem' }}>
                 關於我們
               </h4>
-              <h1 className="display-3 mb-4">
-                <strong className="text-primary">M — Motivating（激勵）：</strong>激勵學生主動學習<br/>
-                <strong className="text-primary">I — Inspiring（啟發）：</strong>啟發學生發揮潛能<br/>
-                <strong className="text-primary">G — Growing（成長）：</strong>陪伴學生持續成長
-              </h1>
-              <p className="text-dark">
+              <div style={{ borderTop: '2px solid #f28b00', width: '60px', marginBottom: '1.5rem' }}></div>
+              <div style={{ lineHeight: 1.2, marginBottom: '2rem' }}>
+                <span style={{ color: '#1976d2', fontWeight: 700, fontSize: '2.8rem', display: 'block' }}>
+                  M <span style={{ fontSize: '2rem', fontWeight: 400 }}> Motivating（激勵）</span>：
+                </span>
+                <span style={{ fontSize: '1.6rem', display: 'block', marginBottom: '1.2rem' }}>激勵學生主動學習</span>
+                <span style={{ color: '#1976d2', fontWeight: 700, fontSize: '2.8rem', display: 'block' }}>
+                  I <span style={{ fontSize: '2rem', fontWeight: 400 }}> Inspiring（啟發）</span>：
+                </span>
+                <span style={{ fontSize: '1.6rem', display: 'block', marginBottom: '1.2rem' }}>啟發學生發揮潛能</span>
+                <span style={{ color: '#1976d2', fontWeight: 700, fontSize: '2.8rem', display: 'block' }}>
+                  G <span style={{ fontSize: '2rem', fontWeight: 400 }}> Growing（成長）</span>：
+                </span>
+                <span style={{ fontSize: '1.6rem', display: 'block', marginBottom: '1.2rem' }}>陪伴學生持續成長</span>
+              </div>
+              <p className="text-dark" style={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
                 MIG成立於2017年，是一家專注於教育及職業發展的精英教育團隊。我們致力於為全球客戶提供專業、全面且貼心的升學、留學及就業規劃服務。<br/>
                 我們的核心服務涵蓋：升學及留學顧問、移民與簽證申請、語言培訓、學歷認證、職業規劃與海外就業支援等。透過雙語全球議題討論、香港及海外頂尖大學生導師輔導，以及企業參觀和大師班等體驗活動，幫助孩子們彌補傳統學業的不足，塑造差異化升學優勢和未來競爭力。團隊成員均具備豐富的行業經驗，並與多所國際頂尖學府、移民機構、語言中心、地產與人力資源機構建立了穩固的合作網絡。<br/>
                 我們秉持「以客為本、量身訂做」的理念，為每位客戶打造最合適的發展路徑，協助他們實現人生目標。我們的使命是培養自信、具國際視野的未來領袖，協助他們進入世界頂尖大學和職場。無論您是計劃赴澳洲、美國、加拿大、星加坡、日本等地升學或就業，MIG都能成為您值得信賴的夥伴。<br/>
