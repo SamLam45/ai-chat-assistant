@@ -197,23 +197,24 @@ export default function About({ user }: AboutProps) {
           <div className="row g-5 align-items-center">
             <div className="col-lg-5 wow fadeInLeft" data-wow-delay="0.1s">
               <div className="border rounded" style={{ backgroundColor: '#f28b00' }}>
-                <Image src="/img/teaching-about-1.jpg" className="img-fluid w-100 rounded" alt="教师教导学生" width={500} height={500} />
+                <Image src="/img/teaching-about-1.jpg" className="img-fluid w-100 rounded" alt="教師教導學生" width={500} height={500} />
               </div>
             </div>
             <div className="col-lg-7 wow fadeInRight" data-wow-delay="0.3s">
-              <h4 className="sub-title fw-bold" style={{ color: '#f28b00' }}>关于我们</h4>
+              <h4 className="sub-title fw-bold" style={{ color: '#f28b00' }}>
+                關於我們
+              </h4>
               <h1 className="display-3 mb-4">
-                <strong className="text-primary">全球视野</strong>, 培养具有全球视野的未来领袖
+                <strong className="text-primary">M — Motivating（激勵）：</strong>激勵學生主動學習<br/>
+                <strong className="text-primary">I — Inspiring（啟發）：</strong>啟發學生發揮潛能<br/>
+                <strong className="text-primary">G — Growing（成長）：</strong>陪伴學生持續成長
               </h1>
               <p className="text-dark">
-                我们是一支总部位于香港的精英教育团队，致力于培养具有全球视野和批判性思维的中国青少年。通过双语全球议题讨论、香港及海外顶尖大学生导师辅导，以及企业参观和大师班等体验活动，帮助孩子们弥补传统学业的不足，塑造差异化升学优势和未来竞争力。我们的使命是培养自信、具国际视野的未来领袖，助力他们进入世界顶尖高校和职场。
+                MIG成立於2017年，是一家專注於教育及職業發展的精英教育團隊。我們致力於為全球客戶提供專業、全面且貼心的升學、留學及就業規劃服務。<br/>
+                我們的核心服務涵蓋：升學及留學顧問、移民與簽證申請、語言培訓、學歷認證、職業規劃與海外就業支援等。透過雙語全球議題討論、香港及海外頂尖大學生導師輔導，以及企業參觀和大師班等體驗活動，幫助孩子們彌補傳統學業的不足，塑造差異化升學優勢和未來競爭力。團隊成員均具備豐富的行業經驗，並與多所國際頂尖學府、移民機構、語言中心、地產與人力資源機構建立了穩固的合作網絡。<br/>
+                我們秉持「以客為本、量身訂做」的理念，為每位客戶打造最合適的發展路徑，協助他們實現人生目標。我們的使命是培養自信、具國際視野的未來領袖，協助他們進入世界頂尖大學和職場。無論您是計劃赴澳洲、美國、加拿大、星加坡、日本等地升學或就業，MIG都能成為您值得信賴的夥伴。<br/>
+                我們致力於透過創新的教育方式，為青少年提供獨特的成長機會。我們的課程結合前沿知識與實務經驗，確保每位學員都能在全球化環境中脫穎而出。
               </p>
-              <p className="mb-4 text-dark">
-                我们致力于通过创新的教育方式，为青少年提供独特的成长机会。我们的课程结合前沿知识与实践经验，确保每位学员都能在全球化环境中脱颖而出。
-              </p>
-              <a className="btn btn-primary rounded-pill text-white py-3 px-5" href="#">
-                了解更多
-              </a>
             </div>
           </div>
         </div>
